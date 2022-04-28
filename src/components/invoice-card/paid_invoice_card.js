@@ -13,6 +13,7 @@ import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import style from './card_style';
 import moment from 'moment';
 import DatePicker from 'react-native-date-picker';
+import {connect} from 'react-redux';
 import LottieView from 'lottie-react-native';
 import colors from '../../assets/colors';
 import IconComp from '../../components/IconComp';
@@ -34,12 +35,15 @@ const PaidInvoice = ({
   productType,
   _onPressTypeSearch,
   setProductType,
+  UserReducer,
+  _onPressGetAllInvoices,
 }) => {
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [searchChoice, setSearchChoice] = useState('email');
 
   const renderItem = ({item, index}) => {
+    // console.log(JSON.stringify(UserReducer,null,2));
     return (
       <View key={index} style={{}}>
         <LinearGradient
@@ -69,12 +73,11 @@ const PaidInvoice = ({
 
   return (
     <>
-      <FlatList
-        data={isLoading ? [] : data}
-        ListHeaderComponent={() => (
-          <>
-            <Text style={styles.main_title}>Invoices</Text>
-            <View style={styles.btnContainers}>
+      <>
+        <Text style={styles.main_title}>Invoices</Text>
+        <View style={styles.btnContainers}>
+          {UserReducer?.userData?.role_id !== 3 && (
+            <>
               <Button
                 title="Search By Email"
                 onBtnPress={() => setSearchChoice('email')}
@@ -89,6 +92,7 @@ const PaidInvoice = ({
                   fontSize: width * 0.04,
                 }}
               />
+
               <Button
                 title="Search By Date"
                 onBtnPress={() => setSearchChoice('date')}
@@ -104,12 +108,17 @@ const PaidInvoice = ({
                   fontSize: width * 0.04,
                 }}
               />
-              {/* <Button
-                title="Search By Type"
-                onBtnPress={() => setSearchChoice('type')}
+
+              <Button
+                title="Get All Invoices"
+                onBtnPress={() => {
+                  setSearchChoice('all');
+                  _onPressGetAllInvoices();
+                }}
                 btnStyle={[
                   styles.btnStyle,
-                  searchChoice === 'type' && {backgroundColor: 'orange'},
+                  {marginLeft: width * 0.04},
+                  searchChoice === 'all' && {backgroundColor: 'orange'},
                 ]}
                 isBgColor={false}
                 btnTextStyle={{
@@ -117,130 +126,107 @@ const PaidInvoice = ({
                   color: 'white',
                   fontSize: width * 0.04,
                 }}
-              /> */}
-            </View>
-            {
-              searchChoice === 'email' ? (
-                <>
-                  <TextInput
-                    placeholder="Search by email"
-                    value={searchText}
-                    style={styles.searchBox}
-                    onChangeText={text => setSearchText(text)}
-                  />
-                </>
-              ) : (
-                <>
-                  <View
-                    style={[styles.rowView, {justifyContent: 'flex-start'}]}>
-                    <Heading
-                      title={'Start Date:'}
-                      passedStyle={styles.dateLabel}
-                    />
-                    <Heading
-                      title={'End Date:'}
-                      passedStyle={[
-                        styles.dateLabel,
-                        {marginLeft: width * 0.25},
-                      ]}
-                    />
-                  </View>
-                  <View style={[styles.rowView, {marginBottom: height * 0.03}]}>
-                    {/* start date  */}
+              />
+            </>
+          )}
+        </View>
 
-                    <View style={styles.rowView}>
-                      <TouchableOpacity
-                        style={styles.datePickerView}
-                        activeOpacity={0.7}
-                        onPress={() => {
-                          setShowStartDatePicker(true);
-                        }}>
-                        <Heading
-                          title={moment(startDate).format('DD-MMM-YYYY')}
-                          passedStyle={styles.additionalInfoText}
-                        />
-                      </TouchableOpacity>
-                      <IconComp
-                        type="Ionicons"
-                        name="calendar"
-                        iconStyle={styles.eventStyle}
-                      />
-                    </View>
-
-                    {/* end date  */}
-                    <View style={styles.rowView}>
-                      <TouchableOpacity
-                        style={styles.datePickerView}
-                        activeOpacity={0.7}
-                        onPress={() => {
-                          setShowEndDatePicker(true);
-                        }}>
-                        <Heading
-                          title={moment(endDate).format('DD-MMM-YYYY')}
-                          passedStyle={styles.additionalInfoText}
-                        />
-                      </TouchableOpacity>
-                      <IconComp
-                        type="Ionicons"
-                        name="calendar"
-                        iconStyle={styles.eventStyle}
-                      />
-                    </View>
-                  </View>
-                </>
-              )
-
-              // : (
-              //   <View
-              //     style={[
-              //       styles.rowView,
-              //       {justifyContent: 'space-around', marginBottom: height * 0.03},
-              //     ]}>
-              //     <Button
-              //       title="Walmart"
-              //       onBtnPress={() => setProductType('Walmart')}
-              //       btnStyle={[
-              //         styles.typeBtnStyle,
-              //         productType === 'Walmart' && {backgroundColor: 'green'},
-              //       ]}
-              //       isBgColor={false}
-              //       btnTextStyle={{
-              //         fontFamily: 'Poppins-SemiBold',
-              //         color: productType === 'Walmart' ? 'white' : 'purple',
-              //         fontSize: width * 0.04,
-              //       }}
-              //     />
-              //     <Button
-              //       title="Amazon"
-              //       onBtnPress={() => setProductType('Amazon')}
-              //       btnStyle={[
-              //         styles.typeBtnStyle,
-              //         productType === 'Amazon' && {backgroundColor: 'green'},
-              //       ]}
-              //       isBgColor={false}
-              //       btnTextStyle={{
-              //         fontFamily: 'Poppins-SemiBold',
-              //         color: productType === 'Amazon' ? 'white' : 'purple',
-              //         fontSize: width * 0.04,
-              //       }}
-              //     />
-              //   </View>
-              // )
-            }
-            {(searchChoice == 'email' || searchChoice === 'date') && (
-              <TouchableOpacity
-                onPress={
-                  searchChoice === 'email' ? _onPressSearch : _onPressDateSearch
-                }
-                style={styles.btnContainer}>
-                <Text style={styles.btnText}>Search</Text>
-              </TouchableOpacity>
-            )}
+        {searchChoice === 'email' && UserReducer?.userData?.role_id ===1 ? (
+          <>
+            <TextInput
+              placeholder="Search by email"
+              value={searchText}
+              style={styles.searchBox}
+              onChangeText={text => setSearchText(text)}
+            />
           </>
+        ) : (
+          searchChoice === 'date' && (
+            <>
+              <View style={[styles.rowView, {justifyContent: 'flex-start'}]}>
+                <Heading title={'Start Date:'} passedStyle={styles.dateLabel} />
+                <Heading
+                  title={'End Date:'}
+                  passedStyle={[styles.dateLabel, {marginLeft: width * 0.25}]}
+                />
+              </View>
+              <View style={[styles.rowView, {marginBottom: height * 0.03}]}>
+                {/* start date  */}
+
+                <View style={styles.rowView}>
+                  <TouchableOpacity
+                    style={styles.datePickerView}
+                    activeOpacity={0.7}
+                    onPress={() => {
+                      setShowStartDatePicker(true);
+                    }}>
+                    <Heading
+                      title={moment(startDate).format('DD-MMM-YYYY')}
+                      passedStyle={styles.additionalInfoText}
+                    />
+                  </TouchableOpacity>
+                  <IconComp
+                    type="Ionicons"
+                    name="calendar"
+                    iconStyle={styles.eventStyle}
+                  />
+                </View>
+
+                {/* end date  */}
+                <View style={styles.rowView}>
+                  <TouchableOpacity
+                    style={styles.datePickerView}
+                    activeOpacity={0.7}
+                    onPress={() => {
+                      setShowEndDatePicker(true);
+                    }}>
+                    <Heading
+                      title={moment(endDate).format('DD-MMM-YYYY')}
+                      passedStyle={styles.additionalInfoText}
+                    />
+                  </TouchableOpacity>
+                  <IconComp
+                    type="Ionicons"
+                    name="calendar"
+                    iconStyle={styles.eventStyle}
+                  />
+                </View>
+              </View>
+            </>
+          )
         )}
-        renderItem={renderItem}
-        keyExtractor={item => item?.id?.toString()}
-      />
+        {(searchChoice == 'email' || searchChoice === 'date')&& UserReducer?.userData?.role_id ===1  && (
+          <TouchableOpacity
+            onPress={
+              searchChoice === 'email' ? _onPressSearch : _onPressDateSearch
+            }
+            style={styles.btnContainer}>
+            <Text style={styles.btnText}>Search</Text>
+          </TouchableOpacity>
+        )}
+      </>
+      {UserReducer?.invoices?.length > 0 ? (
+        <FlatList
+          data={isLoading ? [] : data}
+          renderItem={renderItem}
+          keyExtractor={item => item?.id?.toString()}
+        />
+      ) : (
+        !isLoading && <View
+          style={{
+            marginTop: height * 0.1,
+            width: width * 0.43,
+            height: height * 0.17,
+            borderRadius: width * 0.04,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text style={{color: 'white', fontSize: width * 0.045}}>
+            No Record Found
+          </Text>
+        </View>
+      )}
       {isLoading && (
         <LottieView
           speed={1}
@@ -253,9 +239,9 @@ const PaidInvoice = ({
       {/* Start Date Picker  */}
       <DatePicker
         modal
-        // mode="date"
+        mode="date"
         open={showStartDatePicker}
-        minimumDate={startDate}
+        // minimumDate={startDate}
         date={startDate}
         onConfirm={date => {
           setShowStartDatePicker(false);
@@ -268,8 +254,8 @@ const PaidInvoice = ({
       {/* End Date Picker  */}
       <DatePicker
         modal
-        // mode="date"
-        minimumDate={endDate}
+        mode="date"
+        // minimumDate={endDate}
         open={showEndDatePicker}
         date={endDate}
         onConfirm={date => {
@@ -315,7 +301,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     // backgroundColor: 'red',
     // bottom: height * 0.032,
-    top: height * 0.14,
+    top: height * 0.21,
     zIndex: 9999,
     // left: width * 0.01,
   },
@@ -353,6 +339,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: width * 0.04,
     marginBottom: height * 0.02,
+    marginRight: width * 0.05,
   },
   btnText: {
     color: 'white',
@@ -393,4 +380,64 @@ const styles = StyleSheet.create({
     borderColor: colors.themePurple1,
   },
 });
-export default PaidInvoice;
+
+const mapStateToProps = ({UserReducer}) => {
+  return {
+    UserReducer,
+  };
+};
+export default connect(mapStateToProps, null)(PaidInvoice);
+
+{
+  /* <Button
+                title="Search By Type"
+                onBtnPress={() => setSearchChoice('type')}
+                btnStyle={[
+                  styles.btnStyle,
+                  searchChoice === 'type' && {backgroundColor: 'orange'},
+                ]}
+                isBgColor={false}
+                btnTextStyle={{
+                  fontFamily: 'Poppins-SemiBold',
+                  color: 'white',
+                  fontSize: width * 0.04,
+                }}
+              /> */
+}
+
+// : (
+//   <View
+//     style={[
+//       styles.rowView,
+//       {justifyContent: 'space-around', marginBottom: height * 0.03},
+//     ]}>
+//     <Button
+//       title="Walmart"
+//       onBtnPress={() => setProductType('Walmart')}
+//       btnStyle={[
+//         styles.typeBtnStyle,
+//         productType === 'Walmart' && {backgroundColor: 'green'},
+//       ]}
+//       isBgColor={false}
+//       btnTextStyle={{
+//         fontFamily: 'Poppins-SemiBold',
+//         color: productType === 'Walmart' ? 'white' : 'purple',
+//         fontSize: width * 0.04,
+//       }}
+//     />
+//     <Button
+//       title="Amazon"
+//       onBtnPress={() => setProductType('Amazon')}
+//       btnStyle={[
+//         styles.typeBtnStyle,
+//         productType === 'Amazon' && {backgroundColor: 'green'},
+//       ]}
+//       isBgColor={false}
+//       btnTextStyle={{
+//         fontFamily: 'Poppins-SemiBold',
+//         color: productType === 'Amazon' ? 'white' : 'purple',
+//         fontSize: width * 0.04,
+//       }}
+//     />
+//   </View>
+// )

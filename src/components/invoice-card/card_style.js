@@ -30,6 +30,7 @@ export default StyleSheet.create({
     },
     main_title: {
         fontSize : width * 0.040,
+        textTransform:'uppercase',
         color : '#fff',
         fontFamily: 'Poppins-Bold',
     },

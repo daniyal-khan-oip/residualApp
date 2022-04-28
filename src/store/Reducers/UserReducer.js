@@ -8,7 +8,9 @@ import {
   GET_INVEST_EARN,
   GET_INVOICES,
   GET_USER_PRODUCT_ARRAY,
-  GET_CURRENT_LOC,GET_USER_PRODUCTS
+  GET_CURRENT_LOC,
+  GET_USER_PRODUCTS,
+  UPDATE_PROFILE,
 } from '../Actions/actionType';
 
 const INITIAL_STATE = {
@@ -20,6 +22,8 @@ const INITIAL_STATE = {
   invoices: [],
   productsArray: [],
   products: [],
+  totalAmazon: 0,
+  totalWalmart: 0,
 };
 
 export function UserReducer(state = INITIAL_STATE, action) {
@@ -61,6 +65,8 @@ export function UserReducer(state = INITIAL_STATE, action) {
         ...state,
         totalInvestments: action.payload.investment,
         totalEarnings: action.payload.earning,
+        totalAmazon: action.payload.amazone_investment,
+        totalWalmart: action.payload.wallmart,
       };
 
     case GET_INVOICES:
@@ -70,7 +76,6 @@ export function UserReducer(state = INITIAL_STATE, action) {
       };
 
     case GET_USER_PRODUCTS:
-      console.log(action.payload,"..................s")
       return {
         ...state,
         products: action.payload,
@@ -81,6 +86,17 @@ export function UserReducer(state = INITIAL_STATE, action) {
         ...state,
         productsArray: action.payload,
       };
+
+    case UPDATE_PROFILE:
+      console.log("=sdssdsa")
+      return {
+        ...state,
+        userData: {
+          ...state.userData,
+          ...action.payload,
+        },
+      };
+
     default:
       return state;
   }

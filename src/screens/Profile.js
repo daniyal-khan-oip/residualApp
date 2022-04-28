@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   ImageBackground,
   ScrollView,
@@ -7,7 +7,8 @@ import {
   View,
   Text,
   Image,
-  TouchableOpacity,StatusBar
+  TouchableOpacity,
+  StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -18,63 +19,77 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {UserReducer} from '../store/Reducers/UserReducer';
 import {connect} from 'react-redux';
 import * as actions from '../store/Actions/index';
-import { themePurple } from '../assets/colors/colors';
+import {themePurple} from '../assets/colors/colors';
 
 const image = require('../assets/images/login_bg.png');
 const walmart = require('../assets/images/walmart-icon.png');
 const bnb = require('../assets/images/bnb.png');
 const category = require('../assets/images/category.png');
-const profileImage = require('../assets/images/user_profile.png');
+const profileImage = require('../assets/images/dp.png');
 const {height, width} = Dimensions.get('window');
-const STATUS_BAR_HEIGHT =
-    Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
+const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
 
-const Profile = ({UserReducer, user_logout}) => {
-    console.log(UserReducer?.userData)
+const Profile = ({UserReducer, user_logout, navigation}) => {
+  console.log(UserReducer?.userData);
+  const [name, setName] = useState(
+    `${UserReducer?.userData?.first_name} ${UserReducer?.userData?.last_name}`,
+  );
+  useEffect(() => {
+    setName(
+      `${UserReducer?.userData?.first_name} ${UserReducer?.userData?.last_name}`,
+    );
+  }, [UserReducer?.userData]);
   return (
     <ImageBackground source={image} resizeMode="cover" style={style.login_bg}>
-       <View style={{ height: STATUS_BAR_HEIGHT, backgroundColor: themePurple }}>
-          <StatusBar
-            translucent
-            backgroundColor={themePurple}
-            barStyle="light-content"
-          />
-        </View>
+      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+        <StatusBar
+          translucent
+          backgroundColor={themePurple}
+          barStyle="light-content"
+        />
+      </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}>
-          <View style={style.contentView}>
-
-        
-        <LinearGradient
-          colors={['#7124BC', '#437AD8', '#05F0FF']}
-          style={[
-            style.gradient_btn,
-            {
-              borderColor: '#707070',
-              borderStyle: 'solid',
-              borderWidth: 1,
-              marginBottom: height * 0.02
-            },
-          ]}
-          start={{y: 0.0, x: 0.001}}
-          angleCenter={{x: 5, y: 0}}
-          end={{y: 0.0, x: 1.1}}>
-          <View style={[style.card_main]}>
-            <Image source={profileImage} style={style.profile_img} />
-            <View style={{marginLeft: width * 0.04}}>
-              <Text style={style.user_name}>Joe sandy</Text>
-              <Text style={style.user_email}>joesandy@email.com</Text>
+        <View style={style.contentView}>
+          <LinearGradient
+            colors={['#7124BC', '#437AD8', '#05F0FF']}
+            style={[
+              style.gradient_btn,
+              {
+                borderColor: '#707070',
+                borderStyle: 'solid',
+                borderWidth: 1,
+                marginBottom: height * 0.02,
+              },
+            ]}
+            start={{y: 0.0, x: 0.001}}
+            angleCenter={{x: 5, y: 0}}
+            end={{y: 0.0, x: 1.1}}>
+            <View style={[style.card_main]}>
+              <Image
+                source={
+                  UserReducer?.userData?.profile_image
+                    ? {uri: UserReducer?.userData?.profile_image}
+                    : profileImage
+                }
+                style={style.profile_img}
+              />
+              <View style={{marginLeft: width * 0.04}}>
+                <Text style={style.user_name}>{name}</Text>
+                <Text style={style.user_email}>
+                  {UserReducer?.userData?.email}
+                </Text>
+              </View>
             </View>
-          </View>
-        </LinearGradient>
-        <LinearGradient
-          colors={['#7124BC', '#437AD8', '#05F0FF']}
-          style={[style.gradient_btn]}
-          start={{y: 0.0, x: 0.001}}
-          angleCenter={{x: 5, y: 0}}
-          end={{y: 0.0, x: 1.1}}>
-          <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
+          </LinearGradient>
+          <LinearGradient
+            colors={['#7124BC', '#437AD8', '#05F0FF']}
+            style={[style.gradient_btn]}
+            start={{y: 0.0, x: 0.001}}
+            angleCenter={{x: 5, y: 0}}
+            end={{y: 0.0, x: 1.1}}>
+            {/* <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
             <View style={style.list_icon}>
               <Fontisto
                 name="credit-card"
@@ -180,34 +195,44 @@ const Profile = ({UserReducer, user_logout}) => {
             </View>
             <Text style={style.list_title}>Help and support</Text>
             <Icon name="chevron-right" size={width * 0.04} color="#fff" />
-          </View>
-          <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
-            <View style={style.list_icon}>
-              <Fontisto
-                name="player-settings"
-                size={width * 0.05}
-                color="#fff"
-                style={style.list_icon}
-              />
-            </View>
-            <Text style={style.list_title}>Settings</Text>
-            <Icon name="chevron-right" size={width * 0.04} color="#fff" />
-          </View>
-          <TouchableOpacity
-            style={[style.card_main, {paddingBottom: width * 0.05}]}
-            onPress={() => user_logout()}>
-            <View style={style.list_icon}>
-              <MaterialCommunityIcons
-                name="logout"
-                size={width * 0.05}
-                color="#fff"
-                style={style.list_icon}
-              />
-            </View>
-            <Text style={style.list_title}>Logout</Text>
-            {/* <Icon name="chevron-right" size={width * 0.04} color="#fff" /> */}
-          </TouchableOpacity>
-        </LinearGradient>
+          </View>*/}
+            <TouchableOpacity
+              style={[
+                style.card_main,
+                {
+                  paddingBottom: width * 0.05,
+                  borderBottomWidth: 1,
+                  borderBottomColor: 'white',
+                },
+              ]}
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate('editProfile')}>
+              <View style={style.list_icon}>
+                <Fontisto
+                  name="player-settings"
+                  size={width * 0.05}
+                  color="#fff"
+                  style={style.list_icon}
+                />
+              </View>
+              <Text style={style.list_title}>Edit Profile</Text>
+              <Icon name="chevron-right" size={width * 0.04} color="#fff" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[style.card_main, {paddingTop: height * 0.03}]}
+              onPress={() => user_logout()}>
+              <View style={style.list_icon}>
+                <MaterialCommunityIcons
+                  name="logout"
+                  size={width * 0.05}
+                  color="#fff"
+                  style={style.list_icon}
+                />
+              </View>
+              <Text style={style.list_title}>Logout</Text>
+              {/* <Icon name="chevron-right" size={width * 0.04} color="#fff" /> */}
+            </TouchableOpacity>
+          </LinearGradient>
         </View>
       </ScrollView>
     </ImageBackground>
@@ -239,6 +264,7 @@ const style = StyleSheet.create({
     color: 'white',
     fontFamily: 'Poppins-Bold',
     lineHeight: width * 0.07,
+    textTransform: 'capitalize',
   },
   user_email: {
     fontSize: width * 0.035,
@@ -267,9 +293,9 @@ const style = StyleSheet.create({
     paddingVertical: width * 0.04,
     fontFamily: 'Poppins-SemiBold',
   },
-  contentView:{
-    marginVertical:height * 0.04
-  }
+  contentView: {
+    marginVertical: height * 0.04,
+  },
 });
 
 const mapStateToProps = ({UserReducer}) => {

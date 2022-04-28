@@ -10,7 +10,7 @@ import {
   Button,
   TouchableWithoutFeedback,
   TouchableOpacity,
-  ScrollView,
+  ScrollView,StatusBar,
   Image,
 } from 'react-native';
 import {connect} from 'react-redux';
@@ -18,6 +18,7 @@ import LottieView from 'lottie-react-native';
 import ProductCard from '../components/products-card/card';
 import moment from 'moment';
 import * as actions from '../store/Actions';
+import { themePurple } from '../assets/colors/colors';
 
 const image = require('../assets/images/login_bg.png');
 const {height, width} = Dimensions.get('window');
@@ -28,6 +29,9 @@ const ProductsListings = ({
   navigation,
   route,
 }) => {
+  const STATUS_BAR_HEIGHT =
+  Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
+
   const navParams = route.params;
   const accessToken = UserReducer?.accessToken;
   const [refreshing, setRefreshing] = React.useState(false);
@@ -71,6 +75,13 @@ const ProductsListings = ({
       source={image}
       resizeMode="cover"
       style={{flex: 1, alignItems: 'center'}}>
+          <View style={{ height: STATUS_BAR_HEIGHT, backgroundColor: themePurple }}>
+          <StatusBar
+            translucent
+            backgroundColor={themePurple}
+            barStyle="light-content"
+          />
+        </View>
       <FlatList
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

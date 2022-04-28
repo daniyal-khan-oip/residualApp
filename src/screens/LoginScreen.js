@@ -24,8 +24,8 @@ const {height, width} = Dimensions.get('window');
 // const Login = ({ navigation }) => {
 const Login = ({navigation, userLogin}) => {
   const [showPassword, setShowPassword] = useState(true);
-  const [userChange, setUserChange] = useState('super@demo.co');
-  const [password, setPassword] = useState('12345678');
+  const [userChange, setUserChange] = useState('');
+  const [password, setPassword] = useState('');
 
   const _onPressLogin = () => {
     userLogin(userChange, password);

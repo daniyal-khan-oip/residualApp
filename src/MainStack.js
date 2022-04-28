@@ -10,10 +10,12 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import Foundation from 'react-native-vector-icons/Foundation';
 import ProductsStack from './ProductsStack';
+import {connect} from 'react-redux';
+import ProfileStack from './screens/ProfileStack';
 
 const Tabs = AnimatedTabBarNavigator();
 
-const MainStack = () => {
+const MainStack = ({UserReducer}) => {
   return (
     <Tabs.Navigator
       initialRouteName="dashboard"
@@ -41,34 +43,38 @@ const MainStack = () => {
           ),
         }}
       />
-      <Tabs.Screen
-        name="Products"
-        component={ProductsStack}
-        options={{
-          tabBarIcon: ({focused, color, size}) => (
-            <Feather
-              name="box"
-              size={size ? size : 26}
-              color={focused ? color : '#A1A2AB'}
-              focused={focused}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="Promotions"
-        component={Promotion}
-        options={{
-          tabBarIcon: ({focused, color, size}) => (
-            <Foundation
-              name="clipboard-notes"
-              size={size ? size : 26}
-              color={focused ? color : '#A1A2AB'}
-              focused={focused}
-            />
-          ),
-        }}
-      />
+      {UserReducer?.userData?.role_id !== 1 && (
+        <Tabs.Screen
+          name="Products"
+          component={ProductsStack}
+          options={{
+            tabBarIcon: ({focused, color, size}) => (
+              <Feather
+                name="box"
+                size={size ? size : 26}
+                color={focused ? color : '#A1A2AB'}
+                focused={focused}
+              />
+            ),
+          }}
+        />
+      )}
+      {UserReducer?.userData?.role_id !== 1 && (
+        <Tabs.Screen
+          name="Promotions"
+          component={Promotion}
+          options={{
+            tabBarIcon: ({focused, color, size}) => (
+              <Foundation
+                name="clipboard-notes"
+                size={size ? size : 26}
+                color={focused ? color : '#A1A2AB'}
+                focused={focused}
+              />
+            ),
+          }}
+        />
+      )}
       <Tabs.Screen
         name="Invoices"
         component={Invoices}
@@ -85,7 +91,7 @@ const MainStack = () => {
       />
       <Tabs.Screen
         name="Profile"
-        component={Profile}
+        component={ProfileStack}
         options={{
           tabBarIcon: ({focused, color, size}) => (
             <FontAwesome
@@ -100,5 +106,9 @@ const MainStack = () => {
     </Tabs.Navigator>
   );
 };
-
-export default MainStack;
+const mapStateToProps = ({UserReducer}) => {
+  return {
+    UserReducer,
+  };
+};
+export default connect(mapStateToProps, null)(MainStack);

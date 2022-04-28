@@ -45,9 +45,11 @@ const Products = ({navigation, getUserProducts, UserReducer}) => {
       source={image}
       resizeMode="cover"
       style={{flex: 1, alignItems: 'center'}}>
-      <ScrollView
+      {/* <ScrollView
         showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}>
+        showsHorizontalScrollIndicator={false}
+        nestedScrollEnabled={true}
+        > */}
         <View style={{}}>
           <Text style={style.main_title}>My Products</Text>
 
@@ -69,7 +71,7 @@ const Products = ({navigation, getUserProducts, UserReducer}) => {
             }}
           />
         </View>
-      </ScrollView>
+      {/* </ScrollView> */}
     </ImageBackground>
   );
 };

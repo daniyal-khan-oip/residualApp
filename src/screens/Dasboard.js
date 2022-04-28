@@ -145,14 +145,14 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
   const data1 = [
     {
       name: 'Walmart',
-      population: 2150000,
+      population: Number(UserReducer?.totalWalmart),
       color: 'rgba(131, 167, 234, 1)',
       legendFontColor: 'white',
       legendFontSize: 15,
     },
     {
       name: 'Amazon',
-      population: 280000,
+      population: Number(UserReducer?.totalAmazon),
       color: themePurple,
       legendFontColor: 'white',
       legendFontSize: 15,
@@ -161,14 +161,14 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
   const data2 = [
     {
       name: 'Earnings',
-      population: UserReducer?.totalEarnings,
+      population: Number(UserReducer?.totalEarnings),
       color: 'rgba(131, 167, 234, 1)',
       legendFontColor: 'white',
       legendFontSize: 15,
     },
     {
       name: 'Investments',
-      population: UserReducer?.totalInvestments,
+      population: Number(UserReducer?.totalInvestments),
       color: themePurple,
       legendFontColor: 'white',
       legendFontSize: 15,

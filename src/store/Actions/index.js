@@ -55,12 +55,12 @@ export const userLogin = (email, password) => async dispatch => {
       email: email,
       password: password,
     };
-    console.log('data: ', data);
+    // console.log('data: ', data);
     const URL = `${apiUrl}/login`;
     const response = await axios.post(URL, data);
     console.log('-----------', response?.data);
     if (response.data.success) {
-      console.log('....');
+      // console.log('....');
       dispatch({
         type: types.USER_LOGIN,
         payload: {
@@ -125,15 +125,16 @@ export const is_walk_thorugh_seen = () => async dispatch => {
 
 export const getTotalInvestmentAndEarning = (data, token) => async dispatch => {
   try {
-    console.log(data, token);
+    // console.log(data, token);
     const URL = `${apiUrl}/count`;
+    // console.log(`${apiUrl}/count`)
     const res = await axios.post(URL, data, {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
     });
-
+    // console.log("RESPOSE: ",res.data)
     if (res.data.success) {
       dispatch({
         type: types.GET_INVEST_EARN,
@@ -142,20 +143,22 @@ export const getTotalInvestmentAndEarning = (data, token) => async dispatch => {
     }
   } catch (error) {
     console.log('Investments and Earnings Fetching Failed: ' + error.message);
+    console.log('Investments and Earnings Fetching Failed: ' + error);
   }
 };
 
-export const getUserInvoices = (data, token) => async dispatch => {
+export const getUserInvoices = (data, token, isAdmin) => async dispatch => {
   try {
-    // console.log(data, token);
+    console.log(data, token);
     const URL = `${apiUrl}/getInvoice`;
-    const res = await axios.post(URL, data, {
+    const res = await axios.post(URL, isAdmin ? {} : data, {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
     });
 
+    console.log(res.data.data, '===========');
     if (res.data.success) {
       console.log(res.data.data);
       dispatch({
@@ -170,15 +173,15 @@ export const getUserInvoices = (data, token) => async dispatch => {
 
 export const getInvoicesByEmail = (data, token) => async dispatch => {
   try {
-    console.log(data, 'data');
+    console.log(data, 'data``````````````````````````````');
     const URL = `${apiUrl}/getInvoiceEmail`;
     const res = await axios.post(URL, data, {
       headers: {
-        Authorization: `Bearer 40|GQwW11i0fBOQDcPFIuBv74l3KPPhILl2ll5zsNyr`,
+        Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
     });
-    // console.log(res)
+    console.log(res.data);
     if (res.data.success) {
       console.log(
         res.data.data?.length,
@@ -210,7 +213,8 @@ export const getInvoicesByEmail = (data, token) => async dispatch => {
       // description: 'Invalid Cre÷dentials.',
       danger: 'error',
     });
-    console.log('Invoices Fetching Failed: ' + error.message);
+    console.log('Invoices Fetching Failed By Email: ' + error.message);
+    console.log('Invoices Fetching Failed By Email: ' + error);
   }
 };
 
@@ -220,7 +224,7 @@ export const getInvoicesByDate = (data, token) => async dispatch => {
 
     const res = await axios.post(
       URL,
-      {start: '2022-05-13', end: '2022-05-13'},
+      {start: data.start, end: data.end},
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -255,25 +259,25 @@ export const getInvoicesByDate = (data, token) => async dispatch => {
       payload: [],
     });
     showMessage({
-      message: 'Network Failure!',
+      message: 'Something went wrong.',
       // description: 'Invalid Cre÷dentials.',
       danger: 'error',
     });
-    console.log('Invoices Fetching of Events Failed: ' + error.message);
+    console.log('Invoices Fetching of Events Failed Catcedddddd: ' + error.message);
   }
 };
 
 export const getInvoicesByType = (data, token) => async dispatch => {
   try {
     const URL = `${apiUrl}/getInvoiceType`;
-    console.log(URL);
+    // console.log(URL);
     const res = await axios.post(URL, data, {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
     });
-    console.log(res);
+    console.log(res), '[[[[[[[[[[[[[[[[[[[';
     if (res.data.success) {
       console.log(
         res.data.data?.length,
@@ -359,6 +363,7 @@ export const getUserProducts = (data, token) => async dispatch => {
         Accept: 'application/json',
       },
     });
+    // console.log(res.data.data)
     if (res.data.success) {
       dispatch({
         type: types.GET_USER_PRODUCTS,
@@ -384,5 +389,72 @@ export const getUserProducts = (data, token) => async dispatch => {
       danger: 'error',
     });
     console.log('Products Fetching Failed: ' + error.message);
+  }
+};
+
+export const updateProfile = (data, id, token) => async dispatch => {
+  // console.log(data.first_name)
+  // console.log(data.last_name)
+  // console.log(data.phone)
+  console.log(token);
+  try {
+    // const FormData = require('form-data');
+    // let formData = new FormData();
+
+    // formData.append('first_name', 'Super');
+    // formData.append('last_name', 'Admin');
+    // formData.append('phone', '+9853843747373');
+    // formData.append('status', '1');
+    // formData.append('image', {
+    //   type: 'image/jpeg',
+    //   name: 'profilePicture.jpeg',
+    //   uri: data.image.path,
+    // });
+    const apiData = {
+      first_name: data.first_name,
+      last_name: data.last_name,
+      phone: data.phone,
+      status: '1',
+      image: data.image,
+    };
+
+    const URL = `${apiUrl}/updated/${id}`;
+    const response = await axios.post(URL, apiData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        // 'Content-Type':
+        //   'multipart/form-data; boundary=<calculated when request is sent>',
+      },
+    });
+    console.log('-----------', response?.data);
+    if (response.data.success) {
+      showMessage({
+        message: 'Updated Successfully!',
+        type: 'success',
+      });
+      dispatch({
+        type: types.UPDATE_PROFILE,
+        payload: {
+          first_name: data.first_name,
+          last_name: data.last_name,
+          phone: data.phone,
+          profile_image: data.image,
+        },
+      });
+    } else {
+      showMessage({
+        message: 'Failed to update!',
+        danger: 'error',
+      });
+    }
+  } catch (error) {
+    // _onLoginFailed();
+    showMessage({
+      message: 'Something went wrong.',
+      danger: 'error',
+    });
+    console.log('Network Error', error.message);
+    console.log('Network Error', error.response.data);
   }
 };
