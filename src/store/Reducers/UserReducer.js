@@ -11,6 +11,7 @@ import {
   GET_CURRENT_LOC,
   GET_USER_PRODUCTS,
   UPDATE_PROFILE,
+  GET_CUSTOMERS,
 } from '../Actions/actionType';
 
 const INITIAL_STATE = {
@@ -24,6 +25,7 @@ const INITIAL_STATE = {
   products: [],
   totalAmazon: 0,
   totalWalmart: 0,
+  customers: [],
 };
 
 export function UserReducer(state = INITIAL_STATE, action) {
@@ -46,14 +48,20 @@ export function UserReducer(state = INITIAL_STATE, action) {
 
     case USER_LOGOUT:
       return {
-        ...state,
-        accessToken: '',
-        userData: null,
         isUserLogin: false,
+        userData: null,
+        totalInvestments: 0,
+        totalEarnings: 0,
+        accessToken: '',
+        invoices: [],
+        productsArray: [],
+        products: [],
+        totalAmazon: 0,
+        totalWalmart: 0,
+        customers: [],
       };
 
     case UPDATE_USER_DATA:
-      console.log('---------------------------');
       console.log(action.payload);
       return {
         ...state,
@@ -88,13 +96,18 @@ export function UserReducer(state = INITIAL_STATE, action) {
       };
 
     case UPDATE_PROFILE:
-      console.log("=sdssdsa")
       return {
         ...state,
         userData: {
           ...state.userData,
           ...action.payload,
         },
+      };
+
+    case GET_CUSTOMERS:
+      return {
+        ...state,
+        customers: action.payload,
       };
 
     default:

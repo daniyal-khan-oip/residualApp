@@ -11,7 +11,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   ScrollView,StatusBar,
-  Image,
+  Image,Platform
 } from 'react-native';
 import {connect} from 'react-redux';
 import LottieView from 'lottie-react-native';

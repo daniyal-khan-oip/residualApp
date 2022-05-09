@@ -12,6 +12,7 @@ import Foundation from 'react-native-vector-icons/Foundation';
 import ProductsStack from './ProductsStack';
 import {connect} from 'react-redux';
 import ProfileStack from './screens/ProfileStack';
+import CustomersStack from './screens/CustomersStack';
 
 const Tabs = AnimatedTabBarNavigator();
 
@@ -45,7 +46,7 @@ const MainStack = ({UserReducer}) => {
       />
       {UserReducer?.userData?.role_id !== 1 && (
         <Tabs.Screen
-          name="Products"
+          name="Productss"
           component={ProductsStack}
           options={{
             tabBarIcon: ({focused, color, size}) => (
@@ -75,18 +76,46 @@ const MainStack = ({UserReducer}) => {
           }}
         />
       )}
+
+      {UserReducer?.userData?.role_id === 1 && (
+        <Tabs.Screen
+          name="Customers"
+          component={CustomersStack}
+          options={({navigation}) => {
+            return {
+              tabBarIcon: ({focused, color, size}) => (
+                <FontAwesome
+                  onPress={() =>
+                    navigation.navigate('customers', {
+                      screen: 'customers',
+                      initial: false,
+                    })
+                  }
+                  name="users"
+                  size={size ? size : 26}
+                  color={focused ? color : '#A1A2AB'}
+                  focused={focused}
+                />
+              ),
+            };
+          }}
+        />
+      )}
+
       <Tabs.Screen
         name="Invoices"
         component={Invoices}
-        options={{
-          tabBarIcon: ({focused, color, size}) => (
-            <MaterialCommunityIcons
-              name="bell-outline"
-              size={size ? size : 26}
-              color={focused ? color : '#A1A2AB'}
-              focused={focused}
-            />
-          ),
+        options={({navigation}) => {
+          return {
+            tabBarIcon: ({focused, color, size}) => (
+              <MaterialCommunityIcons
+                name="bell-outline"
+                size={size ? size : 26}
+                color={focused ? color : '#A1A2AB'}
+                focused={focused}
+              />
+            ),
+          };
         }}
       />
       <Tabs.Screen

@@ -4,88 +4,47 @@ import {showMessage, hideMessage} from 'react-native-flash-message';
 import {apiUrl} from '../../config/config';
 
 // Auth Action
-export const userSignup = (data, _onSignUpFailed) => async dispatch => {
-  console.log('data: ', data);
-  try {
-    const response = await axios.post(`${apiUrl}/register`, data);
-    if (response?.data?.status) {
-      dispatch({
-        type: types.USER_SIGNUP,
-        payload: response?.data?.data,
-      });
-      console.log('Signuppp Success!!!');
-    } else {
-      dispatch({
-        type: types.ERROR_MODAL,
-        payload: {
-          msg:
-            response?.data?.errors?.email[0] ||
-            response?.data?.errors?.phone[0] ||
-            'Something went wrong.',
-          status: true,
-          title: 'Sign-Up Failed!',
-        },
-      });
-      _onSignUpFailed();
-    }
-  } catch (error) {
-    console.log(
-      'CATCH ERROR RESPONSE STATUS: ',
-      JSON.stringify(error?.response?.data, null, 2),
-    );
-    _onSignUpFailed();
-    dispatch({
-      type: types.ERROR_MODAL,
-      payload: {
-        msg:
-          error?.response?.data?.errors?.email[0] ||
-          error?.response?.data?.errors?.phone[0] ||
-          'Something went wrong',
-        status: true,
-        title: 'Sign-Up Failed!',
-      },
-    });
-    // console.log(error?.response?.data?.errors?.email[0])
-  }
-};
 
-export const userLogin = (email, password) => async dispatch => {
-  try {
-    let data = {
-      email: email,
-      password: password,
-    };
-    // console.log('data: ', data);
-    const URL = `${apiUrl}/login`;
-    const response = await axios.post(URL, data);
-    console.log('-----------', response?.data);
-    if (response.data.success) {
-      // console.log('....');
-      dispatch({
-        type: types.USER_LOGIN,
-        payload: {
-          userData: response?.data?.data,
-          accessToken: response.data?.data.token,
-        },
-      });
-    } else {
+export const userLogin =
+  (email, password, _onLoginFailed) => async dispatch => {
+    try {
+      let data = {
+        email: email,
+        password: password,
+      };
+      // console.log('data: ', data);
+      const URL = `${apiUrl}/login`;
+      console.log(URL);
+      const response = await axios.post(URL, data);
+      // console.log('-----------', response?.data);
+      if (response.data.success) {
+        // console.log('....');
+        dispatch({
+          type: types.USER_LOGIN,
+          payload: {
+            userData: response?.data?.data,
+            accessToken: response.data?.data.token,
+          },
+        });
+      } else {
+        showMessage({
+          message: 'Login Failed!',
+          description: 'Invalid Credentials.',
+          danger: 'error',
+        });
+        _onLoginFailed();
+      }
+    } catch (error) {
+      // _onLoginFailed();
       showMessage({
-        message: 'Login Failed!',
-        description: 'Invalid Credentials.',
+        message: 'Network Failure!',
+        description: 'Check Internet Connection.',
         danger: 'error',
       });
+      console.log('Network Error', error.message);
       _onLoginFailed();
     }
-  } catch (error) {
-    // _onLoginFailed();
-    showMessage({
-      message: 'Network Failure!',
-      description: 'Check Internet Connection.',
-      danger: 'error',
-    });
-    console.log('Network Error', error.message);
-  }
-};
+  };
 
 export const setErrorModal = () => dispatch => {
   try {
@@ -263,7 +222,9 @@ export const getInvoicesByDate = (data, token) => async dispatch => {
       // description: 'Invalid Cre÷dentials.',
       danger: 'error',
     });
-    console.log('Invoices Fetching of Events Failed Catcedddddd: ' + error.message);
+    console.log(
+      'Invoices Fetching of Events Failed Catcedddddd: ' + error.message,
+    );
   }
 };
 
@@ -392,69 +353,95 @@ export const getUserProducts = (data, token) => async dispatch => {
   }
 };
 
-export const updateProfile = (data, id, token) => async dispatch => {
-  // console.log(data.first_name)
-  // console.log(data.last_name)
-  // console.log(data.phone)
-  console.log(token);
+export const updateProfile =
+  (data, id, token, onSuccess, _onFailed) => async dispatch => {
+    // console.log(data.first_name)
+    // console.log(data.last_name)
+    // console.log(data.phone)
+    // console.log(token);
+    try {
+      // const FormData = require('form-data');
+      // let formData = new FormData();
+
+      // formData.append('first_name', 'Super');
+      // formData.append('last_name', 'Admin');
+      // formData.append('phone', '+9853843747373');
+      // formData.append('status', '1');
+      // formData.append('image', {
+      //   type: 'image/jpeg',
+      //   name: 'profilePicture.jpeg',
+      //   uri: data.image.path,
+      // });
+      const apiData = {
+        first_name: data.first_name,
+        last_name: data.last_name,
+        phone: data.phone,
+        status: '1',
+        image: data.image,
+      };
+
+      const URL = `${apiUrl}/update/${id}`;
+      const response = await axios.post(URL, apiData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          // 'Content-Type':
+          //   'multipart/form-data; boundary=<calculated when request is sent>',
+        },
+      });
+      if (response.data.success) {
+        showMessage({
+          message: 'Updated Successfully!',
+          type: 'success',
+        });
+        dispatch({
+          type: types.UPDATE_PROFILE,
+          payload: {
+            first_name: data.first_name,
+            last_name: data.last_name,
+            phone: data.phone,
+            profile_image: data.image,
+          },
+        });
+        onSuccess();
+      } else {
+        _onFailed();
+        showMessage({
+          message: 'Failed to update!',
+          danger: 'error',
+        });
+      }
+    } catch (error) {
+      // _onLoginFailed();
+      _onFailed();
+      showMessage({
+        message: 'Something went wrong.',
+        danger: 'error',
+      });
+      console.log('Network Error', error.message);
+      console.log('Network Error', error.response.data);
+    }
+  };
+
+export const getCustomers = token => async dispatch => {
   try {
-    // const FormData = require('form-data');
-    // let formData = new FormData();
-
-    // formData.append('first_name', 'Super');
-    // formData.append('last_name', 'Admin');
-    // formData.append('phone', '+9853843747373');
-    // formData.append('status', '1');
-    // formData.append('image', {
-    //   type: 'image/jpeg',
-    //   name: 'profilePicture.jpeg',
-    //   uri: data.image.path,
-    // });
-    const apiData = {
-      first_name: data.first_name,
-      last_name: data.last_name,
-      phone: data.phone,
-      status: '1',
-      image: data.image,
-    };
-
-    const URL = `${apiUrl}/updated/${id}`;
-    const response = await axios.post(URL, apiData, {
+    const URL = `${apiUrl}/customers`;
+    const res = await axios.get(URL, {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        // 'Content-Type':
-        //   'multipart/form-data; boundary=<calculated when request is sent>',
       },
     });
-    console.log('-----------', response?.data);
-    if (response.data.success) {
-      showMessage({
-        message: 'Updated Successfully!',
-        type: 'success',
-      });
+
+    if (res.data.success) {
+      console.log('fetched');
+
       dispatch({
-        type: types.UPDATE_PROFILE,
-        payload: {
-          first_name: data.first_name,
-          last_name: data.last_name,
-          phone: data.phone,
-          profile_image: data.image,
-        },
-      });
-    } else {
-      showMessage({
-        message: 'Failed to update!',
-        danger: 'error',
+        type: types.GET_CUSTOMERS,
+        payload: res.data.data,
       });
     }
   } catch (error) {
-    // _onLoginFailed();
-    showMessage({
-      message: 'Something went wrong.',
-      danger: 'error',
-    });
-    console.log('Network Error', error.message);
-    console.log('Network Error', error.response.data);
+    console.log('Customers Fetching Failed: ' + error.message);
   }
 };

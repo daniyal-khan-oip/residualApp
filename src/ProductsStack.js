@@ -8,8 +8,8 @@ const ProductsStack = props => {
   return (
     <ProductStack.Navigator
       screenOptions={{headerShown: false}}
-      initialRouteName="Products">
-      <ProductStack.Screen name="Products" component={Products} {...props.navigation} />
+      initialRouteName="Productss">
+      <ProductStack.Screen name="Productss" component={Products} {...props.navigation} />
       <ProductStack.Screen name="ProductsListings" component={ProductsListings} {...props.navigation} />
     </ProductStack.Navigator>
   );

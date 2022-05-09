@@ -7,6 +7,7 @@ import {
   StyleSheet,
   View,
   Dimensions,
+  RefreshControl,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -37,7 +38,10 @@ const PaidInvoice = ({
   setProductType,
   UserReducer,
   _onPressGetAllInvoices,
+  refreshing,
+  onRefresh,
 }) => {
+  const isAdmin = UserReducer?.userData?.role_id === 1 ? true : false;
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [searchChoice, setSearchChoice] = useState('email');
@@ -131,7 +135,7 @@ const PaidInvoice = ({
           )}
         </View>
 
-        {searchChoice === 'email' && UserReducer?.userData?.role_id ===1 ? (
+        {searchChoice === 'email' && isAdmin ? (
           <>
             <TextInput
               placeholder="Search by email"
@@ -195,7 +199,7 @@ const PaidInvoice = ({
             </>
           )
         )}
-        {(searchChoice == 'email' || searchChoice === 'date')&& UserReducer?.userData?.role_id ===1  && (
+        {(searchChoice == 'email' || searchChoice === 'date') && isAdmin && (
           <TouchableOpacity
             onPress={
               searchChoice === 'email' ? _onPressSearch : _onPressDateSearch
@@ -205,37 +209,61 @@ const PaidInvoice = ({
           </TouchableOpacity>
         )}
       </>
-      {UserReducer?.invoices?.length > 0 ? (
-        <FlatList
-          data={isLoading ? [] : data}
-          renderItem={renderItem}
-          keyExtractor={item => item?.id?.toString()}
-        />
-      ) : (
-        !isLoading && <View
+      {isLoading ? (
+        <View
           style={{
-            marginTop: height * 0.1,
-            width: width * 0.43,
-            height: height * 0.17,
-            borderRadius: width * 0.04,
-            backgroundColor: 'rgba(0,0,0,0.4)',
-            justifyContent: 'center',
+            marginTop: isAdmin ? height * 0.1 : height * 0.28,
             alignItems: 'center',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            borderRadius: width * 0.03,
+            width: width * 0.63,
           }}>
-          <Text style={{color: 'white', fontSize: width * 0.045}}>
-            No Record Found
+          <LottieView
+            speed={1}
+            style={styles.lottieStyle}
+            autoPlay
+            loop
+            source={require('../../assets/lottie/purple-loading-2.json')}
+          />
+          <Text
+            style={{
+              marginTop: height * -0.15,
+              color: 'white',
+              fontSize: width * 0.07,
+              fontFamily: 'Poppins-Bold',
+            }}>
+            Fetching Data..
           </Text>
         </View>
-      )}
-      {isLoading && (
-        <LottieView
-          speed={1}
-          style={styles.lottieStyle}
-          autoPlay
-          loop
-          source={require('../../assets/lottie/purple-loading-2.json')}
+      ) : (
+        <FlatList
+          // data={[]}
+          data={isLoading ? [] : data}
+          renderItem={renderItem}
+          // refreshControl={
+          //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          // }
+          keyExtractor={item => item?.id?.toString()}
+          ListFooterComponent={() => {
+            return (
+              // []?.length === 0 && (
+              data?.length === 0 ? (
+                <View
+                  style={[
+                    styles.notFoundContainer,
+                    {marginTop: isAdmin ? height * 0.1 : height * 0.35},
+                  ]}>
+                  <Text style={styles.noRecFound}>No Invoices Found!</Text>
+                  {/* <Text style={styles.swipeText}>Swipe down to refresh</Text> */}
+                </View>
+              ) : (
+                <View style={{marginBottom: 200}} />
+              )
+            );
+          }}
         />
       )}
+
       {/* Start Date Picker  */}
       <DatePicker
         modal
@@ -244,8 +272,10 @@ const PaidInvoice = ({
         // minimumDate={startDate}
         date={startDate}
         onConfirm={date => {
+          var tomorrow = new Date(date.getTime() + 24 * 60 * 60 * 1000);
           setShowStartDatePicker(false);
           setStartDate(date);
+          setEndDate(tomorrow);
         }}
         onCancel={() => {
           setShowStartDatePicker(false);
@@ -255,7 +285,7 @@ const PaidInvoice = ({
       <DatePicker
         modal
         mode="date"
-        // minimumDate={endDate}
+        minimumDate={endDate}
         open={showEndDatePicker}
         date={endDate}
         onConfirm={date => {
@@ -271,6 +301,34 @@ const PaidInvoice = ({
 };
 
 const styles = StyleSheet.create({
+  swipeText: {
+    color: 'white',
+    fontSize: width * 0.045,
+    fontFamily: 'Poppins-Regular',
+  },
+  noRecFound: {
+    color: 'white',
+    fontSize: width * 0.05,
+    fontFamily: 'Poppins-Bold',
+  },
+  notFoundContainer: {
+    width: width * 0.6,
+    height: height * 0.17,
+    borderRadius: width * 0.04,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  lottieStyle: {
+    height: height * 0.38,
+    // backgroundColor: 'red',
+    // position: 'absolute',
+    // top:100,
+    marginTop: height * -0.055,
+    // zIndex: 99999,
+    // left: width * 0.04,
+  },
   btnContainers: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -294,17 +352,17 @@ const styles = StyleSheet.create({
     // borderRadius: 10,
     marginVertical: height * 0.01,
   },
-  lottieStyle: {
-    height: height * 0.4,
-    // width:width * 0.3,
-    // marginTop:100,
-    position: 'absolute',
-    // backgroundColor: 'red',
-    // bottom: height * 0.032,
-    top: height * 0.21,
-    zIndex: 9999,
-    // left: width * 0.01,
-  },
+  // lottieStyle: {
+  //   height: height * 0.4,
+  //   // width:width * 0.3,
+  //   // marginTop:100,
+  //   position: 'absolute',
+  //   // backgroundColor: 'red',
+  //   // bottom: height * 0.032,
+  //   top: height * 0.21,
+  //   zIndex: 9999,
+  //   // left: width * 0.01,
+  // },
   main_title: {
     fontSize: width * 0.06,
     color: 'white',

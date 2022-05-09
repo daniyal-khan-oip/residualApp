@@ -8,7 +8,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  StatusBar,
+  StatusBar,Platform
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -30,15 +30,17 @@ const {height, width} = Dimensions.get('window');
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
 
 const Profile = ({UserReducer, user_logout, navigation}) => {
-  console.log(UserReducer?.userData);
+ 
   const [name, setName] = useState(
     `${UserReducer?.userData?.first_name} ${UserReducer?.userData?.last_name}`,
   );
+  
   useEffect(() => {
     setName(
       `${UserReducer?.userData?.first_name} ${UserReducer?.userData?.last_name}`,
     );
   }, [UserReducer?.userData]);
+
   return (
     <ImageBackground source={image} resizeMode="cover" style={style.login_bg}>
       <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>

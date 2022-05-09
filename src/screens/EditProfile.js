@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   TextInput,
   Dimensions,
+  StatusBar,
+  Platform,
 } from 'react-native';
 import {connect} from 'react-redux';
-import React, {useState,useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {themePurple} from '../assets/colors/colors';
 import PhoneInput from 'react-native-phone-number-input';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -19,7 +21,7 @@ import IconComp from '../components/IconComp';
 
 const {width, height} = Dimensions.get('window');
 
-const EditProfile = ({UserReducer, updateProfile}) => {
+const EditProfile = ({UserReducer, updateProfile, navigation}) => {
   const [fname, setFname] = useState(UserReducer?.userData?.first_name);
   const [lname, setLname] = useState(UserReducer?.userData?.last_name);
   const [phone_no, setPhone_no] = useState(UserReducer?.userData?.phone);
@@ -30,7 +32,8 @@ const EditProfile = ({UserReducer, updateProfile}) => {
       UserReducer?.userData?.phone?.length,
     ),
   );
-  console.log(UserReducer?.userData?.phone);
+  const STATUS_BAR_HEIGHT =
+    Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
   const [imageObject, setImageObject] = useState(null);
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
@@ -60,8 +63,7 @@ const EditProfile = ({UserReducer, updateProfile}) => {
       };
 
       setLoading(true);
-      await updateProfile(data, ID, accessToken, _onSuccess);
-      setLoading(false);
+      await updateProfile(data, ID, accessToken, _onSuccess, _onFailed);
     } else {
       showMessage({
         message: 'All fields are required!',
@@ -72,41 +74,54 @@ const EditProfile = ({UserReducer, updateProfile}) => {
   };
 
   const _onSuccess = () => {
+    setLoading(false);
     ImagePicker.clean().then(() => {
       console.log('removed all tmp images from tmp directory');
     });
+    navigation.goBack();
   };
 
+  const _onFailed = () => {
+    setLoading(false);
+  };
   useEffect(() => {
-    setFname(UserReducer?.userData?.first_name)
-    setLname(UserReducer?.userData?.last_name)
+    setFname(UserReducer?.userData?.first_name);
+    setLname(UserReducer?.userData?.last_name);
   }, [UserReducer?.userData]);
   return (
     <ScrollView>
+      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+        <StatusBar
+          translucent
+          backgroundColor={themePurple}
+          barStyle="light-content"
+        />
+      </View>
       <View style={styles.container}>
         {/* Image Container  */}
         <View style={styles.imageContainer}>
           {image !== null ? (
             <Image source={{uri: image}} style={styles.imageStyles} />
-          ) :
-          UserReducer?.userData?.profile_image !== "" &&  UserReducer?.userData?.profile_image !== null ?
-          (
+          ) : UserReducer?.userData?.profile_image !== '' &&
+            UserReducer?.userData?.profile_image !== null ? (
             <Image
               source={{uri: UserReducer?.userData?.profile_image}}
               style={styles.imageStyles}
             />
-          )
-        :
-        <Image
-              source={require("../assets/images/dp.png")}
+          ) : (
+            <Image
+              source={require('../assets/images/dp.png')}
               style={styles.imageStyles}
             />
-        }
+          )}
         </View>
 
         {/* Name And Email Container  */}
         <View style={styles.textContainer}>
-          <Text style={styles.nameStyles}>{`${UserReducer?.userData?.first_name} ${UserReducer?.userData?.last_name}`}</Text>
+          <Text
+            style={
+              styles.nameStyles
+            }>{`${UserReducer?.userData?.first_name} ${UserReducer?.userData?.last_name}`}</Text>
           <Text style={styles.emailStyles}>{UserReducer?.userData?.email}</Text>
         </View>
 
@@ -120,6 +135,37 @@ const EditProfile = ({UserReducer, updateProfile}) => {
             name="edit"
             iconStyle={{fontSize: width * 0.08, marginLeft: 4}}
           />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => navigation.goBack()}
+          style={{
+            zIndex: 9999,
+            position: 'absolute',
+            top: height * 0.05,
+            left: width * 0.03,
+            backgroundColor: themePurple,
+            paddingHorizontal: width * 0.01,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: width * 0.02,
+            paddingVertical: height * 0.01,
+          }}>
+          <IconComp
+            type={'Ionicons'}
+            name="chevron-back-sharp"
+            iconStyle={{color: 'white', fontSize: width * 0.05}}
+          />
+          <Text
+            style={{
+              color: 'white',
+              fontSize: width * 0.045,
+              paddingRight: width * 0.02,
+            }}>
+            Back
+          </Text>
         </TouchableOpacity>
 
         {/* Form Input Fields View */}
@@ -155,31 +201,18 @@ const EditProfile = ({UserReducer, updateProfile}) => {
             }}
           />
 
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={updateProfileChanges}
-            style={{
-              borderWidth: 2,
-              borderColor: 'white',
-              backgroundColor: themePurple,
-              width: width * 0.4,
-              alignSelf: 'center',
-              height: height * 0.07,
-              borderRadius: width * 0.3,
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginVertical: height * 0.03,
-              elevation: 9,
-            }}>
-            <Text
-              style={{
-                color: 'white',
-                fontSize: width * 0.04,
-                fontFamily: 'Poppins-Bold',
-              }}>
-              Update
-            </Text>
-          </TouchableOpacity>
+          {loading ? (
+            <View style={styles.updateBtnStyle}>
+              <Text style={styles.btnTxt}>Updating..</Text>
+            </View>
+          ) : (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={updateProfileChanges}
+              style={styles.updateBtnStyle}>
+              <Text style={styles.btnTxt}>Update</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </ScrollView>
@@ -197,6 +230,24 @@ const styles = StyleSheet.create({
     // height: height,
     backgroundColor: themePurple,
   },
+  btnTxt: {
+    color: 'white',
+    fontSize: width * 0.04,
+    fontFamily: 'Poppins-Bold',
+  },
+  updateBtnStyle: {
+    borderWidth: 2,
+    borderColor: 'white',
+    backgroundColor: themePurple,
+    width: width * 0.4,
+    alignSelf: 'center',
+    height: height * 0.07,
+    borderRadius: width * 0.3,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: height * 0.03,
+    elevation: 9,
+  },
   imageContainer: {
     width: width,
     height: height * 0.55,
@@ -204,12 +255,12 @@ const styles = StyleSheet.create({
   },
   imageStyles: {
     width: width,
-    height: height * 0.55,
+    height: height * 0.5,
     borderBottomRightRadius: width * 0.15,
   },
   textContainer: {
     position: 'absolute',
-    top: height * 0.435,
+    top: height * 0.38,
     left: width * 0.05,
     paddingHorizontal: width * 0.03,
     backgroundColor: 'rgba(0,0,0,0.4)',
@@ -229,7 +280,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     position: 'absolute',
-    top: height * 0.12,
+    top: height * 0.05,
     right: width * 0.03,
     zIndex: 9999,
     backgroundColor: 'rgba(0,0,0,0.2)',
@@ -240,7 +291,7 @@ const styles = StyleSheet.create({
   },
   formView: {
     marginHorizontal: width * 0.05,
-    marginVertical: height * 0.03,
+    marginBottom: height * 0.03,
   },
   formLabelStyle: {
     fontSize: width * 0.04,

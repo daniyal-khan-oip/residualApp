@@ -13,13 +13,15 @@ import {
   StatusBar,
   ScrollView,
   Image,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {PieChart} from 'react-native-chart-kit';
 import CarouselCards from '../components/carousel-card/CarouselCards';
 import * as actions from '../store/Actions/index';
 import {connect} from 'react-redux';
-import { themePurple } from '../assets/colors/colors';
+import {themePurple} from '../assets/colors/colors';
+import LottieView from 'lottie-react-native';
 
 const image = require('../assets/images/login_bg.png');
 const {height, width} = Dimensions.get('window');
@@ -104,32 +106,25 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
 
   const [checkedState, setCheckState] = useState(true);
   const accessToken = UserReducer?.accessToken;
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     wait(2000).then(() => {
       setRefreshing(false);
-      getTotalInvestmentAndEarning(API_DATA, accessToken);
+      getDashboardData();
     });
   }, []);
 
-  const onPressChartValue = (item, index) => {
-    // item.checked = true
+  const getDashboardData = async () => {
+    setIsLoading(true);
+    await getTotalInvestmentAndEarning(API_DATA, accessToken);
+    setIsLoading(false);
   };
 
-  const renderItem = ({item, index}) => (
-    <Item
-      item={item}
-      check={item.checked}
-      index={index}
-      title={item.label}
-      onPress={onPressChartValue}
-    />
-  );
-
   useEffect(() => {
-    getTotalInvestmentAndEarning(API_DATA, accessToken);
+    getDashboardData();
   }, []);
 
   const chartConfig = {
@@ -176,149 +171,122 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
   ];
   return (
     <ImageBackground source={image} resizeMode="cover" style={style.login_bg}>
-      <View style={{ height: STATUS_BAR_HEIGHT, backgroundColor: themePurple }}>
-          <StatusBar
-            translucent
-            backgroundColor={themePurple}
-            barStyle="light-content"
-          />
-        </View>
+      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+        <StatusBar
+          translucent
+          backgroundColor={themePurple}
+          barStyle="light-content"
+        />
+      </View>
 
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}>
-        <View style={{marginTop: 20}}>
-          <Text style={style.main_title}>Dashboard</Text>
-          <View style={style.card_main}>
-            <LinearGradient
-              colors={['#7124BC', '#437AD8', '#05F0FF']}
-              style={style.gradient_card}
-              start={{y: 0.0, x: -0.05}}
-              angleCenter={{x: 5, y: 0}}
-              end={{y: 0.0, x: 1.2}}>
-              <Icon name="pie-chart" color="#fff" style={style.card_icon} />
-              <Text style={style.card_value}>
-                {`$${UserReducer?.totalInvestments}`}
-              </Text>
-              <Text style={style.card_title}>Total</Text>
-              <Text style={style.card_title}>Investments</Text>
-            </LinearGradient>
-            <LinearGradient
-              colors={['#7124BC', '#437AD8', '#05F0FF']}
-              style={style.gradient_card}
-              start={{y: 0.0, x: -0.05}}
-              angleCenter={{x: 5, y: 0}}
-              end={{y: 0.0, x: 1.2}}>
-              <Icon name="pie-chart" color="#fff" style={style.card_icon} />
-              <Text
-                style={
-                  style.card_value
-                }>{`$${UserReducer?.totalEarnings}`}</Text>
-              <Text style={style.card_title}>Total</Text>
-              <Text style={style.card_title}>Earnings</Text>
-            </LinearGradient>
-          </View>
-        </View>
-
-        {/* Walmart and Amazon Product Pie Chart  */}
-        <PieChart
-          data={data1}
-          width={width * 0.9}
-          height={height * 0.3}
-          chartConfig={chartConfig}
-          accessor={'population'}
-          backgroundColor={'transparent'}
-          paddingLeft={'0'}
-          center={[width * 0.02, height * 0.01]}
-          absolute
-        />
-
-        {/* Earnings and Investments Chart */}
-        <PieChart
-          data={data2}
-          width={width * 0.9}
-          height={height * 0.3}
-          chartConfig={chartConfig}
-          accessor={'population'}
-          backgroundColor={'transparent'}
-          paddingLeft={'0'}
-          center={[width * 0.02, height * 0.01]}
-          absolute
-        />
-        {/* <FlatList
-          horizontal
-          style={{}}
-          contentContainerStyle={{
-            justifyContent: 'space-between',
-            height: height * 0.04,
-            width: width * 0.9,
-            marginTop: height * 0.03,
-          }}
-          data={dashboardStatus}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-        /> */}
-        {/* <View style={style.chart_card}>
-          <Text style={style.chart_title}>Revenue</Text>
-          <View style={style.chart_detail}>
-            <Text style={style.chart_detail_value}>$27,003.98</Text>
-            <Text style={style.chart_detail_value2}>+7.6%</Text>
-          </View>
-          <LineChart
-            data={data}
-            width={width * 0.9} // from react-native
-            height={300}
-            // yAxisLabel="$"
-            // yAxisSuffix="k"
-            // yAxisInterval={1} // optional, defaults to 1
-            withHorizontalLabels={false}
-            // verticalLabelRotation={0}
-            bezier
-            spacing={0.8}
-            spacingInner={0.8}
-            verticalLabelRotation={0}
-            // withInnerLines={false}
-            // withHorizontalLines={false}
-            withVerticalLines={false}
+        showsVerticalScrollIndicator={false}>
+        {isLoading ? (
+          <View
             style={{
-              borderRadius: 16,
-              paddingRight: 40,
-            }}
-            fromZero={true}
-            chartConfig={{
-              backgroundColor: '#fff',
-              backgroundGradientTo: '#fff',
-              // backgroundGradientTo: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
-              backgroundGradientFrom: '#fff',
-              decimalPlaces: 2, // optional, defaults to 2dp
-              // color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              // labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              color: (opacity = 1) => `rgba(17, 24, 39, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              style: {
-                borderRadius: 16,
-              },
-              propsForDots: {
-                r: '2',
-                strokeWidth: '2',
-                stroke: '#000',
-              },
-            }}
-          />
-        </View> */}
-        {/* <View>
-          <Text style={style.products_title}>Products</Text>
-          <CarouselCards />
-        </View> */}
+              marginTop: height * 0.35,
+              alignItems: 'center',
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              borderRadius: width * 0.03,
+              width: width * 0.63,
+            }}>
+            <LottieView
+              speed={1}
+              style={style.lottieStyle}
+              autoPlay
+              loop
+              source={require('../assets/lottie/purple-loading-2.json')}
+            />
+            <Text
+              style={{
+                marginTop: height * -0.15,
+                color: 'white',
+                fontSize: width * 0.07,
+                fontFamily: 'Poppins-Bold',
+              }}>
+              Fetching Data..
+            </Text>
+          </View>
+        ) : (
+          <>
+            <View style={{marginTop: 20}}>
+              <Text style={style.main_title}>Dashboard</Text>
+              <View style={style.card_main}>
+                <LinearGradient
+                  colors={['#7124BC', '#437AD8', '#05F0FF']}
+                  style={style.gradient_card}
+                  start={{y: 0.0, x: -0.05}}
+                  angleCenter={{x: 5, y: 0}}
+                  end={{y: 0.0, x: 1.2}}>
+                  <Icon name="pie-chart" color="#fff" style={style.card_icon} />
+                  <Text style={style.card_value}>
+                    {`$${UserReducer?.totalInvestments}`}
+                  </Text>
+                  <Text style={style.card_title}>Total</Text>
+                  <Text style={style.card_title}>Investments</Text>
+                </LinearGradient>
+                <LinearGradient
+                  colors={['#7124BC', '#437AD8', '#05F0FF']}
+                  style={style.gradient_card}
+                  start={{y: 0.0, x: -0.05}}
+                  angleCenter={{x: 5, y: 0}}
+                  end={{y: 0.0, x: 1.2}}>
+                  <Icon name="pie-chart" color="#fff" style={style.card_icon} />
+                  <Text
+                    style={
+                      style.card_value
+                    }>{`$${UserReducer?.totalEarnings}`}</Text>
+                  <Text style={style.card_title}>Total</Text>
+                  <Text style={style.card_title}>Earnings</Text>
+                </LinearGradient>
+              </View>
+            </View>
+
+            {/* Walmart and Amazon Product Pie Chart  */}
+            <PieChart
+              data={data1}
+              width={width * 0.9}
+              height={height * 0.3}
+              chartConfig={chartConfig}
+              accessor={'population'}
+              backgroundColor={'transparent'}
+              paddingLeft={'0'}
+              center={[width * 0.02, height * 0.01]}
+              absolute
+            />
+
+            {/* Earnings and Investments Chart */}
+            <PieChart
+              data={data2}
+              width={width * 0.9}
+              height={height * 0.3}
+              chartConfig={chartConfig}
+              accessor={'population'}
+              backgroundColor={'transparent'}
+              paddingLeft={'0'}
+              center={[width * 0.02, height * 0.01]}
+              absolute
+            />
+          </>
+        )}
       </ScrollView>
     </ImageBackground>
   );
 };
 
 const style = StyleSheet.create({
+  lottieStyle: {
+    height: height * 0.38,
+    // backgroundColor: 'red',
+    // position: 'absolute',
+    // top:100,
+    marginTop: height * -0.055,
+    // zIndex: 99999,
+    // left: width * 0.04,
+  },
   login_bg: {
     flex: 1,
     alignItems: 'center',
