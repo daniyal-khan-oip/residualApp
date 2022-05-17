@@ -62,7 +62,7 @@ export function UserReducer(state = INITIAL_STATE, action) {
       };
 
     case UPDATE_USER_DATA:
-      console.log(action.payload);
+      // console.log(action.payload);
       return {
         ...state,
         userData: {...action.payload},

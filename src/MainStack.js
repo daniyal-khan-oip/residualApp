@@ -44,7 +44,7 @@ const MainStack = ({UserReducer}) => {
           ),
         }}
       />
-      {UserReducer?.userData?.role_id !== 1 && (
+      {UserReducer?.userData?.role_id === 3 && (
         <Tabs.Screen
           name="Productss"
           component={ProductsStack}
@@ -60,7 +60,7 @@ const MainStack = ({UserReducer}) => {
           }}
         />
       )}
-      {UserReducer?.userData?.role_id !== 1 && (
+      {UserReducer?.userData?.role_id === 3 && (
         <Tabs.Screen
           name="Promotions"
           component={Promotion}
@@ -77,7 +77,7 @@ const MainStack = ({UserReducer}) => {
         />
       )}
 
-      {UserReducer?.userData?.role_id === 1 && (
+      {UserReducer?.userData?.role_id !== 3 && (
         <Tabs.Screen
           name="Customers"
           component={CustomersStack}
@@ -85,12 +85,14 @@ const MainStack = ({UserReducer}) => {
             return {
               tabBarIcon: ({focused, color, size}) => (
                 <FontAwesome
-                  onPress={() =>
-                    navigation.navigate('customers', {
-                      screen: 'customers',
-                      initial: false,
-                    })
-                  }
+                  // onPress={() => {
+                  //   if (UserReducer?.userData?.role_id !== 3) {
+                  //     navigation.navigate('customers', {
+                  //       screen: 'customers',
+                  //       initial: false,
+                  //     });
+                  //   }
+                  // }}
                   name="users"
                   size={size ? size : 26}
                   color={focused ? color : '#A1A2AB'}

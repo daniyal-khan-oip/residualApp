@@ -140,7 +140,7 @@ export const getInvoicesByEmail = (data, token) => async dispatch => {
         Accept: 'application/json',
       },
     });
-    console.log(res.data);
+    // console.log(res.data);
     if (res.data.success) {
       console.log(
         res.data.data?.length,
@@ -425,20 +425,23 @@ export const updateProfile =
 
 export const getCustomers = token => async dispatch => {
   try {
-    const URL = `${apiUrl}/customers`;
+    const URL = `${apiUrl}/getCustomersForReactNative`;
     const res = await axios.get(URL, {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
     });
-
     if (res.data.success) {
       console.log('fetched');
 
       dispatch({
         type: types.GET_CUSTOMERS,
-        payload: res.data.data,
+        // payload: res.data.data.filter(ele => {
+        //   console.log(ele.role_id,": role_id")
+        //   ele?.role_id == 3;
+        // }),
+        payload:res.data.data
       });
     }
   } catch (error) {

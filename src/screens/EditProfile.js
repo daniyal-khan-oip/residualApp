@@ -110,7 +110,7 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
             />
           ) : (
             <Image
-              source={require('../assets/images/dp.png')}
+              source={require('../assets/images/test.png')}
               style={styles.imageStyles}
             />
           )}

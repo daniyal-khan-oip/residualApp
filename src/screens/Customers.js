@@ -5,7 +5,8 @@ import {
   FlatList,
   View,
   StatusBar,
-  Dimensions,Platform
+  Dimensions,
+  Platform,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {themePurple} from '../assets/colors/colors';
@@ -15,7 +16,7 @@ import CustomersRender from '../components/CustomersRender';
 const image = require('../assets/images/login_bg.png');
 const {width, height} = Dimensions?.get('window');
 
-const Customers = ({UserReducer, getCustomers,navigation}) => {
+const Customers = ({UserReducer, getCustomers, navigation}) => {
   const STATUS_BAR_HEIGHT =
     Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
   const accessToken = UserReducer?.accessToken;
@@ -57,13 +58,14 @@ const Customers = ({UserReducer, getCustomers,navigation}) => {
         contentContainerStyle={{justifyContent: 'center', alignItems: 'center'}}
         data={customers}
         renderItem={({item, index}) => {
-          console.log(item.id);
           return (
-            <CustomersRender
-              item={item}
-              index={index}
-              onPress={_onPressCustomer}
-            />
+            item?.role_id === 3 && (
+              <CustomersRender
+                item={item}
+                index={index}
+                onPress={_onPressCustomer}
+              />
+            )
           );
         }}
       />

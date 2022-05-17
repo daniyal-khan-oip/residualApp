@@ -1,6 +1,5 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import Profile from './Profile';
 import Customers from './Customers';
 import CustomerDetails from './CustomerDetails';
 
