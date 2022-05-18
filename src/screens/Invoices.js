@@ -13,6 +13,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   FlatList,
+  RefreshControl,
 } from 'react-native';
 import * as actions from '../store/Actions/index';
 import {connect} from 'react-redux';
@@ -46,7 +47,7 @@ const Invoices = ({
   const [endDate, setEndDate] = useState(
     new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
   );
-  const isAdmin = UserReducer?.userData?.role_id === 1 ? true : false;
+  const isAdmin = UserReducer?.userData?.role_id !== 3 ? true : false;
   const [isLoading, setIsLoading] = useState(false);
   let API_DATA = {
     user_id: UserReducer?.userData?.id,
@@ -58,7 +59,7 @@ const Invoices = ({
   const [searchChoice, setSearchChoice] = useState('all');
 
   useEffect(() => {
-    getUserInvoices(API_DATA, accessToken, isAdmin);
+    _onPressGetAllInvoices();
   }, []);
 
   useEffect(() => {
@@ -130,6 +131,43 @@ const Invoices = ({
   //   _onPressTypeSearch();
   // }, [productType]);
 
+  const ButtonsComp = ({item}) => {
+    return (
+      <Button
+        title={item.btnName}
+        onBtnPress={() => setSearchChoice(item?.btnChoice)}
+        btnStyle={[
+          styles.btnStyle,
+          searchChoice === item?.btnChoice && {
+            backgroundColor: 'orange',
+          },
+        ]}
+        isBgColor={false}
+        btnTextStyle={{
+          fontFamily: 'Poppins-SemiBold',
+          color: 'white',
+          fontSize: width * 0.04,
+        }}
+      />
+    );
+  };
+  const Buttons = [{
+    id: 2,
+    btnName: 'Get All Invoices',
+    btnChoice: 'all',
+  },
+    {
+      id: 1,
+      btnName: 'Search By Email',
+      btnChoice: 'email',
+    },
+    
+    {
+      id: 3,
+      btnName: 'Search By Date',
+      btnChoice: 'date',
+    },
+  ];
   return (
     <ImageBackground source={image} resizeMode="cover" style={{flex: 1}}>
       <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
@@ -139,71 +177,93 @@ const Invoices = ({
           barStyle="light-content"
         />
       </View>
-      <ScrollView nestedScrollEnabled={true}>
+      <ScrollView
+        nestedScrollEnabled={true}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={{alignItems: 'center'}}>
             <>
               <>
                 <Text style={styles.main_title}>Invoices</Text>
-                <View style={styles.btnContainers}>
-                  {UserReducer?.userData?.role_id !== 3 && (
-                    <>
-                      <Button
-                        title="Search By Email"
-                        onBtnPress={() => setSearchChoice('email')}
-                        btnStyle={[
-                          styles.btnStyle,
-                          searchChoice === 'email' && {
-                            backgroundColor: 'orange',
-                          },
-                        ]}
-                        isBgColor={false}
-                        btnTextStyle={{
-                          fontFamily: 'Poppins-SemiBold',
-                          color: 'white',
-                          fontSize: width * 0.04,
-                        }}
-                      />
 
-                      <Button
-                        title="Search By Date"
-                        onBtnPress={() => setSearchChoice('date')}
-                        btnStyle={[
-                          styles.btnStyle,
-                          {marginLeft: width * 0.04},
-                          searchChoice === 'date' && {
-                            backgroundColor: 'orange',
-                          },
-                        ]}
-                        isBgColor={false}
-                        btnTextStyle={{
-                          fontFamily: 'Poppins-SemiBold',
-                          color: 'white',
-                          fontSize: width * 0.04,
-                        }}
-                      />
+                <FlatList
+                  // ListHeaderComponentStyle={{width: width}}
 
-                      <Button
-                        title="Get All Invoices"
-                        onBtnPress={() => {
-                          setSearchChoice('all');
-                          _onPressGetAllInvoices();
-                        }}
-                        btnStyle={[
-                          styles.btnStyle,
-                          {marginLeft: width * 0.04},
-                          searchChoice === 'all' && {backgroundColor: 'orange'},
-                        ]}
-                        isBgColor={false}
-                        btnTextStyle={{
-                          fontFamily: 'Poppins-SemiBold',
-                          color: 'white',
-                          fontSize: width * 0.04,
-                        }}
-                      />
-                    </>
-                  )}
-                </View>
+                  // data={Buttons}
+                  data={Buttons}
+                  horizontal={true}
+                  renderItem={({item, index}) => {
+                    console.log(item);
+                    return <ButtonsComp item={item} />;
+                  }}
+                  // ListHeaderComponent={({item}) => {
+                  //   return (
+                  //     <View style={styles.btnContainers}>
+                  //       {UserReducer?.userData?.role_id !== 3 && (
+                  //         <>
+                  //           <Button
+                  //             title="Search By Email"
+                  //             onBtnPress={() => setSearchChoice('email')}
+                  //             btnStyle={[
+                  //               styles.btnStyle,
+                  //               searchChoice === 'email' && {
+                  //                 backgroundColor: 'orange',
+                  //               },
+                  //             ]}
+                  //             isBgColor={false}
+                  //             btnTextStyle={{
+                  //               fontFamily: 'Poppins-SemiBold',
+                  //               color: 'white',
+                  //               fontSize: width * 0.04,
+                  //             }}
+                  //           />
+
+                  //           <Button
+                  //             title="Search By Date"
+                  //             onBtnPress={() => setSearchChoice('date')}
+                  //             btnStyle={[
+                  //               styles.btnStyle,
+                  //               {marginLeft: width * 0.04},
+                  //               searchChoice === 'date' && {
+                  //                 backgroundColor: 'orange',
+                  //               },
+                  //             ]}
+                  //             isBgColor={false}
+                  //             btnTextStyle={{
+                  //               fontFamily: 'Poppins-SemiBold',
+                  //               color: 'white',
+                  //               fontSize: width * 0.04,
+                  //             }}
+                  //           />
+
+                  //           <Button
+                  //             title="Get All Invoices"
+                  //             onBtnPress={() => {
+                  //               setSearchChoice('all');
+                  //               _onPressGetAllInvoices();
+                  //             }}
+                  //             btnStyle={[
+                  //               styles.btnStyle,
+                  //               {marginLeft: width * 0.04},
+                  //               searchChoice === 'all' && {
+                  //                 backgroundColor: 'orange',
+                  //               },
+                  //             ]}
+                  //             isBgColor={false}
+                  //             btnTextStyle={{
+                  //               fontFamily: 'Poppins-SemiBold',
+                  //               color: 'white',
+                  //               fontSize: width * 0.04,
+                  //             }}
+                  //           />
+                  //         </>
+                  //       )}
+                  //     </View>
+                  //   );
+                  // }}
+                />
 
                 {searchChoice === 'email' && isAdmin ? (
                   <>
@@ -236,8 +296,6 @@ const Invoices = ({
                       </View>
                       <View
                         style={[styles.rowView, {marginBottom: height * 0.03}]}>
-                        {/* start date  */}
-
                         <View style={styles.rowView}>
                           <TouchableOpacity
                             style={styles.datePickerView}
@@ -252,12 +310,11 @@ const Invoices = ({
                           </TouchableOpacity>
                           <IconComp
                             type="Ionicons"
-                            name="calendar"
-                            iconStyle={styles.eventStyle}
+                            iconName="calendar"
+                            passedStyle={styles.eventStyle}
                           />
                         </View>
 
-                        {/* end date  */}
                         <View style={styles.rowView}>
                           <TouchableOpacity
                             style={styles.datePickerView}
@@ -272,8 +329,8 @@ const Invoices = ({
                           </TouchableOpacity>
                           <IconComp
                             type="Ionicons"
-                            name="calendar"
-                            iconStyle={styles.eventStyle}
+                            iconName="calendar"
+                            passedStyle={styles.eventStyle}
                           />
                         </View>
                       </View>
@@ -325,15 +382,12 @@ const Invoices = ({
                   renderItem={({item, index}) => (
                     <InvoiceMapper item={item} index={index} />
                   )}
-                  // refreshControl={
-                  //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                  // }
                   nestedScrollEnabled={true}
                   keyExtractor={item => item?.id?.toString()}
                   ListFooterComponent={() => {
                     return (
                       // []?.length === 0 && (
-                        invoices?.length === 0 ? (
+                      invoices?.length === 0 ? (
                         <View
                           style={[
                             styles.notFoundContainer,
@@ -425,7 +479,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    flexWrap: 'wrap',
+    // flexWrap: 'wrap',
     width: width * 0.9,
   },
   btnStyle: {
@@ -435,6 +489,7 @@ const styles = StyleSheet.create({
     margin: 0,
     borderRadius: 10,
     marginVertical: height * 0.01,
+    marginHorizontal: width * 0.02,
   },
   typeBtnStyle: {
     backgroundColor: 'white',

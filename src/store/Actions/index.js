@@ -441,10 +441,47 @@ export const getCustomers = token => async dispatch => {
         //   console.log(ele.role_id,": role_id")
         //   ele?.role_id == 3;
         // }),
-        payload:res.data.data
+        payload: res.data.data,
       });
     }
   } catch (error) {
     console.log('Customers Fetching Failed: ' + error.message);
   }
 };
+
+export const changePassword =
+  (data, onSuccess, accessToken) => async dispatch => {
+    console.log(accessToken);
+    console.log(`${apiUrl}/api/password-change`)
+    try {
+      const response = await axios.post(`${apiUrl}/password-change`, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      console.log(response.data.success);
+      if (response.data.success) {
+        showMessage({
+          message: 'Password Changed!',
+          type: 'success',
+          // description: 'Can not change password at the moment, try again.',
+          // danger: 'error',
+        });
+
+        onSuccess();
+      } else {
+        showMessage({
+          message: 'Oh Snap!',
+          description: 'Can not change password at the moment, try again.',
+          type: 'danger',
+        });
+      }
+    } catch (error) {
+      showMessage({
+        message: 'Oh Snap!',
+        description: 'Can not change password at the moment, try again.',
+        type: 'danger',
+      });
+      console.log('FAILED Changin Password.', error.response.data);
+    }
+  };

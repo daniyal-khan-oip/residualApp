@@ -7,7 +7,6 @@ import {
   Dimensions,
   TextInput,
 } from 'react-native';
-import colors from '../assets/colors';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -22,7 +21,7 @@ const BOLD_ITALIC = 'Poppins-BoldItalic';
 const EXTRA_BOLD_ITALIC = 'Poppins-ExtraBoldItalic';
 const SEMI_BOLD = 'Poppins-SemiBold';
 const EXTRA_BOLD = 'Poppins-ExtraBold';
-const LIGHT = 'Poppins-Light';
+
 const Heading = ({title, passedStyle, fontType}) => {
   return (
     <Text
@@ -37,8 +36,6 @@ const Heading = ({title, passedStyle, fontType}) => {
               ? BLACK
               : fontType === 'medium'
               ? MEDIUM
-              : fontType === 'light'
-              ? LIGHT
               : fontType === 'italic'
               ? ITALIC
               : fontType === 'bold'
@@ -58,8 +55,8 @@ const Heading = ({title, passedStyle, fontType}) => {
 };
 const styles = StyleSheet.create({
   text: {
-    fontSize: 24,
-    color: colors.themePurple,
+    fontSize: width * 0.11,
+    color: 'black',
   },
 });
 

@@ -12,7 +12,7 @@ const {width, height} = Dimensions?.get('window');
 
 const CustomersRender = ({item, index, onPress}) => {
   return (
-    item?.role_id !== 1 && (
+    item?.role_id === 3 && (
       <TouchableOpacity key={index} activeOpacity={0.5} onPress={() =>onPress(item)}>
         <LinearGradient
           colors={['#7124BC', '#437AD8', '#05F0FF']}

@@ -1,9 +1,12 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, Dimensions} from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import colors from '../assets/colors';
+import { themePurple } from '../assets/colors/colors';
+
+import IconComp from './IconComp';
+
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
+
 const Button = ({
   title,
   onBtnPress,
@@ -16,12 +19,10 @@ const Button = ({
       activeOpacity={0.8}
       style={[
         styles.btn,
-
+        btnStyle,
         isBgColor
           ? styles.btnWithBgColor
-          : btnStyle
-          ? btnStyle
-          : styles.btnWithOutBgColor,
+          : styles.btnWithOutBgColor && btnStyle,
       ]}
       onPress={() => {
         onBtnPress();
@@ -30,14 +31,20 @@ const Button = ({
         style={[
           styles.text,
           isBgColor
-            ? {color: colors.themePurple1}
+            ? {color: 'white'}
             : btnTextStyle
             ? btnTextStyle
-            : {color: 'white'},
-          // {color: colors.themePurple1 },
+            : {color: themePurple},
+          // color: isBgColor ? '#ffffff' : themePurple},
         ]}>
         {title}
       </Text>
+      <IconComp
+        iconName={'exclamationcircle'}
+        // iconSize={}
+        type={'AntDesign'}
+        // passedStyle={}
+      />
     </TouchableOpacity>
   );
 };
@@ -46,22 +53,23 @@ const styles = StyleSheet.create({
   text: {
     fontSize: width * 0.05,
     // fontWeight: 'bold',
+    fontFamily: 'Montserrat-Bold',
   },
   btn: {
     width: width * 0.8,
     alignItems: 'center',
-    borderRadius: 15,
+    borderRadius: 50,
     justifyContent: 'center',
     paddingVertical: height * 0.018,
     margin: 15,
   },
   btnWithBgColor: {
-    backgroundColor: colors.themePurple,
+    backgroundColor: themePurple,
   },
   btnWithOutBgColor: {
     backgroundColor: 'rgba(0, 0, 0, 0)',
     borderWidth: 1,
-    borderColor: colors.themePurple,
+    borderColor: themePurple,
   },
 });
 

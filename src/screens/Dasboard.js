@@ -169,6 +169,8 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
       legendFontSize: 15,
     },
   ];
+
+  
   return (
     <ImageBackground source={image} resizeMode="cover" style={style.login_bg}>
       <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>

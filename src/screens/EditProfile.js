@@ -132,8 +132,8 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
           style={styles.iconContainer}>
           <IconComp
             type={'FontAwesome'}
-            name="edit"
-            iconStyle={{fontSize: width * 0.08, marginLeft: 4}}
+            iconName="edit"
+            passedStyle={{fontSize: width * 0.08, marginLeft: 4}}
           />
         </TouchableOpacity>
 
@@ -155,8 +155,8 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
           }}>
           <IconComp
             type={'Ionicons'}
-            name="chevron-back-sharp"
-            iconStyle={{color: 'white', fontSize: width * 0.05}}
+            iconName="chevron-back-sharp"
+            passedStyle={{color: 'white', fontSize: width * 0.05}}
           />
           <Text
             style={{

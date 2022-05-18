@@ -8,7 +8,8 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  StatusBar,Platform
+  StatusBar,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -30,11 +31,10 @@ const {height, width} = Dimensions.get('window');
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
 
 const Profile = ({UserReducer, user_logout, navigation}) => {
- 
   const [name, setName] = useState(
     `${UserReducer?.userData?.first_name} ${UserReducer?.userData?.last_name}`,
   );
-  
+
   useEffect(() => {
     setName(
       `${UserReducer?.userData?.first_name} ${UserReducer?.userData?.last_name}`,
@@ -198,6 +198,8 @@ const Profile = ({UserReducer, user_logout, navigation}) => {
             <Text style={style.list_title}>Help and support</Text>
             <Icon name="chevron-right" size={width * 0.04} color="#fff" />
           </View>*/}
+
+            {/* Edit Profile  */}
             <TouchableOpacity
               style={[
                 style.card_main,
@@ -218,6 +220,30 @@ const Profile = ({UserReducer, user_logout, navigation}) => {
                 />
               </View>
               <Text style={style.list_title}>Edit Profile</Text>
+              <Icon name="chevron-right" size={width * 0.04} color="#fff" />
+            </TouchableOpacity>
+
+            {/* Change Password  */}
+            <TouchableOpacity
+              style={[
+                style.card_main,
+                {
+                  paddingVertical: width * 0.05,
+                  borderBottomWidth: 1,
+                  borderBottomColor: 'white',
+                },
+              ]}
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate('changePassword')}>
+              <View style={style.list_icon}>
+                <Fontisto
+                  name="locked"
+                  size={width * 0.05}
+                  color="#fff"
+                  style={style.list_icon}
+                />
+              </View>
+              <Text style={style.list_title}>Change Password</Text>
               <Icon name="chevron-right" size={width * 0.04} color="#fff" />
             </TouchableOpacity>
             <TouchableOpacity
