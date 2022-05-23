@@ -54,6 +54,25 @@ const Profile = ({UserReducer, user_logout, navigation}) => {
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}>
         <View style={style.contentView}>
+        <View style={{flexDirection:"row",justifyContent:"space-between",marginBottom:20}}>
+                <Image
+                  style={{ height: 30, width: 30,resizeMode:"contain" }}
+                  source={require('../assets/images/menu.png')}
+                />
+                <Image
+                  style={{ height: 50, width: 50 }}
+                  source={require('../assets/images/app-logo.png')}
+                />
+                <View style={{flexDirection:"row"}}>
+                {/* <Image
+                  style={{ height: 25, width: 25, tintColor: "white",justifyContent:"center" }}
+                  source={require('../assets/images/refresh.png')}
+                /> */}
+                 
+
+                </View>
+                
+              </View>
           <LinearGradient
             colors={['#7124BC', '#437AD8', '#05F0FF']}
             style={[

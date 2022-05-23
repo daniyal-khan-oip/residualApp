@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -10,24 +10,26 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Image,
-  RefreshControl,Platform,StatusBar
+  RefreshControl, Platform, StatusBar,
+  TouchableOpacity
+
 } from 'react-native';
 import ProductCard from '../components/products-card/card';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import * as actions from '../store/Actions/index';
 import LottieView from 'lottie-react-native';
 import { themePurple } from '../assets/colors/colors';
 
 const image = require('../assets/images/login_bg.png');
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 const STATUS_BAR_HEIGHT =
-    Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
+  Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
 const prdctImg1 = require('../assets/images/prdct_1.png');
 const prdctImg2 = require('../assets/images/prdct_2.png');
 const prdctImg3 = require('../assets/images/prdct_3.png');
 const prdctImg4 = require('../assets/images/prdct_4.png');
 
-const Products = ({navigation, getUserProducts, UserReducer}) => {
+const Products = ({ navigation, getUserProducts, UserReducer }) => {
   const accessToken = UserReducer?.accessToken;
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState([]);
@@ -67,8 +69,8 @@ const Products = ({navigation, getUserProducts, UserReducer}) => {
     <ImageBackground
       source={image}
       resizeMode="cover"
-      style={{flex: 1, alignItems: 'center'}}>
-      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+      style={{ flex: 1, alignItems: 'center' }}>
+      <View style={{ height: STATUS_BAR_HEIGHT, backgroundColor: themePurple }}>
         <StatusBar
           translucent
           backgroundColor={themePurple}
@@ -76,6 +78,29 @@ const Products = ({navigation, getUserProducts, UserReducer}) => {
         />
       </View>
       <View style={{}}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between",marginTop:20 }}>
+          <TouchableOpacity onPress={()=>{navigation.navigate("Profile")}}>
+            <Image
+              style={{ height: 30, width: 30, resizeMode: "contain" }}
+              source={require('../assets/images/menu.png')}
+            />
+          </TouchableOpacity>
+          <Image
+            style={{ height: 50, width: 50 }}
+            source={require('../assets/images/app-logo.png')}
+          />
+          <View style={{ flexDirection: "row" }}>
+            <TouchableOpacity onPress={() => { onRefresh() }}>
+              <Image
+                style={{ height: 25, width: 25, tintColor: "white", justifyContent: "center" }}
+                source={require('../assets/images/refresh.png')}
+              />
+            </TouchableOpacity>
+
+
+          </View>
+
+        </View>
         <Text style={style.main_title}>My Products</Text>
 
         {isLoading ? (
@@ -111,7 +136,7 @@ const Products = ({navigation, getUserProducts, UserReducer}) => {
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
-            renderItem={({item, index}) => {
+            renderItem={({ item, index }) => {
               return (
                 <ProductCard
                   img={item?.type === 'Amazon' ? prdctImg1 : prdctImg2}
@@ -189,7 +214,7 @@ const style = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({UserReducer}) => {
-  return {UserReducer};
+const mapStateToProps = ({ UserReducer }) => {
+  return { UserReducer };
 };
 export default connect(mapStateToProps, actions)(Products);

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   ImageBackground,
@@ -16,15 +16,15 @@ import {
   Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {PieChart} from 'react-native-chart-kit';
+import { PieChart } from 'react-native-chart-kit';
 import CarouselCards from '../components/carousel-card/CarouselCards';
 import * as actions from '../store/Actions/index';
-import {connect} from 'react-redux';
-import {themePurple} from '../assets/colors/colors';
+import { connect } from 'react-redux';
+import { themePurple } from '../assets/colors/colors';
 import LottieView from 'lottie-react-native';
 
 const image = require('../assets/images/login_bg.png');
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
 const dashboardStatus = [
   {
@@ -74,7 +74,7 @@ const data = {
   ],
 };
 
-const Item = ({item, title, check, onPress, index}) => {
+const Item = ({ item, title, check, onPress, index }) => {
   return (
     <TouchableOpacity
       onPress={() => {
@@ -85,9 +85,9 @@ const Item = ({item, title, check, onPress, index}) => {
         <LinearGradient
           colors={['#7124BC', '#437AD8', '#05F0FF']}
           style={style.gradient_btn_list}
-          start={{y: 0.0, x: -0.05}}
-          angleCenter={{x: 5, y: 0}}
-          end={{y: 0.0, x: 1.2}}>
+          start={{ y: 0.0, x: -0.05 }}
+          angleCenter={{ x: 5, y: 0 }}
+          end={{ y: 0.0, x: 1.2 }}>
           <Text style={style.list_label}>{title}</Text>
         </LinearGradient>
       ) : (
@@ -97,7 +97,7 @@ const Item = ({item, title, check, onPress, index}) => {
   );
 };
 
-const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
+const Dashboard = ({ UserReducer, getTotalInvestmentAndEarning,navigation }) => {
   let API_DATA = {
     email: UserReducer?.userData?.email,
   };
@@ -170,13 +170,13 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
     },
   ];
 
-  
+
   return (
     <ImageBackground source={image} resizeMode="cover" style={style.login_bg}>
-      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+      <View style={{ height: STATUS_BAR_HEIGHT, backgroundColor: themePurple }}>
         <StatusBar
           translucent
-          backgroundColor={themePurple}
+          backgroundColor="black"
           barStyle="light-content"
         />
       </View>
@@ -187,6 +187,7 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
         }
         showsVerticalScrollIndicator={false}>
         {isLoading ? (
+
           <View
             style={{
               marginTop: height * 0.35,
@@ -214,15 +215,38 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
           </View>
         ) : (
           <>
-            <View style={{marginTop: 20}}>
+            <View style={{ marginTop: 20,justifyContent:"center" }}>
+              <View style={{flexDirection:"row",justifyContent:"space-between"}}>
+               <TouchableOpacity onPress={()=>{navigation.navigate("Profile")}}>
+               <Image
+                  style={{ height: 30, width: 30,resizeMode:"contain" }}
+                  source={require('../assets/images/menu.png')}
+                />
+               </TouchableOpacity>
+                <Image
+                  style={{ height: 50, width: 50 }}
+                  source={require('../assets/images/app-logo.png')}
+                />
+                <View style={{flexDirection:"row"}}>
+               <TouchableOpacity onPress={()=>{onRefresh()}}>
+               <Image
+                  style={{ height: 25, width: 25, tintColor: "white",justifyContent:"center" }}
+                  source={require('../assets/images/refresh.png')}
+                />
+               </TouchableOpacity>
+               
+
+                </View>
+                
+              </View>
               <Text style={style.main_title}>Dashboard</Text>
               <View style={style.card_main}>
                 <LinearGradient
                   colors={['#7124BC', '#437AD8', '#05F0FF']}
                   style={style.gradient_card}
-                  start={{y: 0.0, x: -0.05}}
-                  angleCenter={{x: 5, y: 0}}
-                  end={{y: 0.0, x: 1.2}}>
+                  start={{ y: 0.0, x: -0.05 }}
+                  angleCenter={{ x: 5, y: 0 }}
+                  end={{ y: 0.0, x: 1.2 }}>
                   <Icon name="pie-chart" color="#fff" style={style.card_icon} />
                   <Text style={style.card_value}>
                     {`$${UserReducer?.totalInvestments}`}
@@ -233,9 +257,9 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
                 <LinearGradient
                   colors={['#7124BC', '#437AD8', '#05F0FF']}
                   style={style.gradient_card}
-                  start={{y: 0.0, x: -0.05}}
-                  angleCenter={{x: 5, y: 0}}
-                  end={{y: 0.0, x: 1.2}}>
+                  start={{ y: 0.0, x: -0.05 }}
+                  angleCenter={{ x: 5, y: 0 }}
+                  end={{ y: 0.0, x: 1.2 }}>
                   <Icon name="pie-chart" color="#fff" style={style.card_icon} />
                   <Text
                     style={
@@ -390,8 +414,8 @@ const style = StyleSheet.create({
   // chart_title : {},
 });
 
-const mapStateToProps = ({UserReducer}) => {
-  return {UserReducer};
+const mapStateToProps = ({ UserReducer }) => {
+  return { UserReducer };
 };
 
 export default connect(mapStateToProps, actions)(Dashboard);
