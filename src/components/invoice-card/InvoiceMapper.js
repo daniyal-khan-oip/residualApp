@@ -1,12 +1,15 @@
 import React, {useState} from 'react';
-import {Text, StyleSheet, View, Dimensions} from 'react-native';
+import {Text, StyleSheet, View, Dimensions,TouchableOpacity} from 'react-native';
 import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 const {height, width} = Dimensions.get('window');
 
-const InvoiceMapper = ({item, index}) => {
+const InvoiceMapper = ({item, index,navigation}) => {
+  
   return (
-    <View key={index}>
+    <TouchableOpacity key={index} onPress={() =>
+      navigation.navigate('InvoiceDetail', {item:item})
+    }>
       <LinearGradient
         colors={['#7124BC', '#437AD8', '#05F0FF']}
         style={style.gradient_btn}
@@ -21,14 +24,17 @@ const InvoiceMapper = ({item, index}) => {
             color={item.status === 'paid' ? '#5FB971' : '#D50101'}
           /> */}
         <View style={style.titles_view}>
-          <Text style={style.main_title}>{item?.type}</Text>
+        
+          <Text style={style.main_title}>{item?.customer ? item?.customer:"No Name"}</Text>
+          <Text style={style.main_title}>{`$${item?.amount}`}</Text>
+          <Text style={style.main_title}>{item?.customer_email}</Text>
           <Text style={style.sub_title}>
-            {moment(item?.date).format('MMMM-DD-yyy')}
+            {moment(item?.created_at).format('MMMM-DD-yyy')}
           </Text>
         </View>
-        <Text style={style.main_title}>{`$${item?.amount?.toFixed(2)}`}</Text>
+        {/* <Text style={style.main_title}>{`$${item?.amount?.toFixed(2)}`}</Text> */}
       </LinearGradient>
-    </View>
+    </TouchableOpacity>
   );
 };
 export default InvoiceMapper;
@@ -45,7 +51,7 @@ const style = StyleSheet.create({
   },
   titles_view: {
     flex: 1,
-    paddingLeft: width * 0.03,
+    paddingLeft: width * 0.03, 
   },
   main_title: {
     fontSize: width * 0.04,

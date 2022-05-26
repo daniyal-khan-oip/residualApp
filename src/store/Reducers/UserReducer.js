@@ -12,6 +12,7 @@ import {
   GET_USER_PRODUCTS,
   UPDATE_PROFILE,
   GET_CUSTOMERS,
+  GET_INVOICES_BY_EMAIL,
 } from '../Actions/actionType';
 
 const INITIAL_STATE = {
@@ -26,10 +27,10 @@ const INITIAL_STATE = {
   totalAmazon: 0,
   totalWalmart: 0,
   customers: [],
+  invoiceLastPage: 0,
 };
 
 export function UserReducer(state = INITIAL_STATE, action) {
-  // console.log('Payload: ', action.payload);
   switch (action.type) {
     case USER_SIGNUP:
       return {
@@ -78,11 +79,14 @@ export function UserReducer(state = INITIAL_STATE, action) {
       };
 
     case GET_INVOICES:
+      console.log(action.payload.array)
       return {
         ...state,
-        invoices: action.payload,
+        invoices: action.payload.array,
+        invoiceLastPage: action.payload.last_page,
       };
 
+   
     case GET_USER_PRODUCTS:
       return {
         ...state,

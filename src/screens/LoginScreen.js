@@ -63,7 +63,7 @@ const Login = ({navigation, userLogin}) => {
       <TouchableWithoutFeedback
         onPress={() => Keyboard.dismiss()}
         style={{marginTop: height * -0.2}}>
-        <Image source={logo} />
+        <Image style={{alignSelf:"center",marginBottom:height*.1}} source={logo} />
 
         <View style={style.login_detail}>
           <Text style={style.login_text}>Login</Text>
