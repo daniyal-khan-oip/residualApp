@@ -13,6 +13,7 @@ import ProductsStack from './ProductsStack';
 import {connect} from 'react-redux';
 import ProfileStack from './screens/ProfileStack';
 import CustomersStack from './screens/CustomersStack';
+import InvoicesStack from './InvoicesStack';
 
 const Tabs = AnimatedTabBarNavigator();
 
@@ -106,7 +107,7 @@ const MainStack = ({UserReducer}) => {
 
       <Tabs.Screen
         name="Invoices"
-        component={Invoices}
+        component={InvoicesStack}
         options={({navigation}) => {
           return {
             tabBarIcon: ({focused, color, size}) => (

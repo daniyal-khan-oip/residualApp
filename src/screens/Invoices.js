@@ -14,6 +14,7 @@ import {
   TouchableWithoutFeedback,
   FlatList,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import * as actions from '../store/Actions/index';
 import {connect} from 'react-redux';
@@ -36,13 +37,14 @@ const Invoices = ({
   getUserInvoices,
   getInvoicesByEmail,
   getInvoicesByType,
+  navigation,
 }) => {
   const STATUS_BAR_HEIGHT =
     Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
   const [invoices, setInvoices] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
-  const [productType, setProductType] = useState('Amazon');
+  const [pageNo, setPageNo] = useState(1);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(
     new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
@@ -57,17 +59,27 @@ const Invoices = ({
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [searchChoice, setSearchChoice] = useState('all');
+  const lastPage = UserReducer?.invoiceLastPage
+    ? UserReducer?.invoiceLastPage
+    : 0;
+
+  console.log(lastPage, '==', pageNo);
 
   useEffect(() => {
     _onPressGetAllInvoices();
   }, []);
 
   useEffect(() => {
-    // if (UserReducer?.invoices?.length) {
-    setInvoices(UserReducer?.invoices);
-    // }
+    if(UserReducer?.invoices){
+    const oldData = searchChoice !== 'all' ? [] : [...invoices];
+    setInvoices([...UserReducer?.invoices]);
+    setInvoices([...oldData, ...UserReducer?.invoices]);
+    } else {
+      setInvoices([])
+    }
   }, [UserReducer?.invoices]);
 
+  console.log(UserReducer?.invoice,"===============----")
   const _onPressSearch = async () => {
     Keyboard.dismiss();
     if (searchText.length === 0) {
@@ -85,6 +97,7 @@ const Invoices = ({
     setIsLoading(false);
   };
 
+
   const _onPressDateSearch = async () => {
     Keyboard.dismiss();
     setIsLoading(true);
@@ -92,19 +105,7 @@ const Invoices = ({
       start: moment(startDate).format('YYYY-MM-DD'),
       end: moment(endDate).format('YYYY-MM-DD'),
     };
-    console.log(data);
     await getInvoicesByDate(data, accessToken);
-    setIsLoading(false);
-  };
-
-  const _onPressTypeSearch = async () => {
-    Keyboard.dismiss();
-    setIsLoading(true);
-    let data = {
-      type: productType,
-    };
-    console.log(data);
-    await getInvoicesByType(data, accessToken);
     setIsLoading(false);
   };
 
@@ -112,24 +113,61 @@ const Invoices = ({
     return new Promise(resolve => setTimeout(resolve, timeout));
   };
 
+  const renderFooter = () => {
+    if (invoices?.length === 0) {
+      return (
+        <View
+          style={[
+            styles.notFoundContainer,
+            {marginTop: isAdmin ? height * 0.1 : height * 0.35},
+          ]}>
+          <Text style={styles.noRecFound}>No Invoices Found!</Text>
+        </View>
+      );
+    } 
+    
+    else if (pageNo < lastPage) {
+      //Footer View with Load More button
+      return (
+        <View style={styles.footer}>
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={_onPressGetAllInvoices}
+            //On Click of button calling getData function to load more data
+            style={styles.loadMoreBtn}>
+            <Text style={styles.btnText}>Load More</Text>
+            {isLoading ? (
+              <ActivityIndicator color="white" style={{marginLeft: 8}} />
+            ) : null}
+          </TouchableOpacity>
+        </View>
+      );
+    } 
+    
+    else {
+      return <Text></Text>;
+    }
+  };
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    wait(1500).then(() => {
+    wait(1500).then(async () => {
       setRefreshing(false);
-      _onPressGetAllInvoices();
+      setIsLoading(true);
+      setInvoices([]);
+      await getUserInvoices(API_DATA, accessToken, isAdmin, 1);
+      setPageNo(pageNo + 1);
+      setIsLoading(false);
     });
   }, []);
 
   const _onPressGetAllInvoices = async () => {
+    setPageNo(pageNo + 1);
     Keyboard.dismiss();
     setIsLoading(true);
-    await getUserInvoices(API_DATA, accessToken, isAdmin);
+    await getUserInvoices(API_DATA, accessToken, isAdmin, pageNo);
     setIsLoading(false);
   };
-  // This useEffect will be used if getting data on type change buttons
-  // useEffect(() => {
-  //   _onPressTypeSearch();
-  // }, [productType]);
 
   const ButtonsComp = ({item}) => {
     return (
@@ -151,23 +189,25 @@ const Invoices = ({
       />
     );
   };
-  const Buttons = [{
-    id: 2,
-    btnName: 'Get All Invoices',
-    btnChoice: 'all',
-  },
+  const Buttons = [
+    {
+      id: 2,
+      btnName: 'Get All Invoices',
+      btnChoice: 'all',
+    },
     {
       id: 1,
       btnName: 'Search By Email',
       btnChoice: 'email',
     },
-    
+
     {
       id: 3,
       btnName: 'Search By Date',
       btnChoice: 'date',
     },
   ];
+
   return (
     <ImageBackground source={image} resizeMode="cover" style={{flex: 1}}>
       <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
@@ -188,82 +228,15 @@ const Invoices = ({
               <>
                 <Text style={styles.main_title}>Invoices</Text>
 
-                <FlatList
-                  // ListHeaderComponentStyle={{width: width}}
-
-                  // data={Buttons}
-                  data={Buttons}
-                  horizontal={true}
-                  renderItem={({item, index}) => {
-                    console.log(item);
-                    return <ButtonsComp item={item} />;
-                  }}
-                  // ListHeaderComponent={({item}) => {
-                  //   return (
-                  //     <View style={styles.btnContainers}>
-                  //       {UserReducer?.userData?.role_id !== 3 && (
-                  //         <>
-                  //           <Button
-                  //             title="Search By Email"
-                  //             onBtnPress={() => setSearchChoice('email')}
-                  //             btnStyle={[
-                  //               styles.btnStyle,
-                  //               searchChoice === 'email' && {
-                  //                 backgroundColor: 'orange',
-                  //               },
-                  //             ]}
-                  //             isBgColor={false}
-                  //             btnTextStyle={{
-                  //               fontFamily: 'Poppins-SemiBold',
-                  //               color: 'white',
-                  //               fontSize: width * 0.04,
-                  //             }}
-                  //           />
-
-                  //           <Button
-                  //             title="Search By Date"
-                  //             onBtnPress={() => setSearchChoice('date')}
-                  //             btnStyle={[
-                  //               styles.btnStyle,
-                  //               {marginLeft: width * 0.04},
-                  //               searchChoice === 'date' && {
-                  //                 backgroundColor: 'orange',
-                  //               },
-                  //             ]}
-                  //             isBgColor={false}
-                  //             btnTextStyle={{
-                  //               fontFamily: 'Poppins-SemiBold',
-                  //               color: 'white',
-                  //               fontSize: width * 0.04,
-                  //             }}
-                  //           />
-
-                  //           <Button
-                  //             title="Get All Invoices"
-                  //             onBtnPress={() => {
-                  //               setSearchChoice('all');
-                  //               _onPressGetAllInvoices();
-                  //             }}
-                  //             btnStyle={[
-                  //               styles.btnStyle,
-                  //               {marginLeft: width * 0.04},
-                  //               searchChoice === 'all' && {
-                  //                 backgroundColor: 'orange',
-                  //               },
-                  //             ]}
-                  //             isBgColor={false}
-                  //             btnTextStyle={{
-                  //               fontFamily: 'Poppins-SemiBold',
-                  //               color: 'white',
-                  //               fontSize: width * 0.04,
-                  //             }}
-                  //           />
-                  //         </>
-                  //       )}
-                  //     </View>
-                  //   );
-                  // }}
-                />
+                {isAdmin && (
+                  <FlatList
+                    data={Buttons}
+                    horizontal={true}
+                    renderItem={({item, index}) => {
+                      return <ButtonsComp item={item} />;
+                    }}
+                  />
+                )}
 
                 {searchChoice === 'email' && isAdmin ? (
                   <>
@@ -380,30 +353,31 @@ const Invoices = ({
                 <FlatList
                   data={isLoading ? [] : invoices}
                   renderItem={({item, index}) => (
-                    <InvoiceMapper item={item} index={index} />
+                    <InvoiceMapper
+                      item={item}
+                      index={index}
+                      navigation={navigation}
+                    />
                   )}
                   nestedScrollEnabled={true}
-                  keyExtractor={item => item?.id?.toString()}
-                  ListFooterComponent={() => {
-                    return (
-                      // []?.length === 0 && (
-                      invoices?.length === 0 ? (
-                        <View
-                          style={[
-                            styles.notFoundContainer,
-                            {marginTop: isAdmin ? height * 0.1 : height * 0.35},
-                          ]}>
-                          <Text style={styles.noRecFound}>
-                            No Invoices Found!
-                          </Text>
-                          {/* <Text style={styles.swipeText}>Swipe down to refresh</Text> */}
-                        </View>
-                      ) : (
-                        <View style={{marginBottom: 200}} />
-                      )
-                    );
-                  }}
+                  keyExtractor={(item, index) => index?.toString()}
+                  ListFooterComponent={renderFooter}
                 />
+                // ListFooterComponent={() => {
+                //   return invoices?.length === 0 ? (
+                //     <View
+                //       style={[
+                //         styles.notFoundContainer,
+                //         {marginTop: isAdmin ? height * 0.1 : height * 0.35},
+                //       ]}>
+                //       <Text style={styles.noRecFound}>
+                //         No Invoices Found!
+                //       </Text>
+                //     </View>
+                //   ) : (
+                //     <View style={{marginBottom: 200}} />
+                //   );
+                // }}
               )}
 
               {/* Start Date Picker  */}
@@ -447,6 +421,13 @@ const Invoices = ({
 };
 
 const styles = StyleSheet.create({
+  footer: {
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: height * 0.04,
+  },
   swipeText: {
     color: 'white',
     fontSize: width * 0.045,
@@ -487,9 +468,17 @@ const styles = StyleSheet.create({
     borderRadius: width * 0.07,
     width: width * 0.43,
     margin: 0,
-    borderRadius: 10,
+    borderRadius: 20,
     marginVertical: height * 0.01,
     marginHorizontal: width * 0.02,
+  },
+  loadMoreBtn: {
+    padding: 10,
+    backgroundColor: themePurple,
+    borderRadius: 4,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   typeBtnStyle: {
     backgroundColor: 'white',

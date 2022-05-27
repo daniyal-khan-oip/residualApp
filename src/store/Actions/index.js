@@ -106,33 +106,37 @@ export const getTotalInvestmentAndEarning = (data, token) => async dispatch => {
   }
 };
 
-export const getUserInvoices = (data, token, isAdmin) => async dispatch => {
-  try {
-    console.log(data, token);
-    const URL = `${apiUrl}/getInvoice`;
-    const res = await axios.post(URL, isAdmin ? {} : data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-    });
-
-    console.log(res.data.data, '===========');
-    if (res.data.success) {
-      console.log(res.data.data);
-      dispatch({
-        type: types.GET_INVOICES,
-        payload: res.data.data,
+export const getUserInvoices =
+  (data, token, isAdmin, pageNo) => async dispatch => {
+    try {
+      // console.log(data, token);
+      const URL = `${apiUrl}/getInvoice?page=${pageNo}`;
+      const res = await axios.post(URL, isAdmin ? {} : data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
       });
+
+      // console.log(res.data.data, '===========');
+      if (res.data.success) {
+        const arrayy = res.data.data.data;
+        // console.log(JSON.stringify(arrayy,null,2),"-----------------");
+        dispatch({
+          type: types.GET_INVOICES,
+          payload: {
+            array: arrayy,
+            last_page: res.data.data.last_page,
+          },
+        });
+      }
+    } catch (error) {
+      console.log('Invoices Fetching Failed: ' + error.message);
     }
-  } catch (error) {
-    console.log('Invoices Fetching Failed: ' + error.message);
-  }
-};
+  };
 
 export const getInvoicesByEmail = (data, token) => async dispatch => {
   try {
-    console.log(data, 'data``````````````````````````````');
     const URL = `${apiUrl}/getInvoiceEmail`;
     const res = await axios.post(URL, data, {
       headers: {
@@ -142,13 +146,12 @@ export const getInvoicesByEmail = (data, token) => async dispatch => {
     });
     // console.log(res.data);
     if (res.data.success) {
-      console.log(
-        res.data.data?.length,
-        'INVOICES BY EMAIL ------------------------------------------ length',
-      );
       dispatch({
         type: types.GET_INVOICES,
-        payload: res.data.data,
+        payload: {
+          array: res.data.data,
+          invoiceLastPage: 0,
+        },
       });
     } else {
       console.log('=====================');
@@ -191,18 +194,16 @@ export const getInvoicesByDate = (data, token) => async dispatch => {
         },
       },
     );
-    console.log(res);
+
     if (res.data.success) {
-      console.log(
-        res.data.data?.length,
-        'events ------------------------------------------ length',
-      );
       dispatch({
         type: types.GET_INVOICES,
-        payload: res.data.data,
+        payload: {
+          array: res.data.data,
+          invoiceLastPage: 0,
+        },
       });
     } else {
-      console.log('=====================');
       showMessage({
         message: 'No Record Found!',
         danger: 'error',
@@ -452,7 +453,7 @@ export const getCustomers = token => async dispatch => {
 export const changePassword =
   (data, onSuccess, accessToken) => async dispatch => {
     console.log(accessToken);
-    console.log(`${apiUrl}/api/password-change`)
+    console.log(`${apiUrl}/api/password-change`);
     try {
       const response = await axios.post(`${apiUrl}/password-change`, data, {
         headers: {
