@@ -13,6 +13,7 @@ import {
   UPDATE_PROFILE,
   GET_CUSTOMERS,
   GET_INVOICES_BY_EMAIL,
+  GET_CREDENTIALS,
 } from '../Actions/actionType';
 
 const INITIAL_STATE = {
@@ -28,6 +29,7 @@ const INITIAL_STATE = {
   totalWalmart: 0,
   customers: [],
   invoiceLastPage: 0,
+  credentials: null,
 };
 
 export function UserReducer(state = INITIAL_STATE, action) {
@@ -63,7 +65,6 @@ export function UserReducer(state = INITIAL_STATE, action) {
       };
 
     case UPDATE_USER_DATA:
-      // console.log(action.payload);
       return {
         ...state,
         userData: {...action.payload},
@@ -79,14 +80,12 @@ export function UserReducer(state = INITIAL_STATE, action) {
       };
 
     case GET_INVOICES:
-      console.log(action.payload.array)
       return {
         ...state,
         invoices: action.payload.array,
         invoiceLastPage: action.payload.last_page,
       };
 
-   
     case GET_USER_PRODUCTS:
       return {
         ...state,
@@ -112,6 +111,12 @@ export function UserReducer(state = INITIAL_STATE, action) {
       return {
         ...state,
         customers: action.payload,
+      };
+
+    case GET_CREDENTIALS:
+      return {
+        ...state,
+        credentials: action.payload,
       };
 
     default:

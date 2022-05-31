@@ -15,6 +15,7 @@ import {
   FlatList,
   RefreshControl,
   ActivityIndicator,
+  Image
 } from 'react-native';
 import * as actions from '../store/Actions/index';
 import {connect} from 'react-redux';
@@ -145,7 +146,7 @@ const Invoices = ({
     } 
     
     else {
-      return <Text></Text>;
+      return <Text>dsfdsfsd</Text>;
     }
   };
 
@@ -225,9 +226,26 @@ const Invoices = ({
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={{alignItems: 'center'}}>
             <>
+            
               <>
-                <Text style={styles.main_title}>Invoices</Text>
+              
+                
+               <View style={{flexDirection:"row"}}>
+               <TouchableOpacity onPress={()=>{navigation.navigate("Profile")}}>
+               <Image
+                  style={{ height: 25, width: 25,resizeMode:"contain",marginTop:25 }}
+                  source={require('../assets/images/menu.png')}
+                />
+               </TouchableOpacity>
+               <Text style={styles.main_title}>Invoices</Text>
+                <TouchableOpacity onPress={()=>{onRefresh()}}>
+               <Image
+                  style={{ height: 22, width: 22, tintColor: "white",marginTop:20,marginLeft:width*.25 }}
+                  source={require('../assets/images/refresh.png')}
+                />
+               </TouchableOpacity>
 
+               </View>
                 {isAdmin && (
                   <FlatList
                     data={Buttons}
@@ -506,6 +524,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
     textAlign: 'center',
     marginTop: 20,
+    marginLeft:width*.28
   },
   eventStyle: {
     color: 'white',

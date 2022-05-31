@@ -486,3 +486,39 @@ export const changePassword =
       console.log('FAILED Changin Password.', error.response.data);
     }
   };
+
+export const getCredentials = (data, token) => async dispatch => {
+  try {
+    const URL = `${apiUrl}/userCredentials`;
+    const res = await axios.post(URL, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    });
+    // console.log(res.data);
+    if (res.data.success) {
+      dispatch({
+        type: types.GET_CREDENTIALS,
+        payload: res.data.data,
+      });
+    } else {
+      showMessage({
+        message: 'No Credentials Found!',
+        danger: 'error',
+      });
+      dispatch({
+        type: types.GET_CREDENTIALS,
+        payload: null,
+      });
+    }
+  } catch (error) {
+    showMessage({
+      message: 'Network Failure!',
+      danger: 'error',
+    });
+    
+    console.log('Credentials Fetching Failed: ' + error.message);
+    console.log('Credentials Fetching Failed: ' + error);
+  }
+};

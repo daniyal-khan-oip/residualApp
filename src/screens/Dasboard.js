@@ -97,7 +97,7 @@ const Item = ({item, title, check, onPress, index}) => {
   );
 };
 
-const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
+const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
   let API_DATA = {
     email: UserReducer?.userData?.email,
   };
@@ -170,13 +170,12 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
     },
   ];
 
-  
   return (
     <ImageBackground source={image} resizeMode="cover" style={style.login_bg}>
       <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
         <StatusBar
           translucent
-          backgroundColor={themePurple}
+          backgroundColor="black"
           barStyle="light-content"
         />
       </View>
@@ -214,7 +213,39 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning}) => {
           </View>
         ) : (
           <>
-            <View style={{marginTop: 20}}>
+            <View style={{marginTop: 20, justifyContent: 'center'}}>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('Profile');
+                  }}>
+                  <Image
+                    style={{height: 30, width: 30, resizeMode: 'contain'}}
+                    source={require('../assets/images/menu.png')}
+                  />
+                </TouchableOpacity>
+                <Image
+                  style={{height: 50, width: 50}}
+                  source={require('../assets/images/app-logo.png')}
+                />
+                <View style={{flexDirection: 'row'}}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      onRefresh();
+                    }}>
+                    <Image
+                      style={{
+                        height: 25,
+                        width: 25,
+                        tintColor: 'white',
+                        justifyContent: 'center',
+                      }}
+                      source={require('../assets/images/refresh.png')}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
               <Text style={style.main_title}>Dashboard</Text>
               <View style={style.card_main}>
                 <LinearGradient
