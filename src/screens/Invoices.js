@@ -229,23 +229,34 @@ const Invoices = ({
             
               <>
               
-                
-               <View style={{flexDirection:"row"}}>
+             
+              
+              <View style={{ marginTop: 20,justifyContent:"center",marginBottom:10 }}>
+              <View style={{flexDirection:"row",justifyContent:"space-between"}}>
                <TouchableOpacity onPress={()=>{navigation.navigate("Profile")}}>
                <Image
-                  style={{ height: 25, width: 25,resizeMode:"contain",marginTop:25 }}
+                  style={{ height: 30, width: 30,resizeMode:"contain" ,marginRight:width*.3}}
                   source={require('../assets/images/menu.png')}
                 />
                </TouchableOpacity>
-               <Text style={styles.main_title}>Invoices</Text>
-                <TouchableOpacity onPress={()=>{onRefresh()}}>
+                <Image
+                  style={{ height: 50, width: 50 }}
+                  source={require('../assets/images/app-logo.png')}
+                />
+                <View style={{flexDirection:"row"}}>
+               <TouchableOpacity onPress={()=>{onRefresh()}}>
                <Image
-                  style={{ height: 22, width: 22, tintColor: "white",marginTop:20,marginLeft:width*.25 }}
+                  style={{ height: 25, width: 25, tintColor: "white",justifyContent:"center",marginLeft:width*.3 }}
                   source={require('../assets/images/refresh.png')}
                 />
                </TouchableOpacity>
+               
 
-               </View>
+                </View>
+                </View>
+             </View>
+             <Text style={{color:"white",fontSize:width*.45,fontWeight:"bold"}}>Invoices</Text>
+              
                 {isAdmin && (
                   <FlatList
                     data={Buttons}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, Text, View, Dimensions, ScrollView, Image } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View, Dimensions, ScrollView, Image,TouchableOpacity } from 'react-native';
 
 import PromotionCard from '../components/promotion-card/card'
 
@@ -14,7 +14,7 @@ const promotionImg4 = require("../assets/images/promotion_page/card-4.png");
 
 
 
-const Promotion = () => {
+const Promotion = ({navigation}) => {
 
     return (
         <ImageBackground source={image} resizeMode="cover" style={{ flex: 1, alignItems: 'center' }}>
@@ -22,6 +22,37 @@ const Promotion = () => {
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
             >
+                 <View
+                style={{flexDirection: 'row', justifyContent: 'space-between',marginTop:height*.05}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('Profile');
+                  }}>
+                  <Image
+                    style={{height: 30, width: 30, resizeMode: 'contain'}}
+                    source={require('../assets/images/menu.png')}
+                  />
+                </TouchableOpacity>
+                <Image
+                  style={{height: 50, width: 50}}
+                  source={require('../assets/images/app-logo.png')}
+                />
+                <View style={{flexDirection: 'row'}}>
+                  <TouchableOpacity
+                   >
+                    <Image
+                      style={{
+                        height: 25,
+                        width: 25,
+                        tintColor: 'white',
+                        justifyContent: 'center',
+                      }}
+                      source={require('../assets/images/refresh.png')}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
                 <View style={{}}>
                     <Text style={style.main_title}>
                         Promotions
