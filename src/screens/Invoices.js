@@ -81,7 +81,6 @@ const Invoices = ({
     }
   }, [UserReducer?.invoices]);
 
-  console.log(UserReducer?.invoice, '===============----');
   const _onPressSearch = async () => {
     Keyboard.dismiss();
     if (searchText.length === 0) {
@@ -407,7 +406,7 @@ const Invoices = ({
                     ListHeaderComponent={
                       <Heading
                         title="Paid Invoices"
-                        passedStyle={{color: 'white', fontSize: width * 0.055,fontWeight:"bold"}}
+                        passedStyle={{color: 'white', fontSize: width * 0.055,fontWeight:"bold",marginBottom:height * 0.03,}}
                       />
                     }
                     data={isLoading ? [] : invoices}
@@ -427,7 +426,7 @@ const Invoices = ({
                     ListHeaderComponent={
                       <Heading
                         title="Pending Invoices"
-                        passedStyle={{color: 'white', fontSize: width * 0.055,fontWeight:"bold"}}
+                        passedStyle={{color: 'white', fontSize: width * 0.055,fontWeight:"bold",marginBottom:height * 0.03,}}
                       />
                     }
                     data={isLoading ? [] : invoices}

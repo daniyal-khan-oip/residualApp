@@ -170,6 +170,20 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
     },
   ];
 
+  const onPressChartValue = (item, index) => {
+    // item.checked = true
+  };
+
+  const renderItem = ({item, index}) => (
+    <Item
+      item={item}
+      check={item.checked}
+      index={index}
+      title={item.label}
+      onPress={onPressChartValue}
+    />
+  );
+
   return (
     <ImageBackground source={image} resizeMode="cover" style={style.login_bg}>
       <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
@@ -212,7 +226,7 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
             </Text>
           </View>
         ) : (
-          <>
+          <View style={{}}>
             <View style={{marginTop: 20, justifyContent: 'center'}}>
               <View
                 style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -277,7 +291,19 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
                 </LinearGradient>
               </View>
             </View>
-
+            {/* <FlatList
+              horizontal
+              style={{}}
+              contentContainerStyle={{
+                justifyContent: 'space-between',
+                height: height * 0.04,
+                width: width * 0.9,
+                marginTop: height * 0.03,
+              }}
+              data={dashboardStatus}
+              renderItem={renderItem}
+              keyExtractor={item => item.id}
+            /> */}
             {/* Walmart and Amazon Product Pie Chart  */}
             <PieChart
               data={data1}
@@ -303,7 +329,10 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
               center={[width * 0.02, height * 0.01]}
               absolute
             />
-          </>
+
+            <Text style={style.products_title}>Products</Text>
+            <CarouselCards />
+          </View>
         )}
       </ScrollView>
     </ImageBackground>
@@ -337,6 +366,7 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     width: width * 0.9,
     justifyContent: 'space-between',
+    marginHorizontal:width * 0.05,
   },
   gradient_card: {
     width: width * 0.42,
@@ -415,6 +445,8 @@ const style = StyleSheet.create({
     fontSize: width * 0.06,
     fontFamily: 'Poppins-SemiBold',
     marginTop: 30,
+    width: width,
+    marginLeft: width * 0.05,
     marginBottom: 20,
   },
   // chart_title : {},

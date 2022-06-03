@@ -517,8 +517,58 @@ export const getCredentials = (data, token) => async dispatch => {
       message: 'Network Failure!',
       danger: 'error',
     });
-    
+
     console.log('Credentials Fetching Failed: ' + error.message);
     console.log('Credentials Fetching Failed: ' + error);
+  }
+};
+
+export const subscribeProduct = (data, accessToken) => async dispatch => {
+  // console.log(data, accessToken);
+  try {
+    const response = await axios.post(`${apiUrl}/addSubscription`, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    console.log(response.data.message);
+
+
+
+    if (response.data.success === true) {
+
+
+      console.log(response.data.message, 's========');
+      if (response?.data?.message?.localeCompare('Already Subscribe.') === 0) {
+
+// alert("Test")
+        showMessage({
+          message: response?.data?.message,
+          type: 'danger',
+        });
+      }
+
+    } else {
+
+      // alert("Test 2")
+      showMessage({
+        message: response?.data?.message,
+        type: 'success',
+      });
+    }
+
+
+
+  } 
+  
+  
+  
+  catch (error) {
+    showMessage({
+      message: 'Oh Snap!',
+      description: 'Can not subscribe product at the moment, try again.',
+      type: 'danger',
+    });
+    console.log('FAILED subscribing product.', error.response.data);
   }
 };

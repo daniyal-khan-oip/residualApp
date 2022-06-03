@@ -74,9 +74,13 @@ const productCard = props => {
             </Modal> */}
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() =>
-          props.navigation.navigate('ProductsListings', {type:props.type})
-        }
+        onPress={() => {
+          if (props.type === 'AirBNB' || props.type === 'UNIQUE EXPRESS') {
+            props.onPress(props.type);
+          } else {
+            props.navigation.navigate('ProductsListings', {type: props.type});
+          }
+        }}
         title="Show modal">
         <LinearGradient
           colors={['#7124BC', '#437AD8', '#05F0FF']}
