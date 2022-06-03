@@ -4,7 +4,7 @@ import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 const {height, width} = Dimensions.get('window');
 
-const InvoiceMapper = ({item, index,navigation}) => {
+const InvoiceMappers = ({item, index,navigation}) => {
   
   return (
     
@@ -26,7 +26,7 @@ const InvoiceMapper = ({item, index,navigation}) => {
           /> */}
         <Image
         style={{height:50,width:50}}
-        source={require("../../assets/images/pending.png")}
+        source={require("../../assets/images/paid.png")}
       />
         <View style={style.titles_view}>
         {console.log("item",item)}
@@ -42,7 +42,7 @@ const InvoiceMapper = ({item, index,navigation}) => {
     </TouchableOpacity>
   );
 };
-export default InvoiceMapper;
+export default InvoiceMappers;
 
 const style = StyleSheet.create({
   gradient_btn: {

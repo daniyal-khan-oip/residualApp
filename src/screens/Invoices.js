@@ -15,7 +15,7 @@ import {
   FlatList,
   RefreshControl,
   ActivityIndicator,
-  Image
+  Image,
 } from 'react-native';
 import * as actions from '../store/Actions/index';
 import {connect} from 'react-redux';
@@ -29,6 +29,7 @@ import LottieView from 'lottie-react-native';
 import DatePicker from 'react-native-date-picker';
 import colors from '../assets/colors';
 import InvoiceMapper from '../components/invoice-card/InvoiceMapper';
+import InvoiceMappers from '../components/invoice-card/InvoiceMappers';
 const image = require('../assets/images/login_bg.png');
 const {height, width} = Dimensions.get('window');
 
@@ -71,16 +72,16 @@ const Invoices = ({
   }, []);
 
   useEffect(() => {
-    if(UserReducer?.invoices){
-    const oldData = searchChoice !== 'all' ? [] : [...invoices];
-    setInvoices([...UserReducer?.invoices]);
-    setInvoices([...oldData, ...UserReducer?.invoices]);
+    if (UserReducer?.invoices) {
+      const oldData = searchChoice !== 'all' ? [] : [...invoices];
+      setInvoices([...UserReducer?.invoices]);
+      setInvoices([...oldData, ...UserReducer?.invoices]);
     } else {
-      setInvoices([])
+      setInvoices([]);
     }
   }, [UserReducer?.invoices]);
 
-  console.log(UserReducer?.invoice,"===============----")
+  console.log(UserReducer?.invoice, '===============----');
   const _onPressSearch = async () => {
     Keyboard.dismiss();
     if (searchText.length === 0) {
@@ -97,7 +98,6 @@ const Invoices = ({
     await getInvoicesByEmail(data, accessToken);
     setIsLoading(false);
   };
-
 
   const _onPressDateSearch = async () => {
     Keyboard.dismiss();
@@ -125,9 +125,7 @@ const Invoices = ({
           <Text style={styles.noRecFound}>No Invoices Found!</Text>
         </View>
       );
-    } 
-    
-    else if (pageNo < lastPage) {
+    } else if (pageNo < lastPage) {
       //Footer View with Load More button
       return (
         <View style={styles.footer}>
@@ -143,9 +141,7 @@ const Invoices = ({
           </TouchableOpacity>
         </View>
       );
-    } 
-    
-    else {
+    } else {
       return <Text>dsfdsfsd</Text>;
     }
   };
@@ -226,37 +222,64 @@ const Invoices = ({
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={{alignItems: 'center'}}>
             <>
-            
               <>
-              
-             
-              
-              <View style={{ marginTop: 20,justifyContent:"center",marginBottom:10 }}>
-              <View style={{flexDirection:"row",justifyContent:"space-between"}}>
-               <TouchableOpacity onPress={()=>{navigation.navigate("Profile")}}>
-               <Image
-                  style={{ height: 30, width: 30,resizeMode:"contain" ,marginRight:width*.3}}
-                  source={require('../assets/images/menu.png')}
-                />
-               </TouchableOpacity>
-                <Image
-                  style={{ height: 50, width: 50 }}
-                  source={require('../assets/images/app-logo.png')}
-                />
-                <View style={{flexDirection:"row"}}>
-               <TouchableOpacity onPress={()=>{onRefresh()}}>
-               <Image
-                  style={{ height: 25, width: 25, tintColor: "white",justifyContent:"center",marginLeft:width*.3 }}
-                  source={require('../assets/images/refresh.png')}
-                />
-               </TouchableOpacity>
-               
+                <View
+                  style={{
+                    marginTop: 20,
+                    justifyContent: 'center',
+                    marginBottom: 10,
+                  }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.navigate('Profile');
+                      }}>
+                      <Image
+                        style={{
+                          height: 30,
+                          width: 30,
+                          resizeMode: 'contain',
+                          marginRight: width * 0.3,
+                        }}
+                        source={require('../assets/images/menu.png')}
+                      />
+                    </TouchableOpacity>
+                    <Image
+                      style={{height: 50, width: 50}}
+                      source={require('../assets/images/app-logo.png')}
+                    />
+                    <View style={{flexDirection: 'row'}}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          onRefresh();
+                        }}>
+                        <Image
+                          style={{
+                            height: 25,
+                            width: 25,
+                            tintColor: 'white',
+                            justifyContent: 'center',
+                            marginLeft: width * 0.3,
+                          }}
+                          source={require('../assets/images/refresh.png')}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+                <Text
+                  style={{
+                    color: 'white',
+                    fontSize: width * 0.06,
+                    fontWeight: 'bold',
+                  }}>
+                  Invoices
+                </Text>
 
-                </View>
-                </View>
-             </View>
-             <Text style={{color:"white",fontSize:width*.45,fontWeight:"bold"}}>Invoices</Text>
-              
                 {isAdmin && (
                   <FlatList
                     data={Buttons}
@@ -379,34 +402,47 @@ const Invoices = ({
                   </Text>
                 </View>
               ) : (
-                <FlatList
-                  data={isLoading ? [] : invoices}
-                  renderItem={({item, index}) => (
-                    <InvoiceMapper
-                      item={item}
-                      index={index}
-                      navigation={navigation}
-                    />
-                  )}
-                  nestedScrollEnabled={true}
-                  keyExtractor={(item, index) => index?.toString()}
-                  ListFooterComponent={renderFooter}
-                />
-                // ListFooterComponent={() => {
-                //   return invoices?.length === 0 ? (
-                //     <View
-                //       style={[
-                //         styles.notFoundContainer,
-                //         {marginTop: isAdmin ? height * 0.1 : height * 0.35},
-                //       ]}>
-                //       <Text style={styles.noRecFound}>
-                //         No Invoices Found!
-                //       </Text>
-                //     </View>
-                //   ) : (
-                //     <View style={{marginBottom: 200}} />
-                //   );
-                // }}
+                <>
+                  <FlatList
+                    ListHeaderComponent={
+                      <Heading
+                        title="Paid Invoices"
+                        passedStyle={{color: 'white', fontSize: width * 0.055,fontWeight:"bold"}}
+                      />
+                    }
+                    data={isLoading ? [] : invoices}
+                    renderItem={({item, index}) => (
+                      <InvoiceMappers
+                        item={item}
+                        index={index}
+                        navigation={navigation}
+                      />
+                    )}
+                    nestedScrollEnabled={true}
+                    keyExtractor={(item, index) => index?.toString()}
+                    ListFooterComponent={renderFooter}
+                  />
+
+                  <FlatList
+                    ListHeaderComponent={
+                      <Heading
+                        title="Pending Invoices"
+                        passedStyle={{color: 'white', fontSize: width * 0.055,fontWeight:"bold"}}
+                      />
+                    }
+                    data={isLoading ? [] : invoices}
+                    renderItem={({item, index}) => (
+                      <InvoiceMapper
+                        item={item}
+                        index={index}
+                        navigation={navigation}
+                      />
+                    )}
+                    nestedScrollEnabled={true}
+                    keyExtractor={(item, index) => index?.toString()}
+                    ListFooterComponent={renderFooter}
+                  />
+                </>
               )}
 
               {/* Start Date Picker  */}
@@ -535,7 +571,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
     textAlign: 'center',
     marginTop: 20,
-    marginLeft:width*.28
+    marginLeft: width * 0.28,
   },
   eventStyle: {
     color: 'white',
