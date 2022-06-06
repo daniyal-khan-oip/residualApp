@@ -21,6 +21,7 @@ import * as actions from '../store/Actions/index';
 import LottieView from 'lottie-react-native';
 import {themePurple} from '../assets/colors/colors';
 import Heading from '../components/Heading';
+import ConfirmModal from '../components/ConfirmModal';
 
 const image = require('../assets/images/login_bg.png');
 const {height, width} = Dimensions.get('window');
@@ -42,6 +43,7 @@ const Products = ({
   const [refreshing, setRefreshing] = useState(false);
   const [productType, setProductType] = React.useState('');
   const [isBuying, setIsBuying] = useState(false);
+  const [showAlert, setShowAlert] = React.useState(false);
 
   const wait = timeout => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -74,16 +76,23 @@ const Products = ({
     setIsLoading(false);
   };
 
-  const onPressProduct = async type => {
+  const onPressConfirm = async () => {
     setIsBuying(true);
-    setProductType(type);
+
     const apiData = {
-      type: type,
+      type: productType,
       email: UserReducer?.userData?.email,
     };
     await subscribeProduct(apiData, accessToken);
     setIsBuying(false);
+    setShowAlert(false);
   };
+
+  const onPressProduct = type => {
+    setProductType(type);
+    setShowAlert(true);
+  };
+
   return (
     <ImageBackground
       source={image}
@@ -229,7 +238,7 @@ const Products = ({
           </>
         )}
       </View>
-      {isBuying && (
+      {/* {isBuying && (
         <View
           style={{
             width: width * 0.6,
@@ -251,6 +260,16 @@ const Products = ({
             fontType="medium"
           />
         </View>
+      )} */}
+
+      {showAlert && (
+        <ConfirmModal
+          isLoading={isBuying}
+          packageDetails={null}
+          onPressCancelSubscription={onPressConfirm}
+          isModalVisible={showAlert}
+          setIsModalVisible={setShowAlert}
+        />
       )}
       {/* </ScrollView> */}
     </ImageBackground>

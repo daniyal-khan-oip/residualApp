@@ -9,7 +9,7 @@ import {connect} from 'react-redux';
 import * as actions from '../../store/Actions/index';
 import {themePurple} from '../../assets/colors/colors';
 import Heading from '../Heading';
-
+import ConfirmModal from '../ConfirmModal';
 const {width, height} = Dimensions.get('window');
 
 const CarouselCards = ({UserReducer, subscribeProduct}) => {
@@ -18,6 +18,7 @@ const CarouselCards = ({UserReducer, subscribeProduct}) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const accessToken = UserReducer?.accessToken;
   const [productType, setProductType] = React.useState('');
+  const [showAlert, setShowAlert] = React.useState(false);
 
   const data = [
     {
@@ -43,17 +44,22 @@ const CarouselCards = ({UserReducer, subscribeProduct}) => {
     },
   ];
 
-  const onPressProduct = async item => {
+  const onPressProduct = item => {
     setProductType(item.type);
+    setShowAlert(true);
+  };
+
+  const onPressConfirm = async () => {
     setIsLoading(true);
     const apiData = {
-      type: item?.type,
+      type: productType,
       email: UserReducer?.userData?.email,
     };
     await subscribeProduct(apiData, accessToken);
-    setIsLoading(false);
-  };
 
+    setIsLoading(false);
+    setShowAlert(false);
+  };
   return (
     <View>
       <Carousel
@@ -75,7 +81,7 @@ const CarouselCards = ({UserReducer, subscribeProduct}) => {
         useScrollView={true}
         onSnapToItem={index => setIndex(index)}
       />
-      {isLoading && (
+      {/* {isLoading && (
         <View
           style={{
             width: width * 0.6,
@@ -95,7 +101,7 @@ const CarouselCards = ({UserReducer, subscribeProduct}) => {
             fontType="medium"
           />
         </View>
-      )}
+      )} */}
       <Pagination
         dotsLength={data.length}
         activeDotIndex={index}
@@ -115,6 +121,24 @@ const CarouselCards = ({UserReducer, subscribeProduct}) => {
         inactiveDotScale={1}
         tappableDots={true}
       />
+      {/* {!showAlert && (
+        <AlertModal2
+          title="Confirm"
+          message="Are you sure you want to subscribe this product?"
+          isModalVisible={!showAlert}
+          setIsModalVisible={setShowAlert}
+        />
+      )} */}
+
+      {showAlert && (
+        <ConfirmModal
+          isLoading={isLoading}
+          packageDetails={null}
+          onPressCancelSubscription={onPressConfirm}
+          isModalVisible={showAlert}
+          setIsModalVisible={setShowAlert}
+        />
+      )}
     </View>
   );
 };
