@@ -4,6 +4,7 @@ import Profile from './Profile';
 import EditProfile from './EditProfile';
 import ChangePassword from './ChangePassword';
 import ViewAuthCredentials from './ViewAuthCredentials';
+import SubscriptionRequests from './SubscriptionRequests';
 
 const ProfileStackNav = createNativeStackNavigator();
 const ProfileStack = props => {
@@ -32,6 +33,12 @@ const ProfileStack = props => {
       <ProfileStackNav.Screen
         name="viewAuthCredentials"
         component={ViewAuthCredentials}
+        {...props.navigation}
+      />
+
+<ProfileStackNav.Screen
+        name="subscriptionReqs"
+        component={SubscriptionRequests}
         {...props.navigation}
       />
     </ProfileStackNav.Navigator>

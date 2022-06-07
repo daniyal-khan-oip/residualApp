@@ -390,28 +390,30 @@ export const updateProfile =
           //   'multipart/form-data; boundary=<calculated when request is sent>',
         },
       });
-      if (response.data.success) {
-        showMessage({
-          message: 'Updated Successfully!',
-          type: 'success',
-        });
-        dispatch({
-          type: types.UPDATE_PROFILE,
-          payload: {
-            first_name: data.first_name,
-            last_name: data.last_name,
-            phone: data.phone,
-            profile_image: data.image,
-          },
-        });
-        onSuccess();
-      } else {
-        _onFailed();
-        showMessage({
-          message: 'Failed to update!',
-          danger: 'error',
-        });
-      }
+      console.log(apiData, 'apiData');
+      console.log(response.data)
+      // if (response.data.success) {
+      //   showMessage({
+      //     message: 'Updated Successfully!',
+      //     type: 'success',
+      //   });
+      //   dispatch({
+      //     type: types.UPDATE_PROFILE,
+      //     payload: {
+      //       first_name: data.first_name,
+      //       last_name: data.last_name,
+      //       phone: data.phone,
+      //       profile_image: data.image,
+      //     },
+      //   });
+      //   onSuccess();
+      // } else {
+      //   _onFailed();
+      //   showMessage({
+      //     message: 'Failed to update!',
+      //     danger: 'error',
+      //   });
+      // }
     } catch (error) {
       // _onLoginFailed();
       _onFailed();

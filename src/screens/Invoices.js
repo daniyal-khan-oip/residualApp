@@ -153,6 +153,8 @@ const Invoices = ({
       setInvoices([]);
       await getUserInvoices(API_DATA, accessToken, isAdmin, 1);
       setPageNo(pageNo + 1);
+      setSearchChoice('all');
+      setSearchText('');
       setIsLoading(false);
     });
   }, []);
@@ -219,57 +221,50 @@ const Invoices = ({
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View style={{alignItems: 'center'}}>
+          <View style={{alignItems: 'center', marginTop: 20}}>
             <>
               <>
-                <View
-                  style={{
-                    marginTop: 20,
-                    justifyContent: 'center',
-                    marginBottom: 10,
-                  }}>
-                  <View
+                {/* Header  */}
+                <View style={styles.headerStyle}>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
                     style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                    }}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.navigate('Profile');
-                      }}>
-                      <Image
-                        style={{
-                          height: 30,
-                          width: 30,
-                          resizeMode: 'contain',
-                          marginRight: width * 0.3,
-                        }}
-                        source={require('../assets/images/menu.png')}
-                      />
-                    </TouchableOpacity>
+                      width: width * 0.15,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onPress={() => {}}>
                     <Image
-                      style={{height: 50, width: 50}}
-                      source={require('../assets/images/app-logo.png')}
+                      style={{height: 30, width: 30, resizeMode: 'contain'}}
+                      source={require('../assets/images/menu.png')}
                     />
-                    <View style={{flexDirection: 'row'}}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          onRefresh();
-                        }}>
-                        <Image
-                          style={{
-                            height: 25,
-                            width: 25,
-                            tintColor: 'white',
-                            justifyContent: 'center',
-                            marginLeft: width * 0.3,
-                          }}
-                          source={require('../assets/images/refresh.png')}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
+                  </TouchableOpacity>
+
+                  <Image
+                    style={{height: 50, width: 50}}
+                    source={require('../assets/images/app-logo.png')}
+                  />
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={{
+                      width: width * 0.15,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onPress={() => {
+                      onRefresh();
+                    }}>
+                    <Image
+                      style={{
+                        height: 22,
+                        width: 22,
+                        tintColor: 'white',
+                      }}
+                      source={require('../assets/images/refresh.png')}
+                    />
+                  </TouchableOpacity>
                 </View>
+
                 <Text
                   style={{
                     color: 'white',
@@ -406,7 +401,12 @@ const Invoices = ({
                     ListHeaderComponent={
                       <Heading
                         title="Paid Invoices"
-                        passedStyle={{color: 'white', fontSize: width * 0.055,fontWeight:"bold",marginBottom:height * 0.03,}}
+                        passedStyle={{
+                          color: 'white',
+                          fontSize: width * 0.055,
+                          fontWeight: 'bold',
+                          marginBottom: height * 0.03,
+                        }}
                       />
                     }
                     data={isLoading ? [] : invoices}
@@ -426,7 +426,12 @@ const Invoices = ({
                     ListHeaderComponent={
                       <Heading
                         title="Pending Invoices"
-                        passedStyle={{color: 'white', fontSize: width * 0.055,fontWeight:"bold",marginBottom:height * 0.03,}}
+                        passedStyle={{
+                          color: 'white',
+                          fontSize: width * 0.055,
+                          fontWeight: 'bold',
+                          marginBottom: height * 0.03,
+                        }}
                       />
                     }
                     data={isLoading ? [] : invoices}
@@ -637,6 +642,13 @@ const styles = StyleSheet.create({
     height: height * 0.06,
     backgroundColor: 'white',
     borderColor: colors.themePurple1,
+  },
+  headerStyle: {
+    flexDirection: 'row',
+    width: width,
+    marginTop: height * 0.02,
+    paddingVertical: height * 0.01,
+    justifyContent: 'space-between',
   },
 });
 

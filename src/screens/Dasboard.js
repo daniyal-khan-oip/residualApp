@@ -22,6 +22,7 @@ import * as actions from '../store/Actions/index';
 import {connect} from 'react-redux';
 import {themePurple} from '../assets/colors/colors';
 import LottieView from 'lottie-react-native';
+import IconComp from '../components/IconComp';
 
 const image = require('../assets/images/login_bg.png');
 const {height, width} = Dimensions.get('window');
@@ -103,6 +104,7 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
   };
   const STATUS_BAR_HEIGHT =
     Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
+  const isAdmin = UserReducer?.userData?.role_id !== 3 ? true : false;
 
   const [checkedState, setCheckState] = useState(true);
   const accessToken = UserReducer?.accessToken;
@@ -228,7 +230,7 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
         ) : (
           <View style={{}}>
             <View style={{marginTop: 20, justifyContent: 'center'}}>
-              <View
+              {/* <View
                 style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <TouchableOpacity
                   onPress={() => {
@@ -259,6 +261,47 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
                     />
                   </TouchableOpacity>
                 </View>
+              </View> */}
+
+              {/* Header  */}
+              <View style={style.headerStyle}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  style={{
+                    width: width * 0.15,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  onPress={() => {}}>
+                  <Image
+                    style={{height: 30, width: 30, resizeMode: 'contain'}}
+                    source={require('../assets/images/menu.png')}
+                  />
+                </TouchableOpacity>
+
+                <Image
+                  style={{height: 50, width: 50}}
+                  source={require('../assets/images/app-logo.png')}
+                />
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  style={{
+                    width: width * 0.15,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  onPress={() => {
+                    onRefresh();
+                  }}>
+                  <Image
+                    style={{
+                      height: 22,
+                      width: 22,
+                      tintColor: 'white',
+                    }}
+                    source={require('../assets/images/refresh.png')}
+                  />
+                </TouchableOpacity>
               </View>
               <Text style={style.main_title}>Dashboard</Text>
               <View style={style.card_main}>
@@ -330,8 +373,12 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
               absolute
             />
 
-            <Text style={style.products_title}>Products</Text>
-            <CarouselCards />
+            {!isAdmin && (
+              <>
+                <Text style={style.products_title}>Products</Text>
+                <CarouselCards />
+              </>
+            )}
           </View>
         )}
       </ScrollView>
@@ -340,6 +387,13 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
 };
 
 const style = StyleSheet.create({
+  headerStyle: {
+    flexDirection: 'row',
+    width: width,
+    marginTop: height * 0.02,
+    paddingVertical: height * 0.01,
+    justifyContent: 'space-between',
+  },
   lottieStyle: {
     height: height * 0.38,
     // backgroundColor: 'red',
@@ -366,7 +420,7 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     width: width * 0.9,
     justifyContent: 'space-between',
-    marginHorizontal:width * 0.05,
+    marginHorizontal: width * 0.05,
   },
   gradient_card: {
     width: width * 0.42,
