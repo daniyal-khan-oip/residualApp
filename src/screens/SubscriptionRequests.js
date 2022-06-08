@@ -12,6 +12,7 @@ import {
   Image,
   TextInput,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import {themePurple} from '../assets/colors/colors';
@@ -38,18 +39,20 @@ const SubscriptionRequests = ({
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  const isAdmin = UserReducer?.userData?.role_id !== 3 ? true : false;
+  const [pageNo, setPageNo] = useState(1);
+  const lastPage = UserReducer?.subscriptionLastPage
+    ? UserReducer?.subscriptionLastPage
+    : 0;
+  const [subscriptionRequests, setSubscriptionRequests] = useState([]);
 
   const STATUS_BAR_HEIGHT =
     Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
   const accessToken = UserReducer?.accessToken;
 
-  const apiData = {
-    //   type: TYPE,
-    //   email: UserReducer?.userData?.email,
-  };
-
+  console.log('-- == == =', JSON.stringify(UserReducer?.subsReqs, null, 2));
   useEffect(() => {
-    //   getCredentials(apiData, accessToken);
+    getSubscriptionRequests(accessToken, pageNo);
   }, []);
 
   const onRefresh = useCallback(() => {
@@ -57,11 +60,65 @@ const SubscriptionRequests = ({
     wait(1500).then(async () => {
       setRefreshing(false);
       setIsLoading(true);
-      // await getCredentials(apiData, accessToken);
-
+      setSubscriptionRequests([]);
+      await getSubscriptionRequests(accessToken, 1);
+      setPageNo(pageNo + 1);
       setIsLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    setSubscriptionRequests(UserReducer?.subsReqs);
+  }, [UserReducer?.subsReqs]);
+
+  const _onPressLoadMore = async () => {
+    setPageNo(pageNo + 1);
+    setIsLoading(true);
+    await getSubscriptionRequests(accessToken, pageNo);
+    setIsLoading(false);
+  };
+
+  const renderFooter = () => {
+    if (subscriptionRequests?.length === 0) {
+      return (
+        <View
+          style={[
+            styles.notFoundContainer,
+            {marginTop: isAdmin ? height * 0.1 : height * 0.35},
+          ]}>
+          <Text style={styles.noRecFound}>No Subscription Requests Found!</Text>
+        </View>
+      );
+    } else if (pageNo < lastPage) {
+      //Footer View with Load More button
+      return (
+        <View style={styles.footer}>
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={_onPressLoadMore}
+            //On Click of button calling getData function to load more data
+            style={styles.loadMoreBtn}>
+            <Text style={styles.btnText}>Load More</Text>
+            {isLoading ? (
+              <ActivityIndicator color="white" style={{marginLeft: 8}} />
+            ) : null}
+          </TouchableOpacity>
+        </View>
+      );
+    } else {
+      return <Text>dsfdsfsd</Text>;
+    }
+  };
+
+  useEffect(() => {
+    if (UserReducer?.subsReqs) {
+      const oldData = [...subscriptionRequests];
+      // setSubscriptionRequests([...UserReducer?.subsReqs]);
+      setSubscriptionRequests([...oldData, ...UserReducer?.subsReqs]);
+    } else {
+      setSubscriptionRequests([]);
+    }
+  }, [UserReducer?.subsReqs]);
 
   return (
     <ImageBackground source={image} resizeMode="cover" style={{flex: 1}}>
@@ -147,30 +204,37 @@ const SubscriptionRequests = ({
           </View>
 
           {/* ScrollView  */}
-          <ScrollView
-            nestedScrollEnabled={true}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }>
-            <Text style={styles.main_title}>{`Subscription Requests`}</Text>
 
+          {subscriptionRequests?.length > 0 ? (
             <FlatList
-              data={array}
+              data={subscriptionRequests}
+              ListHeaderComponent={
+                <Text style={styles.main_title}>{`Subscription Requests`}</Text>
+              }
               keyExtractor={(item, index) => index.toString()}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+              ListFooterComponent={renderFooter}
               renderItem={({item, index}) => {
-                  console.log(item)
-                return <SubscriptionReqsMapper item={item} index={index} />;
+                return (
+                  <SubscriptionReqsMapper
+                    item={item}
+                    index={index}
+                    navigation={navigation}
+                  />
+                );
               }}
             />
-
-            {/* <View style={styles.viewContainer}>
-                  <Heading
-                    title={'No Credentials Found!'}
-                    passedStyle={styles.textStyle}
-                    fontType="medium"
-                  />
-                </View> */}
-          </ScrollView>
+          ) : (
+            <View style={styles.viewContainer}>
+              <Heading
+                title={'No Subscription Requests Found!'}
+                passedStyle={styles.textStyle}
+                fontType="medium"
+              />
+            </View>
+          )}
         </>
       )}
     </ImageBackground>
@@ -185,6 +249,33 @@ const mapStateToProps = ({UserReducer}) => {
 export default connect(mapStateToProps, actions)(SubscriptionRequests);
 
 const styles = StyleSheet.create({
+  btnText: {
+    color: 'white',
+    fontSize: width * 0.045,
+    alignSelf: 'center',
+  },
+  loadMoreBtn: {
+    padding: 10,
+    backgroundColor: themePurple,
+    borderRadius: 4,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noRecFound: {
+    color: 'white',
+    fontSize: width * 0.05,
+    fontFamily: 'Poppins-Bold',
+  },
+  notFoundContainer: {
+    width: width * 0.6,
+    height: height * 0.17,
+    borderRadius: width * 0.04,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
   lottieStyle: {
     height: height * 0.36,
     // backgroundColor: 'red',
@@ -225,7 +316,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: width * 0.8,
     // borderWidth: 1,
-    paddingHorizontal:width * 0.02,
+    paddingHorizontal: width * 0.02,
     // borderColor: 'white',
     borderRadius: width * 0.04,
   },
@@ -244,51 +335,58 @@ const styles = StyleSheet.create({
     width: width,
     marginTop: height * 0.05,
     paddingVertical: height * 0.01,
-    paddingBottom:height * 0.03,
+    paddingBottom: height * 0.03,
     justifyContent: 'space-between',
+  },
+  footer: {
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: height * 0.04,
   },
 });
 
-const array = [
-  {
-    id: 1,
-    name: 'John Doe',
-    image: require('../../test.png'),
-    product: 'Amazon',
-    date:new Date()
-  },
-  {
-    id: 2,
-    name: 'Chirs Brown',
-    image: require('../../test.png'),
-    product: 'AirBnB,',
-    date:new Date()
-  },
-  {
-    id: 3,
-    name: 'Peter Mareqeqq',
-    image: require('../../test.png'),
-    product: 'Walmart',
-    date:new Date()
-  },
-  {
-    id: 4,
-    name: 'Hyeyte Oasdaa',
-    image: require('../../test.png'),
-    product: 'AirBnB',
-  },
-  {
-    id: 5,
-    name: 'Daswew Mnhdeww',
-    image: require('../../test.png'),
-    product: 'Amazon',
-    date:new Date()
-  },
-  {
-    id: 6,
-    name: 'Xmasua Zsuasiu',
-    image: require('../../test.png'),
-    product: 'Walmart',
-    date:new Date()
-  },
-];
+// const array = [
+//   {
+//     id: 1,
+//     name: 'John Doe',
+//     image: require('../../test.png'),
+//     product: 'Amazon',
+//     date: new Date(),
+//   },
+//   {
+//     id: 2,
+//     name: 'Chirs Brown',
+//     image: require('../../test.png'),
+//     product: 'AirBnB,',
+//     date: new Date(),
+//   },
+//   {
+//     id: 3,
+//     name: 'Peter Mareqeqq',
+//     image: require('../../test.png'),
+//     product: 'Walmart',
+//     date: new Date(),
+//   },
+//   {
+//     id: 4,
+//     name: 'Hyeyte Oasdaa',
+//     image: require('../../test.png'),
+//     product: 'AirBnB',
+//   },
+//   {
+//     id: 5,
+//     name: 'Daswew Mnhdeww',
+//     image: require('../../test.png'),
+//     product: 'Amazon',
+//     date: new Date(),
+//   },
+//   {
+//     id: 6,
+//     name: 'Xmasua Zsuasiu',
+//     image: require('../../test.png'),
+//     product: 'Walmart',
+//     date: new Date(),
+//   },
+// ];

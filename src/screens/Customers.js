@@ -57,7 +57,7 @@ const Customers = ({UserReducer, getCustomers, navigation}) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
-                onPress={() => {}}>
+                onPress={() => {navigation.navigate("profile")}}>
                 <Image
                   style={{height: 30, width: 30, resizeMode: 'contain'}}
                   source={require('../assets/images/menu.png')}

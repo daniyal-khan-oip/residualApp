@@ -65,8 +65,6 @@ const Invoices = ({
     ? UserReducer?.invoiceLastPage
     : 0;
 
-  console.log(lastPage, '==', pageNo);
-
   useEffect(() => {
     _onPressGetAllInvoices();
   }, []);
@@ -233,7 +231,7 @@ const Invoices = ({
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
-                    onPress={() => {}}>
+                    onPress={() => {navigation.navigate("profile")}}>
                     <Image
                       style={{height: 30, width: 30, resizeMode: 'contain'}}
                       source={require('../assets/images/menu.png')}

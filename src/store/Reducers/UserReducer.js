@@ -14,6 +14,7 @@ import {
   GET_CUSTOMERS,
   GET_INVOICES_BY_EMAIL,
   GET_CREDENTIALS,
+  GET_SUBSCRIPTION_REQUESTS,
 } from '../Actions/actionType';
 
 const INITIAL_STATE = {
@@ -30,9 +31,12 @@ const INITIAL_STATE = {
   customers: [],
   invoiceLastPage: 0,
   credentials: null,
+  subsReqs: [],
+  subscriptionLastPage: 0,
 };
 
 export function UserReducer(state = INITIAL_STATE, action) {
+  
   switch (action.type) {
     case USER_SIGNUP:
       return {
@@ -79,13 +83,6 @@ export function UserReducer(state = INITIAL_STATE, action) {
         totalWalmart: action.payload.wallmart,
       };
 
-    case GET_INVOICES:
-      return {
-        ...state,
-        invoices: action.payload.array,
-        invoiceLastPage: action.payload.last_page,
-      };
-
     case GET_USER_PRODUCTS:
       return {
         ...state,
@@ -117,6 +114,30 @@ export function UserReducer(state = INITIAL_STATE, action) {
       return {
         ...state,
         credentials: action.payload,
+      };
+
+    case GET_SUBSCRIPTION_REQUESTS:
+      // return {
+      //   ...state,
+      //   subscriptionRequests: action.payload,
+      // };
+      console.log(action.payload.array), 'from reducer';
+      // return {
+      //   ...state,
+      //   subscriptionRequests: [],
+      //   subscriptionLastPage: 0,
+      // };
+      return {
+        ...state,
+        subsReqs: action.payload.array,
+        subscriptionLastPage: action.payload.last_page,
+      };
+
+    case GET_INVOICES:
+      return {
+        ...state,
+        invoices: action.payload.array,
+        invoiceLastPage: action.payload.last_page,
       };
 
     default:

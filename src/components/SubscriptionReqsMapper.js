@@ -14,12 +14,14 @@ import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 const {height, width} = Dimensions.get('window');
 
-const SubscriptionReqsMapper = ({item, index}) => {
+const SubscriptionReqsMapper = ({item, index, navigation}) => {
   return (
     <TouchableOpacity
       key={index}
-      style={{alignSelf: 'center',}}
-      onPress={() => {}}
+      style={{alignSelf: 'center'}}
+      onPress={() => {
+        navigation.navigate('ViewSubscriptionDetails', {item: item});
+      }}
       activeOpacity={0.8}>
       {
         <LinearGradient
@@ -28,12 +30,11 @@ const SubscriptionReqsMapper = ({item, index}) => {
           start={{y: 0.0, x: 0.001}}
           angleCenter={{x: 5, y: 0}}
           end={{y: 0.0, x: 1.1}}>
-         
           <View style={style.titles_view}>
             <Text style={style.main_title}>
               {item?.name ? item?.name : 'No Name'}
             </Text>
-            <View style={{flexDirection:'row', alignItems:'center'}}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <Feather
                 name="package"
                 size={width * 0.05}
@@ -42,7 +43,7 @@ const SubscriptionReqsMapper = ({item, index}) => {
               />
               <Text style={style.sub_title}>
                 {/* {moment(item?.created_at).format('MMMM-DD-yyy')} */}
-                {` Product: ${item.product}`}
+                {` Product: ${item?.type}`}
               </Text>
             </View>
 
@@ -51,7 +52,7 @@ const SubscriptionReqsMapper = ({item, index}) => {
                 style.main_title,
                 {alignSelf: 'flex-end', position: 'absolute', marginTop: 15},
               ]}>{`$322`}</Text> */}
-              <View style={{flexDirection:'row', alignItems:'center'}}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <Ionicons
                 name="time"
                 size={width * 0.05}
@@ -59,7 +60,9 @@ const SubscriptionReqsMapper = ({item, index}) => {
                 style={style.list_icon}
               />
               <Text style={style.sub_title}>
-              {` Requested On: ${moment(item?.date).format('MMMM-DD-yyy')}`}
+                {` Requested On: ${moment(item?.created_at).format(
+                  'MMMM-DD-yyy',
+                )}`}
               </Text>
             </View>
           </View>
@@ -69,7 +72,11 @@ const SubscriptionReqsMapper = ({item, index}) => {
               width: width * 0.13,
               borderRadius: width * 0.03,
             }}
-            source={item.image}
+            source={
+              item?.image
+                ? {uri: item?.image}
+                : require('../../test.png')
+            }
           />
         </LinearGradient>
       }

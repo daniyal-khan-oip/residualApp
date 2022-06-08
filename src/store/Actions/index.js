@@ -106,6 +106,49 @@ export const getTotalInvestmentAndEarning = (data, token) => async dispatch => {
   }
 };
 
+export const getSubscriptionRequests =
+  (accessToken, pageNo) => async dispatch => {
+    try {
+      // const URL = `${apiUrl}/getAllSubscribeCustomer`;
+      const response = await axios.get(
+        `${apiUrl}/getAllSubscribeCustomer?page=${pageNo}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.data.success) {
+     
+    
+
+        const arrayy = response.data.data.data;
+        console.log(JSON.stringify(arrayy[0],null,2));
+        console.log(response.data.data.last_page,"last page")
+        dispatch({
+          type: types.GET_SUBSCRIPTION_REQUESTS,
+          payload: {
+            array: arrayy,
+            last_page: response?.data?.data?.last_page,
+          },
+        });
+      } else {
+        showMessage({
+          message: 'No Subscription Requests Found!',
+          danger: 'error',
+        });
+      }
+    } catch (err) {
+      showMessage({
+        message: 'Network Failure!',
+        danger: 'error',
+      });
+
+      console.log('Subscription Requests Fetching Failed: ' + err.message);
+      console.log('Subscription Requests Fetching Failed: ' + err);
+    }
+  };
+
 export const getUserInvoices =
   (data, token, isAdmin, pageNo) => async dispatch => {
     try {
@@ -120,13 +163,13 @@ export const getUserInvoices =
 
       // console.log(res.data.data, '===========');
       if (res.data.success) {
-        const arrayy = res.data.data.data;
+        const arrayy = res?.data?.data?.data;
         // console.log(JSON.stringify(arrayy,null,2),"-----------------");
         dispatch({
           type: types.GET_INVOICES,
           payload: {
             array: arrayy,
-            last_page: res.data.data.last_page,
+            last_page: res?.data?.data?.last_page,
           },
         });
       }
@@ -391,7 +434,7 @@ export const updateProfile =
         },
       });
       console.log(apiData, 'apiData');
-      console.log(response.data)
+      console.log(response.data);
       // if (response.data.success) {
       //   showMessage({
       //     message: 'Updated Successfully!',
@@ -535,37 +578,23 @@ export const subscribeProduct = (data, accessToken) => async dispatch => {
     });
     console.log(response.data.message);
 
-
-
     if (response.data.success === true) {
-
-
       console.log(response.data.message, 's========');
       if (response?.data?.message?.localeCompare('Already Subscribe.') === 0) {
-
-// alert("Test")
+        // alert("Test")
         showMessage({
           message: response?.data?.message,
           type: 'danger',
         });
       }
-
     } else {
-
       // alert("Test 2")
       showMessage({
         message: response?.data?.message,
         type: 'success',
       });
     }
-
-
-
-  } 
-  
-  
-  
-  catch (error) {
+  } catch (error) {
     showMessage({
       message: 'Oh Snap!',
       description: 'Can not subscribe product at the moment, try again.',
@@ -574,3 +603,4 @@ export const subscribeProduct = (data, accessToken) => async dispatch => {
     console.log('FAILED subscribing product.', error.response.data);
   }
 };
+
