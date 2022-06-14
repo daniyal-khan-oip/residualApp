@@ -23,6 +23,7 @@ import {connect} from 'react-redux';
 import {themePurple} from '../assets/colors/colors';
 import LottieView from 'lottie-react-native';
 import IconComp from '../components/IconComp';
+import Heading from '../components/Heading';
 
 const image = require('../assets/images/login_bg.png');
 const {height, width} = Dimensions.get('window');
@@ -141,34 +142,34 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
   };
   const data1 = [
     {
-      name: 'Walmart',
+      name: 'Walmart Investments',
       population: Number(UserReducer?.totalWalmart),
-      color: 'rgba(131, 167, 234, 1)',
-      legendFontColor: 'white',
-      legendFontSize: 15,
-    },
-    {
-      name: 'Amazon',
-      population: Number(UserReducer?.totalAmazon),
       color: themePurple,
       legendFontColor: 'white',
-      legendFontSize: 15,
+      legendFontSize: 12,
+    },
+    {
+      name: 'Amazon Investments',
+      population: Number(UserReducer?.totalAmazon),
+      color: 'rgba(131, 167, 234, 1)',
+      legendFontColor: 'white',
+      legendFontSize: 12,
     },
   ];
   const data2 = [
     {
-      name: 'Earnings',
+      name: 'Walmart Earnings',
       population: Number(UserReducer?.totalEarnings),
-      color: 'rgba(131, 167, 234, 1)',
-      legendFontColor: 'white',
-      legendFontSize: 15,
-    },
-    {
-      name: 'Investments',
-      population: Number(UserReducer?.totalInvestments),
       color: themePurple,
       legendFontColor: 'white',
-      legendFontSize: 15,
+      legendFontSize: 12,
+    },
+    {
+      name: 'Amazon Earnings',
+      population: Number(UserReducer?.totalInvestments),
+      color: 'rgba(131, 167, 234, 1)',
+      legendFontColor: 'white',
+      legendFontSize: 12,
     },
   ];
 
@@ -187,7 +188,7 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
   );
 
   return (
-    <ImageBackground source={image} resizeMode="cover" style={style.login_bg}>
+    <ImageBackground source={image} style={style.login_bg}>
       <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
         <StatusBar
           translucent
@@ -272,7 +273,9 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
-                  onPress={() => {navigation.navigate("profile")}}>
+                  onPress={() => {
+                    navigation.navigate('profile');
+                  }}>
                   <Image
                     style={{height: 30, width: 30, resizeMode: 'contain'}}
                     source={require('../assets/images/menu.png')}
@@ -348,30 +351,75 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
               keyExtractor={item => item.id}
             /> */}
             {/* Walmart and Amazon Product Pie Chart  */}
-            <PieChart
-              data={data1}
-              width={width * 0.9}
-              height={height * 0.3}
-              chartConfig={chartConfig}
-              accessor={'population'}
-              backgroundColor={'transparent'}
-              paddingLeft={'0'}
-              center={[width * 0.02, height * 0.01]}
-              absolute
-            />
 
-            {/* Earnings and Investments Chart */}
-            <PieChart
-              data={data2}
-              width={width * 0.9}
-              height={height * 0.3}
-              chartConfig={chartConfig}
-              accessor={'population'}
-              backgroundColor={'transparent'}
-              paddingLeft={'0'}
-              center={[width * 0.02, height * 0.01]}
-              absolute
-            />
+            {UserReducer?.totalInvestments !== 0 &&
+              UserReducer?.totalEarnings !== 0 &&
+              UserReducer?.totalAmazon !== 0 &&
+              UserReducer?.totalWalmart !== 0 && (
+                <>
+                  <PieChart
+                    data={data1}
+                    width={width * 0.9}
+                    height={height * 0.3}
+                    chartConfig={chartConfig}
+                    accessor={'population'}
+                    backgroundColor={'transparent'}
+                    // paddingLeft={'0'}
+                    center={[width * 0.02, height * 0.01]}
+                    absolute
+                    hasLegend={false}
+                    paddingLeft={'100'}
+                  />
+
+                  <View style={style.rowView}>
+                    <View style={{backgroundColor: themePurple, padding: 15}} />
+                    <Heading
+                      title={` ${UserReducer?.totalWalmart} Walmart Investments`}
+                      passedStyle={style.textView}
+                      fontType="medium"
+                    />
+                  </View>
+
+                  <View style={style.rowView}>
+                    <View style={style.innerRow} />
+                    <Heading
+                      title={` ${UserReducer?.totalAmazon} Amazon Investments`}
+                      passedStyle={style.textView}
+                      fontType="medium"
+                    />
+                  </View>
+                  <PieChart
+                    data={data2}
+                    width={width * 0.9}
+                    height={height * 0.3}
+                    chartConfig={chartConfig}
+                    accessor={'population'}
+                    backgroundColor={'transparent'}
+                    hasLegend={false}
+                    center={[width * 0.02, height * 0.01]}
+                    absolute
+                    paddingLeft={'100'}
+                  />
+
+                  <View style={style.rowView}>
+                    <View style={style.innerRow2} />
+                    <Heading
+                      title={` ${UserReducer?.totalEarnings} Walmart Earnings`}
+                      passedStyle={style.textView}
+                      fontType="medium"
+                    />
+                  </View>
+
+                  <View style={style.rowView}>
+                    <View style={style.innerRow} />
+                    <Heading
+                      title={` ${UserReducer?.totalInvestments} Amazon Earnings`}
+                      passedStyle={style.textView}
+                      fontType="medium"
+                    />
+                  </View>
+                </>
+              )}
 
             {!isAdmin && (
               <>
@@ -394,6 +442,11 @@ const style = StyleSheet.create({
     paddingVertical: height * 0.01,
     justifyContent: 'space-between',
   },
+  textView: {
+    color: 'white',
+    fontSize: width * 0.04,
+    marginLeft: width * 0.02,
+  },
   lottieStyle: {
     height: height * 0.38,
     // backgroundColor: 'red',
@@ -408,6 +461,20 @@ const style = StyleSheet.create({
     alignItems: 'center',
     width: width,
     height: height,
+  },
+  innerRow: {
+    backgroundColor: 'rgba(177, 198, 237, 0.79)',
+    padding: 15,
+  },
+  innerRow2: {
+    backgroundColor: themePurple,
+    padding: 15,
+  },
+  rowView: {
+    flexDirection: 'row',
+    marginLeft: width * 0.1,
+    alignItems: 'center',
+    marginVertical: height * 0.01,
   },
   main_title: {
     fontSize: width * 0.055,

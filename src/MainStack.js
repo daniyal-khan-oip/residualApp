@@ -47,7 +47,7 @@ const MainStack = ({UserReducer}) => {
       />
       {UserReducer?.userData?.role_id === 3 && (
         <Tabs.Screen
-          name="Productss"
+          name="Products"
           component={ProductsStack}
           options={{
             tabBarIcon: ({focused, color, size}) => (
@@ -61,7 +61,7 @@ const MainStack = ({UserReducer}) => {
           }}
         />
       )}
-      {UserReducer?.userData?.role_id === 3 && (
+      { (
         <Tabs.Screen
           name="Promotions"
           component={Promotion}

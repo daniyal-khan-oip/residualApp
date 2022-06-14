@@ -39,6 +39,7 @@ const Products = ({
 }) => {
   const accessToken = UserReducer?.accessToken;
   const [isLoading, setIsLoading] = useState(false);
+  const isAdmin = UserReducer?.userData?.role_id !== 3 ? true : false;
   const [products, setProducts] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [productType, setProductType] = React.useState('');
@@ -92,7 +93,7 @@ const Products = ({
     setProductType(type);
     setShowAlert(true);
   };
-
+  console.log(UserReducer?.products);
   return (
     <ImageBackground
       source={image}
@@ -178,7 +179,14 @@ const Products = ({
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
               ListHeaderComponent={
-                <Text style={style.main_title}>My Products</Text>
+                <>
+                  <Text style={style.main_title}>My Products</Text>
+                  {UserReducer?.products?.length == 0 && (
+                    <View style={[style.notFoundContainer]}>
+                      <Text style={style.noRecFound}>No Products Found!</Text>
+                    </View>
+                  )}
+                </>
               }
               renderItem={({item, index}) => {
                 return (
@@ -277,6 +285,17 @@ const Products = ({
 };
 
 const style = StyleSheet.create({
+  notFoundContainer: {
+    width: width * 0.6,
+    height: height * 0.17,
+    borderRadius: width * 0.04,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginTop: height * 0.02,
+    marginBottom: height * 0.07,
+  },
   swipeText: {
     color: 'white',
     fontSize: width * 0.045,
@@ -287,16 +306,16 @@ const style = StyleSheet.create({
     fontSize: width * 0.05,
     fontFamily: 'Poppins-Bold',
   },
-  notFoundContainer: {
-    marginTop: height * 0.35,
-    width: width * 0.6,
-    height: height * 0.17,
-    borderRadius: width * 0.04,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
+  // notFoundContainer: {
+  //   marginTop: height * 0.35,
+  //   width: width * 0.6,
+  //   height: height * 0.17,
+  //   borderRadius: width * 0.04,
+  //   backgroundColor: 'rgba(0,0,0,0.4)',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   alignSelf: 'center',
+  // },
   lottieStyle: {
     height: height * 0.38,
     // backgroundColor: 'red',

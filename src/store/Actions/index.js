@@ -84,16 +84,14 @@ export const is_walk_thorugh_seen = () => async dispatch => {
 
 export const getTotalInvestmentAndEarning = (data, token) => async dispatch => {
   try {
-    // console.log(data, token);
-    const URL = `${apiUrl}/count`;
-    // console.log(`${apiUrl}/count`)
+
+    const URL = `${apiUrl}/count`;  
     const res = await axios.post(URL, data, {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
     });
-    // console.log("RESPOSE: ",res.data)
     if (res.data.success) {
       dispatch({
         type: types.GET_INVEST_EARN,
@@ -119,12 +117,9 @@ export const getSubscriptionRequests =
         },
       );
       if (response.data.success) {
-     
-    
-
         const arrayy = response.data.data.data;
-        console.log(JSON.stringify(arrayy[0],null,2));
-        console.log(response.data.data.last_page,"last page")
+        console.log(JSON.stringify(arrayy[0], null, 2));
+        console.log(response.data.data.last_page, 'last page');
         dispatch({
           type: types.GET_SUBSCRIPTION_REQUESTS,
           payload: {
@@ -149,34 +144,55 @@ export const getSubscriptionRequests =
     }
   };
 
-export const getUserInvoices =
-  (data, token, isAdmin, pageNo) => async dispatch => {
-    try {
-      // console.log(data, token);
-      const URL = `${apiUrl}/getInvoice?page=${pageNo}`;
-      const res = await axios.post(URL, isAdmin ? {} : data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
+export const getUserInvoices = (data, token) => async dispatch => {
+  try {
+    const URL = `${apiUrl}/getCustomerInvoice`;
+    const res = await axios.post(URL, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    });
+
+    if (res.data.success) {
+      const arrayy = res?.data?.data?.data;
+      dispatch({
+        type: types.GET_INVOICES,
+        payload: {
+          array: arrayy,
+          last_page: res?.data?.data?.last_page,
         },
       });
-
-      // console.log(res.data.data, '===========');
-      if (res.data.success) {
-        const arrayy = res?.data?.data?.data;
-        // console.log(JSON.stringify(arrayy,null,2),"-----------------");
-        dispatch({
-          type: types.GET_INVOICES,
-          payload: {
-            array: arrayy,
-            last_page: res?.data?.data?.last_page,
-          },
-        });
-      }
-    } catch (error) {
-      console.log('Invoices Fetching Failed: ' + error.message);
     }
-  };
+  } catch (error) {
+    console.log('Invoices Fetching Failed: ' + error.message);
+  }
+};
+
+export const getAdminInvoices = (data, token, pageNo) => async dispatch => {
+  try {
+    const URL = `${apiUrl}/getInvoice?page=${pageNo}`;
+    const res = await axios.post(URL, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    });
+
+    if (res.data.success) {
+      const arrayy = res?.data?.data?.data;
+      dispatch({
+        type: types.GET_INVOICES,
+        payload: {
+          array: arrayy,
+          last_page: res?.data?.data?.last_page,
+        },
+      });
+    }
+  } catch (error) {
+    console.log('Invoices Fetching Failed: ' + error.message);
+  }
+};
 
 export const getInvoicesByEmail = (data, token) => async dispatch => {
   try {
@@ -282,12 +298,8 @@ export const getInvoicesByType = (data, token) => async dispatch => {
         Accept: 'application/json',
       },
     });
-    console.log(res), '[[[[[[[[[[[[[[[[[[[';
+
     if (res.data.success) {
-      console.log(
-        res.data.data?.length,
-        'events ------------------------------------------ length',
-      );
       dispatch({
         type: types.GET_INVOICES,
         payload: res.data.data,
@@ -327,10 +339,6 @@ export const getUserProductsArray = (data, token) => async dispatch => {
       },
     });
     if (res.data.success) {
-      console.log(
-        res.data.data?.length,
-        'products array ------------------------------------------ length',
-      );
       dispatch({
         type: types.GET_USER_PRODUCT_ARRAY,
         payload: res.data.data?.length > 0 ? res.data.data : [],
@@ -603,4 +611,3 @@ export const subscribeProduct = (data, accessToken) => async dispatch => {
     console.log('FAILED subscribing product.', error.response.data);
   }
 };
-

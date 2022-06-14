@@ -1,10 +1,12 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+source 'https://github.com/CocoaPods/Specs.git'
 
-platform :ios, '11.0'
+platform :ios, '13.0'
 
 target 'residualApp' do
   config = use_native_modules!
+
 
   use_react_native!(
     :path => config[:reactNativePath],
@@ -12,6 +14,10 @@ target 'residualApp' do
     :hermes_enabled => false
   )
 
+  pod 'FBReactNativeSpec', :path => "../node_modules/react-native/React/FBReactNativeSpec"
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+  
   target 'residualAppTests' do
     inherit! :complete
     # Pods for testing
@@ -21,10 +27,9 @@ target 'residualApp' do
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable the next line.
-  use_flipper!()
+  # use_flipper!()
 
   post_install do |installer|
     react_native_post_install(installer)
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end

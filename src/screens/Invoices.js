@@ -38,7 +38,7 @@ const Invoices = ({
   UserReducer,
   getUserInvoices,
   getInvoicesByEmail,
-  getInvoicesByType,
+  getAdminInvoices,
   navigation,
 }) => {
   const STATUS_BAR_HEIGHT =
@@ -117,7 +117,7 @@ const Invoices = ({
         <View
           style={[
             styles.notFoundContainer,
-            {marginTop: isAdmin ? height * 0.1 : height * 0.35},
+            {marginVertical: isAdmin ? height * 0.1 : height * 0.05},
           ]}>
           <Text style={styles.noRecFound}>No Invoices Found!</Text>
         </View>
@@ -158,11 +158,15 @@ const Invoices = ({
   }, []);
 
   const _onPressGetAllInvoices = async () => {
-    setPageNo(pageNo + 1);
-    Keyboard.dismiss();
-    setIsLoading(true);
-    await getUserInvoices(API_DATA, accessToken, isAdmin, pageNo);
-    setIsLoading(false);
+    if (isAdmin) {
+      getAdminInvoices(API_DATA, accessToken, isAdmin, 1);
+    } else {
+      setPageNo(pageNo + 1);
+      Keyboard.dismiss();
+      setIsLoading(true);
+      await getUserInvoices(API_DATA, accessToken, isAdmin, pageNo);
+      setIsLoading(false);
+    }
   };
 
   const ButtonsComp = ({item}) => {
@@ -231,7 +235,9 @@ const Invoices = ({
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
-                    onPress={() => {navigation.navigate("profile")}}>
+                    onPress={() => {
+                      navigation.navigate('profile');
+                    }}>
                     <Image
                       style={{height: 30, width: 30, resizeMode: 'contain'}}
                       source={require('../assets/images/menu.png')}

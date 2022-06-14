@@ -58,11 +58,12 @@ const SubscriptionRequests = ({
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     wait(1500).then(async () => {
+    
       setRefreshing(false);
       setIsLoading(true);
       setSubscriptionRequests([]);
       await getSubscriptionRequests(accessToken, 1);
-      setPageNo(pageNo + 1);
+      setPageNo(2);
       setIsLoading(false);
     });
   }, []);
@@ -78,6 +79,12 @@ const SubscriptionRequests = ({
     setIsLoading(false);
   };
 
+  // useEffect(() => {
+  //   if (pageNo > lastPage) {
+  //     setPageNo(1);
+  //   }
+  // }, [pageNo]);
+  console.log(pageNo, lastPage);
   const renderFooter = () => {
     if (subscriptionRequests?.length === 0) {
       return (
@@ -89,7 +96,7 @@ const SubscriptionRequests = ({
           <Text style={styles.noRecFound}>No Subscription Requests Found!</Text>
         </View>
       );
-    } else if (pageNo < lastPage) {
+    } else if (pageNo <= lastPage) {
       //Footer View with Load More button
       return (
         <View style={styles.footer}>
@@ -106,7 +113,7 @@ const SubscriptionRequests = ({
         </View>
       );
     } else {
-      return <Text>dsfdsfsd</Text>;
+      return null;
     }
   };
 

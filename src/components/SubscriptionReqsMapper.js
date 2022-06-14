@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 const {height, width} = Dimensions.get('window');
@@ -65,6 +65,16 @@ const SubscriptionReqsMapper = ({item, index, navigation}) => {
                 )}`}
               </Text>
             </View>
+
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <MaterialCommunityIcons
+                name="email"
+                size={width * 0.05}
+                color="#fff"
+                style={style.list_icon}
+              />
+              <Text style={style.sub_title}>{` ${item?.email}`}</Text>
+            </View>
           </View>
           <Image
             style={{
@@ -73,9 +83,7 @@ const SubscriptionReqsMapper = ({item, index, navigation}) => {
               borderRadius: width * 0.03,
             }}
             source={
-              item?.image
-                ? {uri: item?.image}
-                : require('../../test.png')
+              item?.image ? {uri: item?.image} : require('../../test.png')
             }
           />
         </LinearGradient>

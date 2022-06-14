@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     // marginBottom : 200,
     alignItems: 'center',
-    shadowOffet: {
+    shadowOffset: {
       width: 0,
       height: 3,
     },

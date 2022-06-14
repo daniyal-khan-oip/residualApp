@@ -8,9 +8,10 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
-  StatusBar,Platform
+  StatusBar,
+  Platform,
 } from 'react-native';
-import { themePurple } from '../assets/colors/colors';
+import {themePurple} from '../assets/colors/colors';
 
 import PromotionCard from '../components/promotion-card/card';
 
@@ -77,10 +78,19 @@ const Promotion = ({navigation}) => {
         <View style={{}}>
           <Text style={style.main_title}>Promotions</Text>
           <View>
-            <PromotionCard img={promotionImg1} />
-            <PromotionCard img={promotionImg2} />
-            <PromotionCard img={promotionImg3} />
-            <PromotionCard img={promotionImg4} />
+            <PromotionCard
+              img={promotionImg1}
+              link="https://www.amazon.com/gp/help/customer/display.html?nodeId=202075790"
+            />
+            <PromotionCard
+              img={promotionImg2}
+              link="https://vimeo.com/features/video-library"
+            />
+            <PromotionCard
+              img={promotionImg3}
+              link="https://www.amazon.com/gp/help/customer/display.html?nodeId=202075790"
+            />
+            <PromotionCard img={promotionImg4} link="https://www.lipsum.com/" />
           </View>
         </View>
       </ScrollView>
