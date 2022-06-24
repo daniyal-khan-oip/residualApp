@@ -30,6 +30,7 @@ const CustomersRender = ({item, index, onPress}) => {
                   }
                 : require('../assets/images/app-logo.png')
             }
+            resizeMode="contain"
             style={style.imageStyle}
           />
           <View style={style.titles_view}>

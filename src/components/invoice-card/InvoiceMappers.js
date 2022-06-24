@@ -37,9 +37,14 @@ const InvoiceMappers = ({item, index, navigation}) => {
           />
           <View style={style.titles_view}>
             <Text style={style.main_title}>{item?.customer ? item?.customer:"No Name"}</Text>
-            
             <Text style={style.sub_title}>
-              {moment(item?.created_at).format('MMMM-DD-yyy')}
+              {item?.customer_email}
+            </Text>
+            <Text style={style.sub_title}>
+              {item?.product}
+            </Text>
+            <Text style={style.sub_title}>
+              {moment(item?.created_at).format('DD, MMMM yyy')}
             </Text>
             <Text
               style={[

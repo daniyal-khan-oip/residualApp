@@ -30,6 +30,12 @@ import DatePicker from 'react-native-date-picker';
 import colors from '../assets/colors';
 import InvoiceMapper from '../components/invoice-card/InvoiceMapper';
 import InvoiceMappers from '../components/invoice-card/InvoiceMappers';
+import {LogBox} from 'react-native';
+
+LogBox.ignoreLogs([
+  'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.',
+]);
+
 const image = require('../assets/images/login_bg.png');
 const {height, width} = Dimensions.get('window');
 
@@ -51,10 +57,23 @@ const Invoices = ({
   const [endDate, setEndDate] = useState(
     new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
   );
+  let hasPaidInvoices = false;
+  // const [hasPaidInvoices, setHasPaidInvoices] = useState(false);
+  invoices.map(ele => {
+    if (ele.Status !== null) {
+      hasPaidInvoices = true;
+    }
+  });
+  useEffect(() => {
+    // alert(`${invoices.length}${searchChoice}`);
+  }, [invoices]);
   const isAdmin = UserReducer?.userData?.role_id !== 3 ? true : false;
   const [isLoading, setIsLoading] = useState(false);
   let API_DATA = {
     user_id: UserReducer?.userData?.id,
+  };
+  let CUSTOMER_API_DATA = {
+    customer_email: UserReducer?.userData?.email,
   };
   const accessToken = UserReducer?.accessToken;
 
@@ -71,8 +90,12 @@ const Invoices = ({
 
   useEffect(() => {
     if (UserReducer?.invoices) {
-      const oldData = searchChoice !== 'all' ? [] : [...invoices];
-      setInvoices([...UserReducer?.invoices]);
+      const oldData = !isAdmin
+        ? [...invoices]
+        : isAdmin && searchChoice !== 'all'
+        ? []
+        : [...invoices];
+      // setInvoices([...UserReducer?.invoices]);
       setInvoices([...oldData, ...UserReducer?.invoices]);
     } else {
       setInvoices([]);
@@ -122,7 +145,7 @@ const Invoices = ({
           <Text style={styles.noRecFound}>No Invoices Found!</Text>
         </View>
       );
-    } else if (pageNo < lastPage) {
+    } else if (pageNo <= lastPage) {
       //Footer View with Load More button
       return (
         <View style={styles.footer}>
@@ -139,9 +162,10 @@ const Invoices = ({
         </View>
       );
     } else {
-      return <Text>dsfdsfsd</Text>;
+      return <Text></Text>;
     }
   };
+  console.log(lastPage, '==', pageNo);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -149,8 +173,12 @@ const Invoices = ({
       setRefreshing(false);
       setIsLoading(true);
       setInvoices([]);
-      await getUserInvoices(API_DATA, accessToken, isAdmin, 1);
-      setPageNo(pageNo + 1);
+      if (isAdmin) {
+        await getAdminInvoices(API_DATA, accessToken, 1);
+      } else {
+        await getUserInvoices(CUSTOMER_API_DATA, accessToken, 1);
+      }
+      setPageNo(2);
       setSearchChoice('all');
       setSearchText('');
       setIsLoading(false);
@@ -158,15 +186,17 @@ const Invoices = ({
   }, []);
 
   const _onPressGetAllInvoices = async () => {
+    // const pageNum = pageNo + 1;
+    setPageNo(pageNo + 1);
+    Keyboard.dismiss();
+    setIsLoading(true);
     if (isAdmin) {
-      getAdminInvoices(API_DATA, accessToken, isAdmin, 1);
+      await getAdminInvoices(API_DATA, accessToken, pageNo);
     } else {
-      setPageNo(pageNo + 1);
-      Keyboard.dismiss();
-      setIsLoading(true);
-      await getUserInvoices(API_DATA, accessToken, isAdmin, pageNo);
-      setIsLoading(false);
+      await getUserInvoices(CUSTOMER_API_DATA, accessToken, pageNo);
     }
+
+    setIsLoading(false);
   };
 
   const ButtonsComp = ({item}) => {
@@ -209,21 +239,29 @@ const Invoices = ({
   ];
 
   return (
-    <ImageBackground source={image} resizeMode="cover" style={{flex: 1}}>
-      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
-        <StatusBar
-          translucent
-          backgroundColor={themePurple}
-          barStyle="light-content"
-        />
-      </View>
+    <ImageBackground source={image} style={{flex: 1}} resizeMode="cover">
+      {Platform.OS !== 'ios' && (
+        <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+          <StatusBar
+            translucent
+            backgroundColor={themePurple}
+            barStyle="light-content"
+          />
+        </View>
+      )}
       <ScrollView
         nestedScrollEnabled={true}
+        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View style={{alignItems: 'center', marginTop: 20}}>
+          <View
+            style={{
+              alignItems: 'center',
+              // marginTop: 20,
+              marginTop: height * 0.04,
+            }}>
             <>
               <>
                 {/* Header  */}
@@ -381,6 +419,8 @@ const Invoices = ({
                     backgroundColor: 'rgba(0,0,0,0.5)',
                     borderRadius: width * 0.03,
                     width: width * 0.63,
+                    height:
+                      Platform?.OS === 'ios' ? height * 0.2 : height * 0.24,
                   }}>
                   <LottieView
                     speed={1}
@@ -401,30 +441,32 @@ const Invoices = ({
                 </View>
               ) : (
                 <>
-                  <FlatList
-                    ListHeaderComponent={
-                      <Heading
-                        title="Paid Invoices"
-                        passedStyle={{
-                          color: 'white',
-                          fontSize: width * 0.055,
-                          fontWeight: 'bold',
-                          marginBottom: height * 0.03,
-                        }}
-                      />
-                    }
-                    data={isLoading ? [] : invoices}
-                    renderItem={({item, index}) => (
-                      <InvoiceMappers
-                        item={item}
-                        index={index}
-                        navigation={navigation}
-                      />
-                    )}
-                    nestedScrollEnabled={true}
-                    keyExtractor={(item, index) => index?.toString()}
-                    ListFooterComponent={renderFooter}
-                  />
+                  {hasPaidInvoices && (
+                    <FlatList
+                      ListHeaderComponent={
+                        <Heading
+                          title="Paid Invoices"
+                          passedStyle={{
+                            color: 'white',
+                            fontSize: width * 0.055,
+                            fontWeight: 'bold',
+                            marginBottom: height * 0.03,
+                          }}
+                        />
+                      }
+                      data={isLoading ? [] : invoices}
+                      renderItem={({item, index}) => (
+                        <InvoiceMappers
+                          item={item}
+                          index={index}
+                          navigation={navigation}
+                        />
+                      )}
+                      nestedScrollEnabled={true}
+                      keyExtractor={(item, index) => index?.toString()}
+                      ListFooterComponent={renderFooter}
+                    />
+                  )}
 
                   <FlatList
                     ListHeaderComponent={
@@ -521,11 +563,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   lottieStyle: {
-    height: height * 0.38,
+    height: Platform?.OS === 'ios' ? height * 0.33 : height * 0.38,
     // backgroundColor: 'red',
     // position: 'absolute',
     // top:100,
-    marginTop: height * -0.055,
+    marginTop: Platform?.OS === 'ios' ? height * -0.037 : height * -0.06,
     // zIndex: 99999,
     // left: width * 0.04,
   },
@@ -652,6 +694,7 @@ const styles = StyleSheet.create({
     width: width,
     marginTop: height * 0.02,
     paddingVertical: height * 0.01,
+    // backgroundColor:'red',
     justifyContent: 'space-between',
   },
 });

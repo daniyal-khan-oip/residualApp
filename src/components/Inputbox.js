@@ -64,19 +64,19 @@ const Inputbox = ({
             iconName={names}
             type={iconType || 'MaterialIcons'}
             passedStyle={[
+              iconStyle && iconStyle,
               {
-                color: 'black',
+                color: iconStyle?.color ? iconStyle?.color : 'black',
                 marginLeft: isShowIcon && isPassword && width * 0.05,
               },
-              iconStyle && iconStyle,
             ]}
           />
         </TouchableOpacity>
       ) : (
         <IconComp
-          name={names}
+          iconName={names}
           type={'MaterialIcons'}
-          iconStyle={{
+          passedStyle={{
             paddingLeft: isShowIcon && isPassword && width * 0.02,
             position: 'absolute',
             left: width * 0.75,
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     borderRadius: 15,
     color: 'black',
-    backgroundColor:'white',
+    backgroundColor: 'white',
     width: width * 0.8,
     margin: height * 0.025,
     height: height * 0.075,

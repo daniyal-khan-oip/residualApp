@@ -9,6 +9,7 @@ import {
   Dimensions,
   StatusBar,
   Platform,
+  ImageBackground,
 } from 'react-native';
 import {connect} from 'react-redux';
 import React, {useState, useEffect, useRef} from 'react';
@@ -75,6 +76,7 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
 
   const _onSuccess = () => {
     setLoading(false);
+
     ImagePicker.clean().then(() => {
       console.log('removed all tmp images from tmp directory');
     });
@@ -89,14 +91,18 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
     setLname(UserReducer?.userData?.last_name);
   }, [UserReducer?.userData]);
   return (
-    <ScrollView>
-      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
-        <StatusBar
-          translucent
-          backgroundColor={themePurple}
-          barStyle="light-content"
-        />
-      </View>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      style={{backgroundColor: themePurple}}>
+      {Platform?.OS !== 'ios' && (
+        <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+          <StatusBar
+            translucent
+            backgroundColor={themePurple}
+            barStyle="light-content"
+          />
+        </View>
+      )}
       <View style={styles.container}>
         {/* Image Container  */}
         <View style={styles.imageContainer}>
@@ -225,6 +231,12 @@ const mapStateToProps = ({UserReducer}) => {
 export default connect(mapStateToProps, actions)(EditProfile);
 
 const styles = StyleSheet.create({
+  login_bg: {
+    flex: 1,
+    alignItems: 'center',
+    width: width,
+    height: height,
+  },
   container: {
     flex: 1,
     // height: height,
@@ -260,11 +272,12 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     position: 'absolute',
-    top: height * 0.38,
+    top: Platform.OS == 'ios' ? height * 0.37 : height * 0.34,
     left: width * 0.05,
     paddingHorizontal: width * 0.03,
     backgroundColor: 'rgba(0,0,0,0.4)',
     borderRadius: 12,
+    paddingVertical: height * 0.02,
   },
   nameStyles: {
     color: 'white',
@@ -307,6 +320,8 @@ const styles = StyleSheet.create({
     borderRadius: width * 0.3,
     paddingHorizontal: width * 0.05,
     elevation: 20,
+    fontSize: width * 0.045,
+    height: height * 0.08,
   },
   phoneInputContainerStyle: {
     backgroundColor: 'white',

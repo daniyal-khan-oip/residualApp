@@ -27,7 +27,12 @@ const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 };
 
-const ViewAuthCredentials = ({UserReducer, getCredentials, route,navigation}) => {
+const ViewAuthCredentials = ({
+  UserReducer,
+  getCredentials,
+  route,
+  navigation,
+}) => {
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -43,12 +48,12 @@ const ViewAuthCredentials = ({UserReducer, getCredentials, route,navigation}) =>
   };
 
   useEffect(() => {
-    getCredentials(apiData, accessToken);
+    getAccountCredentials();
   }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    wait(1500).then(async () => {
+    wait(1000).then(async () => {
       setRefreshing(false);
       setIsLoading(true);
       await getCredentials(apiData, accessToken);
@@ -57,26 +62,25 @@ const ViewAuthCredentials = ({UserReducer, getCredentials, route,navigation}) =>
     });
   }, []);
 
+  const getAccountCredentials = async () => {
+    setIsLoading(true);
+   await getCredentials(apiData, accessToken);
+    setIsLoading(false);
+  };
   return (
     <ImageBackground source={image} resizeMode="cover" style={{flex: 1}}>
-      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
-        <StatusBar
-          translucent
-          backgroundColor={themePurple}
-          barStyle="light-content"
-        />
-      </View>
+      {Platform?.OS !== 'ios' && (
+        <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+          <StatusBar
+            translucent
+            backgroundColor={themePurple}
+            barStyle="light-content"
+          />
+        </View>
+      )}
 
       {isLoading ? (
-        <View
-          style={{
-            marginTop: height * 0.35,
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            borderRadius: width * 0.03,
-            alignSelf: 'center',
-            width: width * 0.63,
-          }}>
+        <View style={styles.loaderContainer}>
           <LottieView
             speed={1}
             style={styles.lottieStyle}
@@ -84,15 +88,7 @@ const ViewAuthCredentials = ({UserReducer, getCredentials, route,navigation}) =>
             loop
             source={require('../assets/lottie/purple-loading-2.json')}
           />
-          <Text
-            style={{
-              marginTop: height * -0.15,
-              color: 'white',
-              fontSize: width * 0.07,
-              fontFamily: 'Poppins-Bold',
-            }}>
-            Fetching Data..
-          </Text>
+          <Text style={styles.fetchTextStyle}>Fetching Data..</Text>
         </View>
       ) : (
         <>
@@ -213,6 +209,11 @@ const ViewAuthCredentials = ({UserReducer, getCredentials, route,navigation}) =>
                   passedStyle={styles.textStyle}
                   fontType="medium"
                 />
+                <Heading
+                  title={'Swipe Down To Refresh.'}
+                  passedStyle={styles.textStyle}
+                  fontType="medium"
+                />
               </View>
             )}
           </ScrollView>
@@ -231,13 +232,28 @@ export default connect(mapStateToProps, actions)(ViewAuthCredentials);
 
 const styles = StyleSheet.create({
   lottieStyle: {
-    height: height * 0.36,
+    height: Platform?.OS === 'ios' ? height * 0.33 : height * 0.38,
     // backgroundColor: 'red',
     // position: 'absolute',
     // top:100,
-    marginTop: height * -0.055,
+    marginTop: Platform?.OS === 'ios' ? height * -0.037 : height * -0.06,
     // zIndex: 99999,
     // left: width * 0.04,
+  },
+  fetchTextStyle: {
+    marginTop: height * -0.15,
+    color: 'white',
+    fontSize: width * 0.07,
+    fontFamily: 'Poppins-Bold',
+  },
+  loaderContainer: {
+    marginTop: height * 0.36,
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: width * 0.03,
+    justifyContent: 'center',
+    width: width * 0.63,
+    alignSelf: 'center',
   },
   viewContainer: {
     borderRadius: width * 0.04,
@@ -246,7 +262,7 @@ const styles = StyleSheet.create({
     width: width * 0.9,
     justifyContent: 'center',
     alignSelf: 'center',
-    // alignItems: 'center',
+    alignItems: 'center',
     paddingHorizontal: width * 0.05,
     marginVertical: height * 0.01,
   },
@@ -286,7 +302,7 @@ const styles = StyleSheet.create({
   headerStyle: {
     flexDirection: 'row',
     width: width,
-    marginTop: height * 0.02,
+    marginTop: Platform.OS == 'ios' ? height * 0.05 : height * 0.02,
     paddingVertical: height * 0.01,
     justifyContent: 'space-between',
   },

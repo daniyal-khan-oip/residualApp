@@ -14,6 +14,7 @@ import {
   Keyboard,
   Platform,
   StatusBar,
+  ScrollView,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {connect} from 'react-redux';
@@ -35,6 +36,7 @@ const Login = ({navigation, userLogin}) => {
   const [userChange, setUserChange] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
   const _onPressLogin = async () => {
     if (userChange.length == 0 || password.length == 0) {
       showMessage({
@@ -53,80 +55,103 @@ const Login = ({navigation, userLogin}) => {
   };
   return (
     <ImageBackground source={image} resizeMode="cover" style={style.login_bg}>
-      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
-        <StatusBar
-          translucent
-          backgroundColor={themePurple}
-          barStyle="light-content"
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {Platform.OS == 'android' && (
+          <View
+            style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+            <StatusBar
+              translucent
+              backgroundColor={themePurple}
+              barStyle="light-content"
+            />
+          </View>
+        )}
+
+        <Image
+          style={{
+            alignSelf: 'center',
+            marginTop: height * 0.15,
+            marginBottom: height * 0.12,
+          }}
+          source={logo}
+          resizeMode="contain"
         />
-      </View>
-      <TouchableWithoutFeedback
-        onPress={() => Keyboard.dismiss()}
-        style={{marginTop: height * -0.2}}>
-        <Image style={{alignSelf:"center",marginBottom:height*.1}} source={logo} />
 
         <View style={style.login_detail}>
           <Text style={style.login_text}>Login</Text>
           <Text style={style.welcome_text}>Welcome Back!</Text>
           <View style={style.form_field}>
             <Icon name="user-circle" color="#A557F2" style={style.icon} />
-            <TextInput
-              placeholder="Username"
-              placeholderTextColor="#565B66"
-              style={[style.inputfield, {marginBottom: width * 0.04}]}
-              onChangeText={e => {
-                if (e == ' ') {
-                  return;
-                }
-                setUserChange(e);
-              }}
-              value={userChange}
-            />
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+              <TextInput
+                placeholder="Username"
+                placeholderTextColor="#565B66"
+                style={[style.inputfield, {marginBottom: width * 0.04}]}
+                onChangeText={e => {
+                  if (e == ' ') {
+                    return;
+                  }
+                  setUserChange(e);
+                }}
+                value={userChange}
+              />
+            </TouchableWithoutFeedback>
           </View>
+
           <View style={style.form_field}>
             <Icon name="lock" color="#A557F2" style={style.icon} />
-            <TextInput
-              placeholder="Password"
-              placeholderTextColor="#565B66"
-              style={style.inputfield}
-              value={password}
-              onChangeText={e => {
-                if (e == ' ') {
-                  return;
-                }
-                setPassword(e);
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+              <TextInput
+                placeholder="Password"
+                placeholderTextColor="#565B66"
+                style={{
+                  backgroundColor: 'white',
+                  width: width * 0.8,
+                  borderRadius: 10,
+                  paddingLeft: 50,
+                  height: height * 0.065,
+                }}
+                value={password}
+                onChangeText={e => {
+                  if (e == ' ') {
+                    return;
+                  }
+                  setPassword(e);
+                }}
+                secureTextEntry={showPassword}
+              />
+            </TouchableWithoutFeedback>
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                right: width * 0.001,
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: width * 0.1,
+                height: height * 0.065,
               }}
-              secureTextEntry={showPassword}
-            />
-            <Icon
-              name={showPassword ? 'eye-slash' : 'eye'}
-              color="#ABACB3"
-              style={style.icon2}
               onPress={() => {
-                // alert('You tapped the button!');
                 setShowPassword(!showPassword);
-              }}
-            />
+              }}>
+              <Icon
+                name={showPassword ? 'eye-slash' : 'eye'}
+                color="#ABACB3"
+                style={style.icon2}
+              />
+            </TouchableOpacity>
           </View>
-          {/* <Text style={style.recover_password}>Recover password</Text> */}
+
           {loading ? (
             <View style={{marginTop: height * 0.055}}>
-             <LinearGradient
-             colors={['#7124BC', '#437AD8', '#05F0FF']}
-             style={style.button}
-             start={{y: 0.0, x: -0.05}}
-             angleCenter={{x: 5, y: 0}}
-             end={{y: 0.0, x: 1.2}}>
-             <Text style={style.loggingIn}>Logging In..</Text>
-           </LinearGradient>
-           </View>
-            // <LottieView
-            //   speed={1}
-            //   style={style.lottieStyle}
-            //   autoPlay
-            //   loop
-            //   source={require('../assets/lottie/purple-loading-2.json')}
-            // />
+              <LinearGradient
+                colors={['#7124BC', '#437AD8', '#05F0FF']}
+                style={style.button}
+                start={{y: 0.0, x: -0.05}}
+                angleCenter={{x: 5, y: 0}}
+                end={{y: 0.0, x: 1.2}}>
+                <Text style={style.loggingIn}>Authorizing..</Text>
+              </LinearGradient>
+            </View>
           ) : (
             <TouchableOpacity
               style={{marginTop: height * 0.055}}
@@ -141,11 +166,11 @@ const Login = ({navigation, userLogin}) => {
               </LinearGradient>
             </TouchableOpacity>
           )}
+          <Text style={style.people_first}>
+            Putting People First, Profits Second
+          </Text>
         </View>
-        <Text style={style.people_first}>
-          Putting People First, Profits Second
-        </Text>
-      </TouchableWithoutFeedback>
+      </ScrollView>
     </ImageBackground>
   );
 };
@@ -161,12 +186,13 @@ const style = StyleSheet.create({
   },
   login_bg: {
     flex: 1,
-    justifyContent: 'space-evenly',
+    // justifyContent: 'space-evenly',
     alignItems: 'center',
   },
   logo: {},
   login_detail: {
     // margin: 'auto',
+    paddingBottom:height * 0.1,
     width: width * 0.8,
   },
   login_text: {
@@ -178,7 +204,7 @@ const style = StyleSheet.create({
   },
   welcome_text: {
     fontSize: width * 0.037,
-    fontFamily:'Poppins-Bold',
+    fontFamily: 'Poppins-Bold',
     color: '#ffffff',
     // color: 'red',
     opacity: 0.7,
@@ -194,7 +220,7 @@ const style = StyleSheet.create({
     width: width * 0.8,
     borderRadius: 10,
     paddingLeft: 50,
-    height: height * 0.07,
+    height: height * 0.065,
   },
   icon: {
     position: 'absolute',
@@ -206,15 +232,12 @@ const style = StyleSheet.create({
     zIndex: 1,
   },
   icon2: {
-    position: 'absolute',
     fontSize: 15,
-    top: height * 0.026,
-    right: 10,
-    zIndex: 1,
+    // zIndex: 1,
   },
   recover_password: {
     fontSize: width * 0.04,
-    fontFamily:'Poppins-Bold',
+    fontFamily: 'Poppins-Bold',
     color: '#ffffff',
     opacity: 0.7,
     marginBottom: 25,
@@ -223,7 +246,7 @@ const style = StyleSheet.create({
   people_first: {
     marginTop: height * 0.02,
     fontSize: width * 0.04,
-    fontFamily:'Poppins-Italic',
+    fontFamily: 'Poppins-Italic',
     // fontStyle: 'italic',
     color: '#ffffff',
   },
@@ -237,14 +260,14 @@ const style = StyleSheet.create({
   },
   button_text: {
     fontSize: width * 0.045,
-    fontFamily:'Poppins-Bold',
+    fontFamily: 'Poppins-Bold',
     color: '#ffffff',
   },
-  loggingIn:{
+  loggingIn: {
     fontSize: width * 0.045,
     color: '#ffffff',
-    fontFamily:'Poppins-Bold'
-  }
+    fontFamily: 'Poppins-Bold',
+  },
 });
 
 export default connect(null, actions)(Login);

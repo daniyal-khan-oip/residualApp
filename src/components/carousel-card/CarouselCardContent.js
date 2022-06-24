@@ -21,14 +21,17 @@ const CarouselCardItem = ({item, index, onPress}) => {
       style={styles.container}
       key={index}
       activeOpacity={0.8}
-      onPress={() => onPress(item) }>
+      onPress={() => onPress(item)}>
       <View style={styles.logo_content}>
-        <Image source={item.companyLogo()} />
+        <Image
+          source={item.companyLogo}
+          style={{tintColor: item?.type == 'Trucking' && 'grey' }}
+        />
         <Text style={styles.desp}>{item.body}</Text>
       </View>
       <View style={styles.circle_content}>
         <View style={[styles.circle, {backgroundColor: item.color}]}></View>
-        <Image source={item.sideImage()} />
+        <Image source={item.sideImage} />
       </View>
     </TouchableOpacity>
   );

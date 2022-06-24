@@ -80,7 +80,7 @@ const MainStack = ({UserReducer}) => {
 
       {UserReducer?.userData?.role_id !== 3 && (
         <Tabs.Screen
-          name="Customers"
+          name="Clients"
           component={CustomersStack}
           options={({navigation}) => {
             return {

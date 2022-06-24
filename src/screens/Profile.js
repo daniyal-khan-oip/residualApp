@@ -420,6 +420,7 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     width: width,
     marginVertical: height * 0.02,
+    marginTop:height * 0.008,
     // paddingVertical: height * 0.01,
     justifyContent: 'space-between',
   },

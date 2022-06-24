@@ -16,12 +16,16 @@ import {
 } from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import {themePurple} from '../assets/colors/colors';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import Heading from '../components/Heading';
 import IconComp from '../components/IconComp';
 import * as actions from '../store/Actions/index';
 import LottieView from 'lottie-react-native';
 import SubscriptionReqsMapper from '../components/SubscriptionReqsMapper';
+import axios from 'axios';
+import {apiUrl} from '../config/config';
+import {useIsFocused} from '@react-navigation/native';
+import {GET_SUBSCRIPTION_REQUESTS} from '../store/Actions/actionType';
 
 const {width, height} = Dimensions.get('window');
 const image = require('../assets/images/login_bg.png');
@@ -37,28 +41,28 @@ const SubscriptionRequests = ({
   navigation,
 }) => {
   const [refreshing, setRefreshing] = useState(false);
+  // const isRecall = route?.params?.isRecall;
+
   const [isLoading, setIsLoading] = useState(false);
+  const isFocused = useIsFocused();
+  const dispatch = useDispatch();
   const [isVisible, setIsVisible] = useState(true);
   const isAdmin = UserReducer?.userData?.role_id !== 3 ? true : false;
   const [pageNo, setPageNo] = useState(1);
-  const lastPage = UserReducer?.subscriptionLastPage
-    ? UserReducer?.subscriptionLastPage
-    : 0;
+  const [lastPage, setLastPage] = useState(0);
   const [subscriptionRequests, setSubscriptionRequests] = useState([]);
 
   const STATUS_BAR_HEIGHT =
     Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
   const accessToken = UserReducer?.accessToken;
 
-  console.log('-- == == =', JSON.stringify(UserReducer?.subsReqs, null, 2));
-  useEffect(() => {
-    getSubscriptionRequests(accessToken, pageNo);
-  }, []);
+  // useEffect(() => {
+  //   getSubscriptionRequests(accessToken, pageNo);
+  // }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     wait(1500).then(async () => {
-    
       setRefreshing(false);
       setIsLoading(true);
       setSubscriptionRequests([]);
@@ -68,23 +72,14 @@ const SubscriptionRequests = ({
     });
   }, []);
 
-  useEffect(() => {
-    setSubscriptionRequests(UserReducer?.subsReqs);
-  }, [UserReducer?.subsReqs]);
-
   const _onPressLoadMore = async () => {
     setPageNo(pageNo + 1);
-    setIsLoading(true);
-    await getSubscriptionRequests(accessToken, pageNo);
-    setIsLoading(false);
+    // setIsLoading(true);
+    // await getSubscriptionRequests(accessToken, pageNo);
+    // setIsLoading(false);
   };
 
-  // useEffect(() => {
-  //   if (pageNo > lastPage) {
-  //     setPageNo(1);
-  //   }
-  // }, [pageNo]);
-  console.log(pageNo, lastPage);
+  console.log(pageNo, lastPage, subscriptionRequests?.length);
   const renderFooter = () => {
     if (subscriptionRequests?.length === 0) {
       return (
@@ -96,7 +91,7 @@ const SubscriptionRequests = ({
           <Text style={styles.noRecFound}>No Subscription Requests Found!</Text>
         </View>
       );
-    } else if (pageNo <= lastPage) {
+    } else if (pageNo < lastPage) {
       //Footer View with Load More button
       return (
         <View style={styles.footer}>
@@ -117,26 +112,79 @@ const SubscriptionRequests = ({
     }
   };
 
-  useEffect(() => {
-    if (UserReducer?.subsReqs) {
-      const oldData = [...subscriptionRequests];
-      // setSubscriptionRequests([...UserReducer?.subsReqs]);
-      setSubscriptionRequests([...oldData, ...UserReducer?.subsReqs]);
-    } else {
-      setSubscriptionRequests([]);
-    }
-  }, [UserReducer?.subsReqs]);
+  // useEffect(() => {
+  //   // if (UserReducer?.subsReqs) {
+  //     const oldData = [...subscriptionRequests];
+  //     setSubscriptionRequests([...oldData, ...UserReducer?.subsReqs]);
+  //   // } else {
+  //     // setSubscriptionRequests([]);
+  //   // }
+  // }, [UserReducer?.subsReqs]);
 
+  const getRequests = async () => {
+    setIsLoading(true);
+    const response = await axios.get(
+      `${apiUrl}/getAllSubscribeCustomer?page=${pageNo}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    // if (checkIsRecall) {
+    //   setSubscriptionRequests([...response?.data?.data?.data]);
+    // } else {
+    if (pageNo === 1) {
+      setSubscriptionRequests(response?.data?.data?.data);
+    } else {
+      setSubscriptionRequests([
+        ...subscriptionRequests,
+        ...response?.data?.data?.data,
+      ]);
+    }
+    // }
+    dispatch({
+      type: GET_SUBSCRIPTION_REQUESTS,
+      payload: {
+        array: response?.data?.data?.data,
+        last_page: 0,
+      },
+    });
+    setLastPage(response?.data?.data?.last_page);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    getRequests();
+  }, [pageNo]);
+
+  // useEffect(() => {
+  //   setSubscriptionRequests([
+  //     ...subscriptionRequests,
+  //     ...UserReducer?.subsReqs,
+  //   ]);
+  // }, [UserReducer?.subsReqs]);
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // do something
+      setPageNo(1)
+      setSubscriptionRequests([])
+    });
+
+    return unsubscribe;
+  }, [navigation]);
   return (
     <ImageBackground source={image} resizeMode="cover" style={{flex: 1}}>
-      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
-        <StatusBar
-          translucent
-          backgroundColor={themePurple}
-          barStyle="light-content"
-        />
-      </View>
-
+      {Platform.OS == 'android' && (
+        <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+          <StatusBar
+            translucent
+            backgroundColor={themePurple}
+            barStyle="light-content"
+          />
+        </View>
+      )}
       {isLoading ? (
         <View
           style={{
@@ -229,6 +277,8 @@ const SubscriptionRequests = ({
                     item={item}
                     index={index}
                     navigation={navigation}
+                    subscriptionRequests={subscriptionRequests}
+                    setSubscriptionRequests={setSubscriptionRequests}
                   />
                 );
               }}
@@ -284,11 +334,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   lottieStyle: {
-    height: height * 0.36,
+    height: Platform?.OS === 'ios' ? height * 0.33 : height * 0.38,
     // backgroundColor: 'red',
     // position: 'absolute',
     // top:100,
-    marginTop: height * -0.055,
+    marginTop: Platform?.OS === 'ios' ? height * -0.037 : height * -0.06,
     // zIndex: 99999,
     // left: width * 0.04,
   },

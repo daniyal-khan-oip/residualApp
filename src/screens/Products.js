@@ -93,11 +93,13 @@ const Products = ({
     setProductType(type);
     setShowAlert(true);
   };
-  console.log(UserReducer?.products);
+
+  console.log(productType);
+
   return (
     <ImageBackground
       source={image}
-      resizeMode="cover"
+      // resizeMode="cover"
       style={{flex: 1, alignItems: 'center'}}>
       <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
         <StatusBar
@@ -107,51 +109,16 @@ const Products = ({
         />
       </View>
       <View style={{}}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginTop: 20,
-          }}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('Profile');
-            }}>
-            <Image
-              style={{height: 30, width: 30, resizeMode: 'contain'}}
-              source={require('../assets/images/menu.png')}
-            />
-          </TouchableOpacity>
-          <Image
-            style={{height: 50, width: 50}}
-            source={require('../assets/images/app-logo.png')}
-          />
-          <View style={{flexDirection: 'row'}}>
-            <TouchableOpacity
-              onPress={() => {
-                onRefresh();
-              }}>
-              <Image
-                style={{
-                  height: 25,
-                  width: 25,
-                  tintColor: 'white',
-                  justifyContent: 'center',
-                }}
-                source={require('../assets/images/refresh.png')}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
         {isLoading ? (
           <View
             style={{
               marginTop: height * 0.35,
               alignItems: 'center',
+              justifyContent: 'center',
               backgroundColor: 'rgba(0,0,0,0.5)',
               borderRadius: width * 0.03,
               width: width * 0.63,
+              height: Platform?.OS === 'ios' ? height * 0.2 : height * 0.24,
             }}>
             <LottieView
               speed={1}
@@ -174,12 +141,51 @@ const Products = ({
           <>
             <FlatList
               data={products}
+              showsVerticalScrollIndicator={false}
               keyExtractor={item => item?.id?.toString()}
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
               ListHeaderComponent={
                 <>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      // marginTop: 20,
+                      alignItems: 'center',
+                      marginTop: height * 0.05,
+                    }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.navigate('Profile');
+                      }}>
+                      <Image
+                        style={{height: 30, width: 30, resizeMode: 'contain'}}
+                        source={require('../assets/images/menu.png')}
+                      />
+                    </TouchableOpacity>
+                    <Image
+                      style={{height: 50, width: 50}}
+                      source={require('../assets/images/app-logo.png')}
+                    />
+                    <View style={{flexDirection: 'row'}}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          onRefresh();
+                        }}>
+                        <Image
+                          style={{
+                            height: 25,
+                            width: 25,
+                            tintColor: 'white',
+                            justifyContent: 'center',
+                          }}
+                          source={require('../assets/images/refresh.png')}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                   <Text style={style.main_title}>My Products</Text>
                   {UserReducer?.products?.length == 0 && (
                     <View style={[style.notFoundContainer]}>
@@ -229,7 +235,13 @@ const Products = ({
                   renderItem={({item, index}) => {
                     return (
                       <ProductCard
-                        img={item?.type === 'AirBNB' ? prdctImg3 : prdctImg4}
+                        img={
+                          item?.type === 'AirBNB'
+                            ? prdctImg3
+                            : item?.type === 'Walmart'
+                            ? prdctImg2
+                            : prdctImg4
+                        }
                         msg="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat"
                         title="Your Investment"
                         sales="Total Sales"
@@ -246,29 +258,6 @@ const Products = ({
           </>
         )}
       </View>
-      {/* {isBuying && (
-        <View
-          style={{
-            width: width * 0.6,
-            borderRadius: width * 0.04,
-            backgroundColor: themePurple,
-            alignSelf: 'center',
-            marginTop: height * 0.02,
-            paddingVertical: height * 0.02,
-            position: 'absolute',
-            bottom: height * 0.04,
-          }}>
-          <Heading
-            title={`Subscribing ${productType}...`}
-            passedStyle={{
-              color: 'white',
-              fontSize: width * 0.042,
-              alignSelf: 'center',
-            }}
-            fontType="medium"
-          />
-        </View>
-      )} */}
 
       {showAlert && (
         <ConfirmModal
@@ -317,11 +306,11 @@ const style = StyleSheet.create({
   //   alignSelf: 'center',
   // },
   lottieStyle: {
-    height: height * 0.38,
+    height: Platform?.OS === 'ios' ? height * 0.33 : height * 0.38,
     // backgroundColor: 'red',
     // position: 'absolute',
     // top:100,
-    marginTop: height * -0.055,
+    marginTop: Platform?.OS === 'ios' ? height * -0.037 : height * -0.06,
     // zIndex: 99999,
     // left: width * 0.04,
   },
@@ -356,8 +345,14 @@ const otherProducts = [
   },
   {
     id: 91,
-    type: 'UNIQUE EXPRESS',
+    type: 'Trucking',
     value: '0',
     image: prdctImg4,
   },
+  // {
+  //   id: 93,
+  //   type: 'Walmart',
+  //   value: '0',
+  //   image: prdctImg2,
+  // },
 ];

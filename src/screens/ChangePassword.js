@@ -95,13 +95,13 @@ const ChangePassword = ({navigation, UserReducer, changePassword}) => {
 
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.container}>
-      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+     {Platform?.OS !== 'ios' && <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
         <StatusBar
           translucent
           backgroundColor={themePurple}
           barStyle="light-content"
         />
-      </View>
+      </View>}
       <SafeAreaView style={{flex: 1}}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <TouchableOpacity
@@ -115,6 +115,7 @@ const ChangePassword = ({navigation, UserReducer, changePassword}) => {
               paddingHorizontal: width * 0.01,
               flexDirection: 'row',
               justifyContent: 'center',
+              marginTop:10,
               alignItems: 'center',
               borderRadius: width * 0.02,
               paddingVertical: height * 0.01,
@@ -174,6 +175,7 @@ const ChangePassword = ({navigation, UserReducer, changePassword}) => {
             iconStyle={{
               color: themePurple,
               paddingLeft: width * 0.1,
+              fontSize:width * 0.06,
             }}
             iconWrapperStyle={{
               position: 'absolute',
@@ -195,6 +197,7 @@ const ChangePassword = ({navigation, UserReducer, changePassword}) => {
             iconStyle={{
               color: themePurple,
               paddingLeft: width * 0.1,
+              fontSize:width * 0.06,
             }}
             iconWrapperStyle={{
               position: 'absolute',
@@ -216,6 +219,7 @@ const ChangePassword = ({navigation, UserReducer, changePassword}) => {
             iconStyle={{
               color: themePurple,
               paddingLeft: width * 0.1,
+              fontSize:width * 0.06,
             }}
             iconWrapperStyle={{
               position: 'absolute',
@@ -298,7 +302,7 @@ const styles = StyleSheet.create({
     marginTop: height * 0.05,
   },
   textInputStyle: {
-    borderRadius: width * 0.02,
+    borderRadius: width * 0.2,
     borderWidth: 1,
     color: 'black',
     borderColor: themePurple,
@@ -308,6 +312,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: width * 0.065,
     color: 'white',
+    marginTop:20,
     marginBottom: 25,
     fontFamily: 'Poppins-Bold',
     textAlign: 'center',
@@ -331,7 +336,7 @@ const styles = StyleSheet.create({
     top: height * -0.005,
   },
   loadingComponent: {
-    borderRadius: width * 0.02,
+    borderRadius: width * 0.1,
     position: 'relative',
     borderWidth: 1,
     borderColor: themePurple,

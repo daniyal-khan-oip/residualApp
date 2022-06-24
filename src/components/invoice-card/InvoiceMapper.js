@@ -17,7 +17,7 @@ const InvoiceMapper = ({item, index, navigation}) => {
       key={index}
       onPress={() => navigation.navigate('InvoiceDetail', {item: item})}
       activeOpacity={0.8}>
-      {item.Status == null ? (
+      {item?.Status == null ? (
         <LinearGradient
           colors={['#7124BC', '#437AD8', '#05F0FF']}
           style={style.gradient_btn}
@@ -40,7 +40,13 @@ const InvoiceMapper = ({item, index, navigation}) => {
             <Text style={style.main_title}>{item?.customer ? item?.customer:"No Name"}</Text>
 
             <Text style={style.sub_title}>
-              {moment(item?.created_at).format('MMMM-DD-yyy')}
+              {item?.customer_email}
+            </Text>
+            <Text style={style.sub_title}>
+              {item?.product}
+            </Text>
+            <Text style={style.sub_title}>
+            {moment(item?.created_at).format('DD, MMMM yyy')}
             </Text>
             <Text
               style={[

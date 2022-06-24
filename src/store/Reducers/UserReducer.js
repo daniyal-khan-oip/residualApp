@@ -121,7 +121,8 @@ export function UserReducer(state = INITIAL_STATE, action) {
       //   ...state,
       //   subscriptionRequests: action.payload,
       // };
-      console.log(action.payload.array), 'from reducer';
+      // console.log(action.payload.array), 'from reducer';
+      
       // return {
       //   ...state,
       //   subscriptionRequests: [],
@@ -134,6 +135,7 @@ export function UserReducer(state = INITIAL_STATE, action) {
       };
 
     case GET_INVOICES:
+      
       return {
         ...state,
         invoices: action.payload.array,

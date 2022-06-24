@@ -188,7 +188,7 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
   );
 
   return (
-    <ImageBackground source={image} style={style.login_bg}>
+    <ImageBackground source={image} style={style.login_bg} resizeMode="cover">
       <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
         <StatusBar
           translucent
@@ -210,6 +210,7 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
               backgroundColor: 'rgba(0,0,0,0.5)',
               borderRadius: width * 0.03,
               width: width * 0.63,
+              height:Platform?.OS === 'ios' ?  height * 0.2  : height * 0.24,
             }}>
             <LottieView
               speed={1}
@@ -230,40 +231,12 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
           </View>
         ) : (
           <View style={{}}>
-            <View style={{marginTop: 20, justifyContent: 'center'}}>
-              {/* <View
-                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate('Profile');
-                  }}>
-                  <Image
-                    style={{height: 30, width: 30, resizeMode: 'contain'}}
-                    source={require('../assets/images/menu.png')}
-                  />
-                </TouchableOpacity>
-                <Image
-                  style={{height: 50, width: 50}}
-                  source={require('../assets/images/app-logo.png')}
-                />
-                <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      onRefresh();
-                    }}>
-                    <Image
-                      style={{
-                        height: 25,
-                        width: 25,
-                        tintColor: 'white',
-                        justifyContent: 'center',
-                      }}
-                      source={require('../assets/images/refresh.png')}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View> */}
-
+            <View
+              style={{
+                // marginTop: 20,
+                marginTop: height * 0.05,
+                justifyContent: 'center',
+              }}>
               {/* Header  */}
               <View style={style.headerStyle}>
                 <TouchableOpacity
@@ -438,7 +411,7 @@ const style = StyleSheet.create({
   headerStyle: {
     flexDirection: 'row',
     width: width,
-    marginTop: height * 0.02,
+    // marginTop: height * 0.02,
     paddingVertical: height * 0.01,
     justifyContent: 'space-between',
   },
@@ -448,11 +421,11 @@ const style = StyleSheet.create({
     marginLeft: width * 0.02,
   },
   lottieStyle: {
-    height: height * 0.38,
+    height:Platform?.OS ==='ios'? height * 0.33 : height * 0.38,
     // backgroundColor: 'red',
     // position: 'absolute',
     // top:100,
-    marginTop: height * -0.055,
+    marginTop: Platform?.OS ==='ios' ? height * -0.037 : height * -0.06,
     // zIndex: 99999,
     // left: width * 0.04,
   },
@@ -566,7 +539,7 @@ const style = StyleSheet.create({
     fontSize: width * 0.06,
     fontFamily: 'Poppins-SemiBold',
     marginTop: 30,
-    width: width,
+    width: width * 0.5,
     marginLeft: width * 0.05,
     marginBottom: 20,
   },

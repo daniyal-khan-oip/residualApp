@@ -84,8 +84,7 @@ export const is_walk_thorugh_seen = () => async dispatch => {
 
 export const getTotalInvestmentAndEarning = (data, token) => async dispatch => {
   try {
-
-    const URL = `${apiUrl}/count`;  
+    const URL = `${apiUrl}/count`;
     const res = await axios.post(URL, data, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -116,10 +115,11 @@ export const getSubscriptionRequests =
           },
         },
       );
+
       if (response.data.success) {
         const arrayy = response.data.data.data;
-        console.log(JSON.stringify(arrayy[0], null, 2));
-        console.log(response.data.data.last_page, 'last page');
+        // console.log(JSON.stringify(arrayy[0], null, 2));
+        // console.log(response.data.data.last_page, 'last page');
         dispatch({
           type: types.GET_SUBSCRIPTION_REQUESTS,
           payload: {
@@ -144,9 +144,9 @@ export const getSubscriptionRequests =
     }
   };
 
-export const getUserInvoices = (data, token) => async dispatch => {
+export const getUserInvoices = (data, token, page) => async dispatch => {
   try {
-    const URL = `${apiUrl}/getCustomerInvoice`;
+    const URL = `${apiUrl}/getCustomerInvoice?page=${page}`;
     const res = await axios.post(URL, data, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -156,6 +156,13 @@ export const getUserInvoices = (data, token) => async dispatch => {
 
     if (res.data.success) {
       const arrayy = res?.data?.data?.data;
+      console.log(arrayy.length, 'length');
+      console.log(
+        res?.data?.data?.current_page,
+        'Api Page ',
+        page,
+        ' my sent page',
+      );
       dispatch({
         type: types.GET_INVOICES,
         payload: {
@@ -163,6 +170,7 @@ export const getUserInvoices = (data, token) => async dispatch => {
           last_page: res?.data?.data?.last_page,
         },
       });
+      // alert(res?.data?.data?.last_page)
     }
   } catch (error) {
     console.log('Invoices Fetching Failed: ' + error.message);
@@ -443,28 +451,28 @@ export const updateProfile =
       });
       console.log(apiData, 'apiData');
       console.log(response.data);
-      // if (response.data.success) {
-      //   showMessage({
-      //     message: 'Updated Successfully!',
-      //     type: 'success',
-      //   });
-      //   dispatch({
-      //     type: types.UPDATE_PROFILE,
-      //     payload: {
-      //       first_name: data.first_name,
-      //       last_name: data.last_name,
-      //       phone: data.phone,
-      //       profile_image: data.image,
-      //     },
-      //   });
-      //   onSuccess();
-      // } else {
-      //   _onFailed();
-      //   showMessage({
-      //     message: 'Failed to update!',
-      //     danger: 'error',
-      //   });
-      // }
+      if (response.data.success) {
+        showMessage({
+          message: 'Updated Successfully!',
+          type: 'success',
+        });
+        dispatch({
+          type: types.UPDATE_PROFILE,
+          payload: {
+            first_name: data.first_name,
+            last_name: data.last_name,
+            phone: data.phone,
+            profile_image: data.image,
+          },
+        });
+        onSuccess();
+      } else {
+        _onFailed();
+        showMessage({
+          message: 'Failed to update!',
+          danger: 'error',
+        });
+      }
     } catch (error) {
       // _onLoginFailed();
       _onFailed();
@@ -505,18 +513,19 @@ export const getCustomers = token => async dispatch => {
 
 export const changePassword =
   (data, onSuccess, accessToken) => async dispatch => {
-    console.log(accessToken);
-    console.log(`${apiUrl}/api/password-change`);
     try {
       const response = await axios.post(`${apiUrl}/password-change`, data, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      console.log(response.data.success);
+      console.log(response.data,"====");
       if (response.data.success) {
         showMessage({
-          message: 'Password Changed!',
+          message:
+            response?.data?.message ||
+            response?.data?.msg ||
+            'Password Changed!',
           type: 'success',
           // description: 'Can not change password at the moment, try again.',
           // danger: 'error',
@@ -526,14 +535,20 @@ export const changePassword =
       } else {
         showMessage({
           message: 'Oh Snap!',
-          description: 'Can not change password at the moment, try again.',
+          description:
+            response?.data?.message ||
+            response?.data?.msg ||
+            'Can not change password at the moment, try again.',
           type: 'danger',
         });
       }
     } catch (error) {
       showMessage({
         message: 'Oh Snap!',
-        description: 'Can not change password at the moment, try again.',
+        description:
+          error?.response?.data?.message ||
+          error?.response?.data?.msg ||
+          'Can not change password at the moment, try again.',
         type: 'danger',
       });
       console.log('FAILED Changin Password.', error.response.data);
@@ -611,3 +626,74 @@ export const subscribeProduct = (data, accessToken) => async dispatch => {
     console.log('FAILED subscribing product.', error.response.data);
   }
 };
+
+export const rejectSubscription =
+  (data, accessToken, onSuccess) => async dispatch => {
+    // console.log(data, accessToken);
+    try {
+      const response = await axios.post(`${apiUrl}/rejectSubscriber`, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (response.data.success === true) {
+        showMessage({
+          message: response?.data?.message || response?.data?.msg,
+          type: 'success',
+        });
+        onSuccess();
+      } else {
+        showMessage({
+          message: response?.data?.message || response?.data?.msg,
+
+          type: 'danger',
+        });
+      }
+    } catch (error) {
+      showMessage({
+        message: 'Oh Snap!',
+        description:
+          error.response.data.msg ||
+          error.response.dat.message ||
+          'Network Error',
+        type: 'danger',
+      });
+      console.log('FAILED rejecting product.', error.response.data);
+    }
+  };
+
+export const acceptSubscription =
+  (data, accessToken, onSuccess) => async dispatch => {
+    try {
+      const response = await axios.post(`${apiUrl}/approveSubscriber`, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (response.data.success === true) {
+        showMessage({
+          message: response?.data?.message || response?.data?.msg,
+          type: 'success',
+        });
+        onSuccess();
+      } else {
+        showMessage({
+          message: response?.data?.message || response?.data?.msg,
+
+          type: 'danger',
+        });
+      }
+    } catch (error) {
+      showMessage({
+        message: 'Oh Snap!',
+        description:
+          error.response.data.msg ||
+          error.response.dat.message ||
+          'Network Error',
+        type: 'danger',
+      });
+      console.log('FAILED accepting product.', error.response.data);
+    }
+  };

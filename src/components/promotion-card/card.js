@@ -1,6 +1,7 @@
 import React from 'react';
-import {Text, View, Image, TouchableOpacity,Linking} from 'react-native';
+import {Text, View, Image, TouchableOpacity,Dimensions,Linking} from 'react-native';
 import style from './card_style';
+const {height, width} = Dimensions.get('window');
 
 const PromotionCard = props => {
   return (
@@ -13,7 +14,7 @@ const PromotionCard = props => {
             }
           });
     }}>
-      <Image source={props.img} />
+      <Image source={props.img} resizeMode='contain' style={{width:width*0.9}} />
     </TouchableOpacity>
   );
 };

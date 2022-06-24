@@ -26,8 +26,11 @@ const CustomerDetails = ({route, UserReducer, navigation}) => {
     Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
   console.log(data?.customer?.email);
   return (
-    <ImageBackground source={image} resizeMode="cover" style={{flex: 1}}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    // <ImageBackground source={image} resizeMode="cover" style={{flex: 1}}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      style={{backgroundColor: themePurple}}>
+      {Platform.OS === 'android' && (
         <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
           <StatusBar
             translucent
@@ -35,152 +38,153 @@ const CustomerDetails = ({route, UserReducer, navigation}) => {
             barStyle="light-content"
           />
         </View>
+      )}
 
-        {/* User Image  */}
-        <Image
-          source={
-            data?.customer?.profile_image !== '' &&
-            data?.customer?.profile_image !== undefined &&
-            data?.customer?.profile_image !== null
-              ? {uri: data?.customer?.profile_image}
-              : require('../assets/images/test.png')
-          }
-          style={{
-            width: width,
-            height: height * 0.5,
-          }}
+      {/* User Image  */}
+      <Image
+        source={
+          data?.customer?.profile_image !== '' &&
+          data?.customer?.profile_image !== undefined &&
+          data?.customer?.profile_image !== null
+            ? {uri: data?.customer?.profile_image}
+            : require('../assets/images/test.png')
+        }
+        style={{
+          width: width,
+          height: height * 0.5,
+        }}
+      />
+
+      <TouchableOpacity
+        activeOpacity={0.5}
+        onPress={() => navigation.goBack()}
+        style={{
+          zIndex: 9999,
+          position: 'absolute',
+          top: Platform?.OS == 'android' ? height * 0.11 : height * 0.07,
+          left: width * 0.03,
+          backgroundColor: themePurple,
+          paddingHorizontal: width * 0.01,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderRadius: width * 0.02,
+          borderWidth:1,
+          borderColor:'grey',
+          paddingVertical: height * 0.01,
+        }}>
+        <IconComp
+          type={'Ionicons'}
+          iconName="chevron-back-sharp"
+          passedStyle={{color: 'white', fontSize: width * 0.05}}
         />
-
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={() => navigation.goBack()}
+        <Text
           style={{
-            zIndex: 9999,
-            position: 'absolute',
-            top: height * 0.11,
-            left: width * 0.03,
-            backgroundColor: themePurple,
-            paddingHorizontal: width * 0.01,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: width * 0.02,
-            paddingVertical: height * 0.01,
+            color: 'white',
+            fontSize: width * 0.045,
+            paddingRight: width * 0.02,
           }}>
+          Customers
+        </Text>
+      </TouchableOpacity>
+
+      {/* Name And Email Container  */}
+      <View style={styles.textContainer}>
+        <Text style={styles.nameStyles}>
+          {data?.customer?.first_name == undefined ||
+          data?.customer?.last_name == undefined ||
+          data?.customer?.first_name == '' ||
+          data?.customer?.first_name == '' ||
+          data?.customer?.first_name == null ||
+          data?.customer?.first_name == null
+            ? 'No Name'
+            : `${data?.customer?.first_name} ${data?.customer?.last_name}`}
+        </Text>
+        <Text style={styles.emailStyles}>
+          {data?.email == '' || data?.email == undefined || data?.email == null
+            ? 'No Email-Address'
+            : data?.email}
+        </Text>
+      </View>
+
+      <View style={styles.allAttrs}>
+        <View style={styles.attrContainer}>
           <IconComp
-            type={'Ionicons'}
-            iconName="chevron-back-sharp"
-            passedStyle={{color: 'white', fontSize: width * 0.05}}
+            type={'FontAwesome'}
+            iconName="map-marker"
+            passedStyle={{color: themePurple, fontSize: width * 0.09}}
           />
           <Text
             style={{
-              color: 'white',
               fontSize: width * 0.045,
-              paddingRight: width * 0.02,
+              marginLeft: width * 0.03,
+              fontFamily: 'Poppins-Medium',
             }}>
-            Customers
-          </Text>
-        </TouchableOpacity>
-
-        {/* Name And Email Container  */}
-        <View style={styles.textContainer}>
-          <Text style={styles.nameStyles}>
-            {data?.customer?.first_name == undefined ||
-            data?.customer?.last_name == undefined ||
-            data?.customer?.first_name == '' ||
-            data?.customer?.first_name == '' ||
-            data?.customer?.first_name == null ||
-            data?.customer?.first_name == null
-              ? 'No Name'
-              : `${data?.customer?.first_name} ${data?.customer?.last_name}`}
-          </Text>
-          <Text style={styles.emailStyles}>
-            {data?.email == '' ||
-            data?.email == undefined ||
-            data?.email == null
-              ? 'No Email-Address'
-              : data?.email}
+            {data?.customer?.city == '' ||
+            data?.customer?.city == undefined ||
+            data?.customer?.city == null ||
+            data?.customer?.country == '' ||
+            data?.customer?.country == undefined ||
+            data?.customer?.country == null ||
+            data?.customer?.state == '' ||
+            data?.customer?.state == undefined ||
+            data?.customer?.state == null
+              ? 'No Location Description Available'
+              : `${data?.customer?.city}, ${data?.customer?.country}, ${data?.customer?.state}`}
           </Text>
         </View>
 
-        <View style={styles.allAttrs}>
-          <View style={styles.attrContainer}>
-            <IconComp
-              type={'FontAwesome'}
-              iconName="map-marker"
-              passedStyle={{color: themePurple, fontSize: width * 0.09}}
-            />
-            <Text
-              style={{
-                fontSize: width * 0.045,
-                marginLeft: width * 0.03,
-                fontFamily: 'Poppins-Medium',
-              }}>
-              {data?.customer?.city == '' ||
-              data?.customer?.city == undefined ||
-              data?.customer?.city == null ||
-              data?.customer?.country == '' ||
-              data?.customer?.country == undefined ||
-              data?.customer?.country == null ||
-              data?.customer?.state == '' ||
-              data?.customer?.state == undefined ||
-              data?.customer?.state == null
-                ? 'No Location Description Available'
-                : `${data?.customer?.city}, ${data?.customer?.country}, ${data?.customer?.state}`}
-            </Text>
-          </View>
-
-          <View style={styles.attrContainer}>
-            <IconComp
-              type={'FontAwesome'}
-              iconName="mobile-phone"
-              passedStyle={{
-                color: themePurple,
-                fontSize: width * 0.09,
-                marginLeft: 5,
-              }}
-            />
-            <Text
-              style={{
-                fontSize: width * 0.045,
-                marginLeft: width * 0.03,
-                fontFamily: 'Poppins-Medium',
-              }}>
-              {data?.customer?.phone == '' ||
-              data?.customer?.phone == null ||
-              data?.customer?.phone == undefined
-                ? 'No Contact Available'
-                : data?.customer?.phone}
-            </Text>
-          </View>
-
-          <View style={styles.attrContainer}>
-            <IconComp
-              type={
-                data?.customer?.status === 1 ? 'FontAwesome' : 'MaterialIcons'
-              }
-              iconName={data?.customer?.status === 1 ? 'check-circle' : 'cancel'}
-              passedStyle={{
-                color: data?.customer?.status === 1 ? 'green' : 'maroon',
-                fontSize: width * 0.08,
-              }}
-            />
-            <Text
-              style={{
-                fontSize: width * 0.045,
-                marginLeft: width * 0.01,
-                fontFamily: 'Poppins-Medium',
-              }}>
-              {data?.customer?.status === 1
-                ? 'Account Activated'
-                : 'Account Deactivated'}
-            </Text>
-          </View>
-
-          <ProductsWhiteCard item={data?.sheet} />
+        <View style={styles.attrContainer}>
+          <IconComp
+            type={'FontAwesome'}
+            iconName="mobile-phone"
+            passedStyle={{
+              color: themePurple,
+              fontSize: width * 0.09,
+              marginLeft: 5,
+            }}
+          />
+          <Text
+            style={{
+              fontSize: width * 0.045,
+              marginLeft: width * 0.03,
+              fontFamily: 'Poppins-Medium',
+            }}>
+            {data?.customer?.phone == '' ||
+            data?.customer?.phone == null ||
+            data?.customer?.phone == undefined
+              ? 'No Contact Available'
+              : data?.customer?.phone}
+          </Text>
         </View>
-      </ScrollView>
-    </ImageBackground>
+
+        <View style={styles.attrContainer}>
+          <IconComp
+            type={
+              data?.customer?.status === 1 ? 'FontAwesome' : 'MaterialIcons'
+            }
+            iconName={data?.customer?.status === 1 ? 'check-circle' : 'cancel'}
+            passedStyle={{
+              color: data?.customer?.status === 1 ? 'green' : 'maroon',
+              fontSize: width * 0.08,
+            }}
+          />
+          <Text
+            style={{
+              fontSize: width * 0.045,
+              marginLeft: width * 0.01,
+              fontFamily: 'Poppins-Medium',
+            }}>
+            {data?.customer?.status === 1
+              ? 'Account Activated'
+              : 'Account Deactivated'}
+          </Text>
+        </View>
+
+        <ProductsWhiteCard item={data?.sheet} />
+      </View>
+    </ScrollView>
+    // </ImageBackground>
   );
 };
 
@@ -215,8 +219,9 @@ const styles = StyleSheet.create({
     marginHorizontal: width * 0.05,
   },
   textContainer: {
+    paddingVertical: height * 0.01,
     position: 'absolute',
-    top: height * 0.4,
+    top: Platform.OS == 'android' ?height * 0.37: height * 0.34,
     left: width * 0.05,
     paddingHorizontal: width * 0.045,
     backgroundColor: 'rgba(0,0,0,0.4)',
@@ -232,6 +237,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Poppins-Medium',
     fontSize: width * 0.04,
-    marginTop: height * -0.01,
+    // marginTop: height * -0.01,
   },
 });

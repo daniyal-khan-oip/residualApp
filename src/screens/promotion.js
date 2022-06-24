@@ -46,14 +46,17 @@ const Promotion = ({navigation}) => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             marginTop: height * 0.05,
+            // backgroundColor:'red',
+            alignItems: 'center',
           }}>
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('Profile');
             }}>
             <Image
-              style={{height: 30, width: 30, resizeMode: 'contain'}}
+              style={{height: 30, width: 30}}
               source={require('../assets/images/menu.png')}
+              resizeMode="contain"
             />
           </TouchableOpacity>
           <Image
@@ -68,6 +71,7 @@ const Promotion = ({navigation}) => {
                   width: 25,
                   tintColor: 'white',
                   justifyContent: 'center',
+                  opacity: 0,
                 }}
                 source={require('../assets/images/refresh.png')}
               />
@@ -75,23 +79,21 @@ const Promotion = ({navigation}) => {
           </View>
         </View>
 
-        <View style={{}}>
-          <Text style={style.main_title}>Promotions</Text>
-          <View>
-            <PromotionCard
-              img={promotionImg1}
-              link="https://www.amazon.com/gp/help/customer/display.html?nodeId=202075790"
-            />
-            <PromotionCard
-              img={promotionImg2}
-              link="https://vimeo.com/features/video-library"
-            />
-            <PromotionCard
-              img={promotionImg3}
-              link="https://www.amazon.com/gp/help/customer/display.html?nodeId=202075790"
-            />
-            <PromotionCard img={promotionImg4} link="https://www.lipsum.com/" />
-          </View>
+        <Text style={style.main_title}>Promotions</Text>
+        <View>
+          <PromotionCard
+            img={promotionImg1}
+            link="https://www.amazon.com/gp/help/customer/display.html?nodeId=202075790"
+          />
+          <PromotionCard
+            img={promotionImg2}
+            link="https://vimeo.com/features/video-library"
+          />
+          <PromotionCard
+            img={promotionImg3}
+            link="https://www.amazon.com/gp/help/customer/display.html?nodeId=202075790"
+          />
+          <PromotionCard img={promotionImg4} link="https://www.lipsum.com/" />
         </View>
       </ScrollView>
     </ImageBackground>

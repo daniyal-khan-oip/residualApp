@@ -14,13 +14,23 @@ import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 const {height, width} = Dimensions.get('window');
 
-const SubscriptionReqsMapper = ({item, index, navigation}) => {
+const SubscriptionReqsMapper = ({
+  item,
+  index,
+  navigation,
+  setSubscriptionRequests,
+  subscriptionRequests,
+}) => {
   return (
     <TouchableOpacity
       key={index}
       style={{alignSelf: 'center'}}
       onPress={() => {
-        navigation.navigate('ViewSubscriptionDetails', {item: item});
+        navigation.navigate('ViewSubscriptionDetails', {
+          item: item,
+          index: index,
+          setSubscriptionRequests: setSubscriptionRequests,subscriptionRequests:subscriptionRequests
+        });
       }}
       activeOpacity={0.8}>
       {

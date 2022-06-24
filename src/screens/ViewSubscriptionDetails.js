@@ -10,27 +10,64 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {themePurple} from '../assets/colors/colors';
 import moment from 'moment';
+import Heading from '../components/Heading';
 import IconComp from '../components/IconComp';
+import {connect} from 'react-redux';
+import * as actions from '../store/Actions/index';
+
 const image = require('../assets/images/login_bg.png');
 const {width, height} = Dimensions.get('window');
 
-const ViewSubscriptionDetails = ({route, navigation}) => {
+const ViewSubscriptionDetails = ({
+  route,
+  navigation,
+  acceptSubscription,
+  UserReducer,
+  rejectSubscription,
+  subscriptionRequests,
+}) => {
   const ITEM = route?.params?.item;
+  const INDEX = route?.params?.index;
+  const accessToken = UserReducer?.accessToken;
 
   const STATUS_BAR_HEIGHT =
     Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
+
+  const data = {
+    id: ITEM?.id,
+  };
+
+  const [isLoading, setIsLoading] = useState(false);
+  const onPressAccept = async () => {
+    setIsLoading(true);
+    await acceptSubscription(data, accessToken, onSuccess);
+    setIsLoading(false);
+  };
+
+  const onPressReject = async () => {
+    setIsLoading(true);
+    await rejectSubscription(data, accessToken, onSuccess);
+    setIsLoading(false);
+  };
+
+  const onSuccess = () => {
+    // setSubscriptionRequests([subscriptionRequests?.splice(0, INDEX)]);
+    navigation.navigate('subscriptionReqs');
+  };
   return (
     <ImageBackground source={image} resizeMode="cover" style={{flex: 1}}>
-      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
-        <StatusBar
-          translucent
-          backgroundColor={themePurple}
-          barStyle="light-content"
-        />
-      </View>
+      {Platform.OS == 'android' && (
+        <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+          <StatusBar
+            translucent
+            backgroundColor={themePurple}
+            barStyle="light-content"
+          />
+        </View>
+      )}
       {/* ScrollView  */}
       <ScrollView nestedScrollEnabled={true}>
         {/* Header  */}
@@ -107,27 +144,87 @@ const ViewSubscriptionDetails = ({route, navigation}) => {
           <Text style={styles.headingStyle}>Customer Email:</Text>
           <Text style={styles.valueStyle}>{`${ITEM?.email}`}</Text>
         </View>
+
+        <View
+          style={{
+            marginVertical: height * 0.03,
+            marginHorizontal: width * 0.05,
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+          }}>
+          {isLoading ? (
+            <View style={[styles.btnContainer, {width: width * 0.6}]}>
+              <Heading
+                title="Please Wait"
+                passedStyle={styles.textStyle}
+                fontType="semi-bold"
+              />
+            </View>
+          ) : (
+            <>
+              {/* Accept Button  */}
+              <TouchableOpacity
+                onPress={async () => {
+                  onPressAccept();
+                  // navigation.navigate('subscriptionReqs');
+                }}
+                activeOpacity={0.9}
+                style={styles.btnContainer}>
+                <Heading
+                  title="Accept"
+                  passedStyle={styles.textStyle}
+                  fontType="semi-bold"
+                />
+              </TouchableOpacity>
+              {/* Reject Button  */}
+              <TouchableOpacity
+                onPress={() => {
+                  onPressReject();
+                  // navigation.navigate('subscriptionReqs');
+                }}
+                activeOpacity={0.9}
+                style={styles.btnContainer}>
+                <Heading
+                  title="Reject"
+                  passedStyle={styles.textStyle}
+                  fontType="semi-bold"
+                />
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
       </ScrollView>
     </ImageBackground>
   );
 };
 
-export default ViewSubscriptionDetails;
+const mapStateToProps = ({UserReducer}) => {
+  return {UserReducer};
+};
+
+export default connect(mapStateToProps, actions)(ViewSubscriptionDetails);
 
 const styles = StyleSheet.create({
-  contentContainerStyle: {justifyContent: 'center', alignItems: 'center'},
+  textStyle: {color: 'white', fontSize: width * 0.04},
+  contentContainerStyle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   btnTextStyle: {
     color: 'white',
     fontSize: width * 0.04,
     fontFamily: 'Poppins-Medium',
   },
-  btnStyle: {
-    backgroundColor: 'purple',
-    borderRadius: width * 0.02,
-    paddingVertical: height * 0.007,
-    paddingHorizontal: width * 0.02,
-    marginRight: width * 0.03,
+  btnContainer: {
+    borderRadius: width * 0.04,
+    backgroundColor: themePurple,
+    width: width * 0.4,
+    height: height * 0.06,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
+
   cardStyle: {
     width: width * 0.9,
     backgroundColor: 'white',
@@ -171,17 +268,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
     fontSize: width * 0.04,
   },
+
   lottieStyle: {
-    height: height * 0.4,
-    // width:width * 0.3,
-    // marginTop:100,
-    position: 'absolute',
+    height: Platform?.OS === 'ios' ? height * 0.33 : height * 0.38,
     // backgroundColor: 'red',
-    // bottom: height * 0.032,
-    top: height * 0.14,
-    zIndex: 9999,
-    // left: width * 0.01,
+    // position: 'absolute',
+    // top:100,
+    marginTop: Platform?.OS === 'ios' ? height * -0.037 : height * -0.06,
+    // zIndex: 99999,
+    // left: width * 0.04,
   },
+
   main_title: {
     marginVertical: height * 0.05,
     fontSize: width * 0.06,

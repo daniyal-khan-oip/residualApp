@@ -75,7 +75,7 @@ const productCard = props => {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => {
-          if (props.type === 'AirBNB' || props.type === 'UNIQUE EXPRESS') {
+          if (props.type === 'AirBNB' || props.type === 'Trucking') {
             props.onPress(props.type);
           } else {
             props.navigation.navigate('ProductsListings', {type: props.type});

@@ -13,7 +13,6 @@ const MainNavigator = ({UserReducer}) => {
           PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        
         } else {
           BackHandler.exitApp();
         }
@@ -21,7 +20,7 @@ const MainNavigator = ({UserReducer}) => {
         console.warn(err);
       }
     }
-    requestLocationPermission();
+    Platform.OS === 'android' && requestLocationPermission();
   }, []);
   return (
     <>
