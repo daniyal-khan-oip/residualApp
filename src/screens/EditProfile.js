@@ -10,6 +10,7 @@ import {
   StatusBar,
   Platform,
   ImageBackground,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {connect} from 'react-redux';
 import React, {useState, useEffect, useRef} from 'react';
@@ -91,7 +92,8 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
     setLname(UserReducer?.userData?.last_name);
   }, [UserReducer?.userData]);
   return (
-    <ScrollView
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <ScrollView
       showsVerticalScrollIndicator={false}
       style={{backgroundColor: themePurple}}>
       {Platform?.OS !== 'ios' && (
@@ -222,6 +224,7 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
         </View>
       </View>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

@@ -250,10 +250,10 @@ export const getInvoicesByEmail = (data, token) => async dispatch => {
 export const getInvoicesByDate = (data, token) => async dispatch => {
   try {
     const URL = `${apiUrl}/getInvoiceFilter`;
-
+    // alert(JSON.stringify(data))
     const res = await axios.post(
       URL,
-      {start: data.start, end: data.end},
+      {date: data.start, end: data.end},
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -261,7 +261,7 @@ export const getInvoicesByDate = (data, token) => async dispatch => {
         },
       },
     );
-
+    // alert(JSON.stringify(res.data))
     if (res.data.success) {
       dispatch({
         type: types.GET_INVOICES,

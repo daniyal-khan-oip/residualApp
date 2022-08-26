@@ -122,7 +122,7 @@ const SubscriptionRequests = ({
   // }, [UserReducer?.subsReqs]);
 
   const getRequests = async () => {
-    setIsLoading(true);
+    pageNo==1?setIsLoading(true):null
     const response = await axios.get(
       `${apiUrl}/getAllSubscribeCustomer?page=${pageNo}`,
       {
@@ -152,7 +152,8 @@ const SubscriptionRequests = ({
       },
     });
     setLastPage(response?.data?.data?.last_page);
-    setIsLoading(false);
+    pageNo==1?setIsLoading(false):null
+    // setIsLoading(false);
   };
 
   useEffect(() => {

@@ -9,6 +9,7 @@ import {
   ImageBackground,
   Platform,
   StatusBar,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
@@ -94,6 +95,7 @@ const ChangePassword = ({navigation, UserReducer, changePassword}) => {
   };
 
   return (
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex:1}}>
     <ImageBackground source={image} resizeMode="cover" style={styles.container}>
      {Platform?.OS !== 'ios' && <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
         <StatusBar
@@ -103,7 +105,7 @@ const ChangePassword = ({navigation, UserReducer, changePassword}) => {
         />
       </View>}
       <SafeAreaView style={{flex: 1}}>
-        <ScrollView showsVerticalScrollIndicator={false}>
+       <ScrollView showsVerticalScrollIndicator={false}>
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => navigation.goBack()}
@@ -283,6 +285,7 @@ const ChangePassword = ({navigation, UserReducer, changePassword}) => {
         </ScrollView>
       </SafeAreaView>
     </ImageBackground>
+    </KeyboardAvoidingView>
   );
 };
 

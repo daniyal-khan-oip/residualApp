@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -17,10 +17,11 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import * as actions from '../store/Actions/index';
-import {connect} from 'react-redux';
-import {themePurple} from '../assets/colors/colors';
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import { connect } from 'react-redux';
+import { themePurple } from '../assets/colors/colors';
+import { showMessage, hideMessage } from 'react-native-flash-message';
 import IconComp from '../components/IconComp';
 import Button from '../components/Button';
 import Heading from '../components/Heading';
@@ -30,14 +31,14 @@ import DatePicker from 'react-native-date-picker';
 import colors from '../assets/colors';
 import InvoiceMapper from '../components/invoice-card/InvoiceMapper';
 import InvoiceMappers from '../components/invoice-card/InvoiceMappers';
-import {LogBox} from 'react-native';
+import { LogBox } from 'react-native';
 
 LogBox.ignoreLogs([
   'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.',
 ]);
 
 const image = require('../assets/images/login_bg.png');
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
 const Invoices = ({
   getInvoicesByDate,
@@ -93,8 +94,8 @@ const Invoices = ({
       const oldData = !isAdmin
         ? [...invoices]
         : isAdmin && searchChoice !== 'all'
-        ? []
-        : [...invoices];
+          ? []
+          : [...invoices];
       // setInvoices([...UserReducer?.invoices]);
       setInvoices([...oldData, ...UserReducer?.invoices]);
     } else {
@@ -126,6 +127,7 @@ const Invoices = ({
       start: moment(startDate).format('YYYY-MM-DD'),
       end: moment(endDate).format('YYYY-MM-DD'),
     };
+    // alert(JSON.stringify(data))
     await getInvoicesByDate(data, accessToken);
     setIsLoading(false);
   };
@@ -140,7 +142,7 @@ const Invoices = ({
         <View
           style={[
             styles.notFoundContainer,
-            {marginVertical: isAdmin ? height * 0.1 : height * 0.05},
+            { marginVertical: isAdmin ? height * 0.1 : height * 0.05 },
           ]}>
           <Text style={styles.noRecFound}>No Invoices Found!</Text>
         </View>
@@ -156,7 +158,7 @@ const Invoices = ({
             style={styles.loadMoreBtn}>
             <Text style={styles.btnText}>Load More</Text>
             {isLoading ? (
-              <ActivityIndicator color="white" style={{marginLeft: 8}} />
+              <ActivityIndicator color="white" style={{ marginLeft: 8 }} />
             ) : null}
           </TouchableOpacity>
         </View>
@@ -189,17 +191,17 @@ const Invoices = ({
     // const pageNum = pageNo + 1;
     setPageNo(pageNo + 1);
     Keyboard.dismiss();
-    setIsLoading(true);
+    pageNo == 1 ? setIsLoading(true) : null
     if (isAdmin) {
       await getAdminInvoices(API_DATA, accessToken, pageNo);
     } else {
       await getUserInvoices(CUSTOMER_API_DATA, accessToken, pageNo);
     }
 
-    setIsLoading(false);
+    pageNo == 1 ? setIsLoading(false) : null
   };
 
-  const ButtonsComp = ({item}) => {
+  const ButtonsComp = ({ item }) => {
     return (
       <Button
         title={item.btnName}
@@ -239,9 +241,9 @@ const Invoices = ({
   ];
 
   return (
-    <ImageBackground source={image} style={{flex: 1}} resizeMode="cover">
+    <ImageBackground source={image} style={{ flex: 1 }} resizeMode="cover">
       {Platform.OS !== 'ios' && (
-        <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+        <View style={{ height: STATUS_BAR_HEIGHT, backgroundColor: themePurple }}>
           <StatusBar
             translucent
             backgroundColor={themePurple}
@@ -277,13 +279,13 @@ const Invoices = ({
                       navigation.navigate('profile');
                     }}>
                     <Image
-                      style={{height: 30, width: 30, resizeMode: 'contain'}}
+                      style={{ height: 30, width: 30, resizeMode: 'contain' }}
                       source={require('../assets/images/menu.png')}
                     />
                   </TouchableOpacity>
 
                   <Image
-                    style={{height: 50, width: 50}}
+                    style={{ height: 50, width: 50 }}
                     source={require('../assets/images/app-logo.png')}
                   />
                   <TouchableOpacity
@@ -320,7 +322,7 @@ const Invoices = ({
                   <FlatList
                     data={Buttons}
                     horizontal={true}
-                    renderItem={({item, index}) => {
+                    renderItem={({ item, index }) => {
                       return <ButtonsComp item={item} />;
                     }}
                   />
@@ -341,7 +343,7 @@ const Invoices = ({
                       <View
                         style={[
                           styles.rowView,
-                          {justifyContent: 'flex-start'},
+                          { justifyContent: 'flex-start' },
                         ]}>
                         <Heading
                           title={'Start Date:'}
@@ -351,12 +353,12 @@ const Invoices = ({
                           title={'End Date:'}
                           passedStyle={[
                             styles.dateLabel,
-                            {marginLeft: width * 0.25},
+                            { marginLeft: width * 0.25 },
                           ]}
                         />
                       </View>
                       <View
-                        style={[styles.rowView, {marginBottom: height * 0.03}]}>
+                        style={[styles.rowView, { marginBottom: height * 0.03 }]}>
                         <View style={styles.rowView}>
                           <TouchableOpacity
                             style={styles.datePickerView}
@@ -406,8 +408,20 @@ const Invoices = ({
                           ? _onPressSearch
                           : _onPressDateSearch
                       }
-                      style={styles.btnContainer}>
-                      <Text style={styles.btnText}>Search</Text>
+                      // style={styles.btnContainer}
+                      >
+                      {/* <Text style={styles.btnText}>Search</Text> */}
+                      <LinearGradient
+
+                        colors={['#74B5E8', '#9974F2', '#E43DEC']}
+                        style={styles.btnContainer}
+                        start={{ x: 0, y: 0.5 }}
+                        end={{ x: 1, y: 0.5 }}
+                        locations={[0, 0.7, 0.9]}
+                      >
+                        <Text style={styles.btnText}>Search</Text>
+                      </LinearGradient>
+
                     </TouchableOpacity>
                   )}
               </>
@@ -455,7 +469,7 @@ const Invoices = ({
                         />
                       }
                       data={isLoading ? [] : invoices}
-                      renderItem={({item, index}) => (
+                      renderItem={({ item, index }) => (
                         <InvoiceMappers
                           item={item}
                           index={index}
@@ -481,7 +495,7 @@ const Invoices = ({
                       />
                     }
                     data={isLoading ? [] : invoices}
-                    renderItem={({item, index}) => (
+                    renderItem={({ item, index }) => (
                       <InvoiceMapper
                         item={item}
                         index={index}
@@ -649,7 +663,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: width * 0.04,
     marginBottom: height * 0.02,
-    marginRight: width * 0.05,
+    // marginRight: width * 0.05,
+    marginLeft:width*0.5
   },
   btnText: {
     color: 'white',
@@ -699,8 +714,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({UserReducer}) => {
-  return {UserReducer};
+const mapStateToProps = ({ UserReducer }) => {
+  return { UserReducer };
 };
 
 export default connect(mapStateToProps, actions)(Invoices);

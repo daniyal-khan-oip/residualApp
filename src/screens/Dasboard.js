@@ -282,7 +282,7 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
               <Text style={style.main_title}>Dashboard</Text>
               <View style={style.card_main}>
                 <LinearGradient
-                  colors={['#7124BC', '#437AD8', '#05F0FF']}
+                  colors={['#74B5E8', '#9974F2', '#E43DEC']}
                   style={style.gradient_card}
                   start={{y: 0.0, x: -0.05}}
                   angleCenter={{x: 5, y: 0}}
@@ -295,7 +295,7 @@ const Dashboard = ({UserReducer, getTotalInvestmentAndEarning, navigation}) => {
                   <Text style={style.card_title}>Investments</Text>
                 </LinearGradient>
                 <LinearGradient
-                  colors={['#7124BC', '#437AD8', '#05F0FF']}
+                  colors={['#74B5E8', '#9974F2', '#E43DEC']}
                   style={style.gradient_card}
                   start={{y: 0.0, x: -0.05}}
                   angleCenter={{x: 5, y: 0}}

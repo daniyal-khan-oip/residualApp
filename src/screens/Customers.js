@@ -35,7 +35,7 @@ const Customers = ({UserReducer, navigation}) => {
   const [lastPage, setLastPage] = useState(0);
 
   const getCustomers = async () => {
-    setIsLoading(true);
+    pageNo==1?setIsLoading(true):null
     const response = await axios.get(`${apiUrl}/customers?page=${pageNo}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -48,7 +48,7 @@ const Customers = ({UserReducer, navigation}) => {
     }
 
     setLastPage(response?.data?.data?.last_page);
-    setIsLoading(false);
+    pageNo==1?setIsLoading(false):null
   };
 
   useEffect(() => {
