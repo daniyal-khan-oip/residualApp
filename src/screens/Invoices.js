@@ -212,6 +212,7 @@ const Invoices = ({
             backgroundColor: 'orange',
           },
         ]}
+        selected={searchChoice === item?.btnChoice}
         isBgColor={false}
         btnTextStyle={{
           fontFamily: 'Poppins-SemiBold',

@@ -1,5 +1,6 @@
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity, Dimensions} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, Dimensions } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { themePurple } from '../assets/colors/colors';
 
 import IconComp from './IconComp';
@@ -13,38 +14,47 @@ const Button = ({
   isBgColor = true,
   btnStyle,
   btnTextStyle,
+  selected
 }) => {
   return (
     <TouchableOpacity
       activeOpacity={0.8}
-      style={[
-        styles.btn,
-        btnStyle,
-        isBgColor
-          ? styles.btnWithBgColor
-          : styles.btnWithOutBgColor && btnStyle,
-      ]}
       onPress={() => {
         onBtnPress();
       }}>
-      <Text
+      <LinearGradient
+        colors={selected?['#74B5E8', '#9974F2', '#E43DEC']:['#fff','#fff']}
         style={[
-          styles.text,
+          styles.btn,
+          btnStyle,
           isBgColor
-            ? {color: 'white'}
-            : btnTextStyle
-            ? btnTextStyle
-            : {color: themePurple},
-          // color: isBgColor ? '#ffffff' : themePurple},
-        ]}>
-        {title}
-      </Text>
-      <IconComp
-        iconName={'exclamationcircle'}
-        // iconSize={}
-        type={'AntDesign'}
+            ? styles.btnWithBgColor
+            : styles.btnWithOutBgColor && btnStyle,
+        ]}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        locations={[0, 0.7, 0.9]}
+      >
+        <Text
+          style={[
+            styles.text,
+            isBgColor
+              ? { color: 'white' }
+              : btnTextStyle
+                ? btnTextStyle
+                : { color: themePurple },
+                {color:selected?'white':'black'}
+            // color: isBgColor ? '#ffffff' : themePurple},
+          ]}>
+          {title}
+        </Text>
+        <IconComp
+          iconName={'exclamationcircle'}
+          // iconSize={}
+          type={'AntDesign'}
         // passedStyle={}
-      />
+        />
+      </LinearGradient>
     </TouchableOpacity>
   );
 };

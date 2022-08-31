@@ -15,7 +15,7 @@ const CustomersRender = ({item, index, onPress}) => {
     item?.role_id === 3 && (
       <TouchableOpacity key={index} activeOpacity={0.5} onPress={() =>onPress(item)}>
         <LinearGradient
-          colors={['#7124BC', '#437AD8', '#05F0FF']}
+           colors={['#74B5E8', '#9974F2', '#E43DEC']}
           style={style.gradient_btn}
           start={{y: 0.0, x: 0.001}}
           angleCenter={{x: 5, y: 0}}

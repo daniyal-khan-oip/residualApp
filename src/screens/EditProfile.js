@@ -20,8 +20,10 @@ import ImagePicker from 'react-native-image-crop-picker';
 import * as actions from '../store/Actions/index';
 import {showMessage, hideMessage} from 'react-native-flash-message';
 import IconComp from '../components/IconComp';
+import LinearGradient from 'react-native-linear-gradient';
 
 const {width, height} = Dimensions.get('window');
+const imageURL = require('../assets/images/login_bg.png');
 
 const EditProfile = ({UserReducer, updateProfile, navigation}) => {
   const [fname, setFname] = useState(UserReducer?.userData?.first_name);
@@ -95,7 +97,7 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <ScrollView
       showsVerticalScrollIndicator={false}
-      style={{backgroundColor: themePurple}}>
+      >
       {Platform?.OS !== 'ios' && (
         <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
           <StatusBar
@@ -105,6 +107,10 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
           />
         </View>
       )}
+      <ImageBackground
+      source={imageURL} resizeMode="cover"
+      style={{flex:1}}
+      >
       <View style={styles.container}>
         {/* Image Container  */}
         <View style={styles.imageContainer}>
@@ -217,12 +223,21 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={updateProfileChanges}
-              style={styles.updateBtnStyle}>
+              >
+              <LinearGradient
+              colors={['#74B5E8', '#9974F2', '#E43DEC']}
+              start={{y: 0.0, x: 0.001}}
+              angleCenter={{x: 5, y: 0}}
+              end={{y: 0.0, x: 1.1}}
+              style={styles.updateBtnStyle}
+              >
               <Text style={styles.btnTxt}>Update</Text>
+              </LinearGradient>
             </TouchableOpacity>
           )}
         </View>
       </View>
+      </ImageBackground>
     </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -243,7 +258,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // height: height,
-    backgroundColor: themePurple,
+    // backgroundColor: themePurple,
   },
   btnTxt: {
     color: 'white',
@@ -251,7 +266,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
   },
   updateBtnStyle: {
-    borderWidth: 2,
+    borderWidth: 0,
     borderColor: 'white',
     backgroundColor: themePurple,
     width: width * 0.4,
@@ -313,7 +328,7 @@ const styles = StyleSheet.create({
     fontSize: width * 0.04,
     fontFamily: 'Poppins-Medium',
     color: 'white',
-    backgroundColor: themePurple,
+    // backgroundColor: themePurple,
     marginVertical: height * 0.01,
   },
   textInputLabel: {
