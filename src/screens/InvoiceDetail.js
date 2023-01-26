@@ -106,30 +106,36 @@ console.log(navParams)
         </View>
 
         <View style={style.textViewStyle}>
+          <Text style={style.headingStyle}>Invoice Date</Text>
+          <Text style={style.valueStyle}>{`${moment(
+            navParams?.created_at,
+          ).format('MMM-DD-YYYY')}`}</Text>
+        </View>
+
+        <View style={style.textViewStyle}>
+          <Text style={style.headingStyle}>Quantity </Text>
+          <Text style={style.valueStyle}>{navParams?.qty}</Text>
+        </View>
+
+
+        <View style={style.textViewStyle}>
           <Text style={style.headingStyle}>Product</Text>
           <Text style={style.valueStyle}>{navParams?.product}</Text>
         </View>
        
+
         <View style={style.textViewStyle}>
           <Text style={style.headingStyle}>Status</Text>
           <Text style={style.valueStyle}>{navParams?.Status === null ? 'Inactive' : "Active"}</Text>
         </View>
        
 
-        <View style={style.textViewStyle}>
-          <Text style={style.headingStyle}>Quantity </Text>
-          <Text style={style.valueStyle}>{navParams?.qty}</Text>
-        </View>
+      
         <View style={style.textViewStyle}>
           <Text style={style.headingStyle}>Rate</Text>
           <Text style={style.valueStyle}>{navParams?.rate}</Text>
         </View>
-        <View style={style.textViewStyle}>
-          <Text style={style.headingStyle}>Invoice Date</Text>
-          <Text style={style.valueStyle}>{`${moment(
-            navParams?.created_at,
-          ).format('MMM-DD-YYYY')}`}</Text>
-        </View>
+      
         {/* <View style={style.textViewStyle}> */}
         <Text style={style.headingStyle}>Customer Email:</Text>
         <Text style={style.valueStyle}>{`${navParams?.customer_email}`}</Text>

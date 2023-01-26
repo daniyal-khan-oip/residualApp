@@ -1,7 +1,7 @@
 import React from 'react';
 import Dashboard from './screens/Dasboard';
 import Promotion from './screens/promotion';
-import {AnimatedTabBarNavigator} from 'react-native-animated-nav-tab-bar';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Profile from './screens/Profile';
 import Products from './screens/Products';
 import Invoices from './screens/Invoices';
@@ -14,12 +14,14 @@ import {connect} from 'react-redux';
 import ProfileStack from './screens/ProfileStack';
 import CustomersStack from './screens/CustomersStack';
 import InvoicesStack from './InvoicesStack';
+import MyTabBar from './components/TabBar';
 
-const Tabs = AnimatedTabBarNavigator();
+const Tabs = createBottomTabNavigator();
 
 const MainStack = ({UserReducer}) => {
   return (
     <Tabs.Navigator
+    tabBar={props => <MyTabBar {...props} />}
       initialRouteName="dashboard"
       tabBarOptions={{
         activeTintColor: 'white',
@@ -27,9 +29,11 @@ const MainStack = ({UserReducer}) => {
           backgroundColor: 'red',
         },
         activeBackgroundColor: '#7124BC',
+        
       }}
       appearance={{
         tabBarBackground: '#F1F4F7',
+
       }}>
       <Tabs.Screen
         name="Dashboard"
@@ -47,21 +51,11 @@ const MainStack = ({UserReducer}) => {
       />
       {UserReducer?.userData?.role_id === 3 && (
         <Tabs.Screen
-          name="Productss"
+          name="Products"
           component={ProductsStack}
-          options={{
-            tabBarIcon: ({focused, color, size}) => (
-              <Feather
-                name="box"
-                size={size ? size : 26}
-                color={focused ? color : '#A1A2AB'}
-                focused={focused}
-              />
-            ),
-          }}
         />
       )}
-      {UserReducer?.userData?.role_id === 3 && (
+      { (
         <Tabs.Screen
           name="Promotions"
           component={Promotion}
@@ -80,7 +74,7 @@ const MainStack = ({UserReducer}) => {
 
       {UserReducer?.userData?.role_id !== 3 && (
         <Tabs.Screen
-          name="Customers"
+          name="Clients"
           component={CustomersStack}
           options={({navigation}) => {
             return {

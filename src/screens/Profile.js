@@ -15,7 +15,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesomeI from 'react-native-vector-icons/FontAwesome5';
 import Fontisto from 'react-native-vector-icons/Fontisto';
-import Octicons from 'react-native-vector-icons/Octicons';
+import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {UserReducer} from '../store/Reducers/UserReducer';
 import {connect} from 'react-redux';
@@ -34,7 +34,7 @@ const Profile = ({UserReducer, user_logout, navigation}) => {
   const [name, setName] = useState(
     `${UserReducer?.userData?.first_name} ${UserReducer?.userData?.last_name}`,
   );
-
+  const isAdmin = UserReducer?.userData?.role_id !== 3 ? true : false;
   useEffect(() => {
     setName(
       `${UserReducer?.userData?.first_name} ${UserReducer?.userData?.last_name}`,
@@ -54,15 +54,58 @@ const Profile = ({UserReducer, user_logout, navigation}) => {
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}>
         <View style={style.contentView}>
+          {/* Header  */}
+          <View style={style.headerStyle}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={{
+                width: width * 0.15,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              onPress={() => {
+                navigation.goBack();
+              }}>
+              <Image
+                style={{height: 30, width: 30, resizeMode: 'contain'}}
+                source={require('../assets/images/menu.png')}
+              />
+            </TouchableOpacity>
+
+            <Image
+              style={{height: 50, width: 50}}
+              source={require('../assets/images/app-logo.png')}
+            />
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={{
+                width: width * 0.15,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              onPress={() => {
+                // onRefresh();
+              }}>
+              {/* <Image
+                style={{
+                  height: 22,
+                  width: 22,
+                  tintColor: 'white',
+                }}
+                source={require('../assets/images/refresh.png')}
+              /> */}
+            </TouchableOpacity>
+          </View>
+
           <LinearGradient
-            colors={['#7124BC', '#437AD8', '#05F0FF']}
+             colors={['#74B5E8', '#9974F2', '#E43DEC']}
             style={[
               style.gradient_btn,
               {
                 borderColor: '#707070',
                 borderStyle: 'solid',
                 borderWidth: 1,
-                marginBottom: height * 0.02,
+                marginVertical: height * 0.02,
               },
             ]}
             start={{y: 0.0, x: 0.001}}
@@ -86,127 +129,175 @@ const Profile = ({UserReducer, user_logout, navigation}) => {
             </View>
           </LinearGradient>
           <LinearGradient
-            colors={['#7124BC', '#437AD8', '#05F0FF']}
+             colors={['#74B5E8', '#9974F2', '#E43DEC']}
             style={[style.gradient_btn]}
             start={{y: 0.0, x: 0.001}}
             angleCenter={{x: 5, y: 0}}
             end={{y: 0.0, x: 1.1}}>
             {/* <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
-            <View style={style.list_icon}>
-              <Fontisto
-                name="credit-card"
-                size={width * 0.03}
-                color="#fff"
-                style={style.list_icon}
-              />
+              <View style={style.list_icon}>
+                <Fontisto
+                  name="credit-card"
+                  size={width * 0.03}
+                  color="#fff"
+                  style={style.list_icon}
+                />
+              </View>
+              <Text style={style.list_title}>Wallet</Text>
+              <Icon name="chevron-right" size={width * 0.04} color="#fff" />
+            </View> */}
+
+            {/* Amazon Cred  */}
+            {!isAdmin && (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('viewAuthCredentials', {type: 'amazon'})
+                }
+                activeOpacity={0.8}
+                style={[style.card_main, {paddingBottom: width * 0.05}]}>
+                <View style={style.list_icon}>
+                  <Icon
+                    name="amazon"
+                    size={width * 0.05}
+                    color="#fff"
+                    style={style.list_icon}
+                  />
+                </View>
+                <Text style={style.list_title}>Amazon Credentials</Text>
+                <Icon name="chevron-right" size={width * 0.04} color="#fff" />
+              </TouchableOpacity>
+            )}
+
+            {/* Walmart Cred  */}
+            {!isAdmin && (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('viewAuthCredentials', {type: 'walmart'})
+                }
+                activeOpacity={0.8}
+                style={[style.card_main, {paddingBottom: width * 0.05}]}>
+                <View style={style.list_icon}>
+                  <Image source={walmart} />
+                </View>
+                <Text style={style.list_title}>Walmart Credentials</Text>
+                <Icon name="chevron-right" size={width * 0.04} color="#fff" />
+              </TouchableOpacity>
+            )}
+
+            {/* Air BNB */}
+            {!isAdmin && (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('viewAuthCredentials', {type: 'airbnb'})
+                }
+                activeOpacity={0.8}
+                style={[style.card_main, {paddingBottom: width * 0.05}]}>
+                <View style={style.list_icon}>
+                  <Image source={bnb} />
+                </View>
+                <Text style={style.list_title}>Air BnB Credentials</Text>
+                <Icon name="chevron-right" size={width * 0.04} color="#fff" />
+              </TouchableOpacity>
+            )}
+
+            {/* Subscription  */}
+            {isAdmin && (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('subscriptionReqs', {type: 'amazon'})
+                }
+                activeOpacity={0.8}
+                style={[style.card_main, {paddingBottom: width * 0.05}]}>
+                <View style={style.list_icon}>
+                  <Feather
+                    name="package"
+                    size={width * 0.05}
+                    color="#fff"
+                    style={style.list_icon}
+                  />
+                </View>
+                <Text style={style.list_title}>Subscription Requests</Text>
+                <Icon name="chevron-right" size={width * 0.04} color="#fff" />
+              </TouchableOpacity>
+            )}
+            {/* <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
+              <View style={style.list_icon}>
+                <MaterialCommunityIcons
+                  name="truck"
+                  size={width * 0.06}
+                  color="#fff"
+                  style={style.list_icon}
+                />
+              </View>
+              <Text style={style.list_title}>Trucking Credentials</Text>
+              <Icon name="chevron-right" size={width * 0.04} color="#fff" />
             </View>
-            <Text style={style.list_title}>Wallet</Text>
-            <Icon name="chevron-right" size={width * 0.04} color="#fff" />
-          </View>
-          <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
-            <View style={style.list_icon}>
-              <Icon
-                name="amazon"
-                size={width * 0.05}
-                color="#fff"
-                style={style.list_icon}
-              />
+            <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
+              <View style={style.list_icon}>
+                <Fontisto
+                  name="credit-card"
+                  size={width * 0.03}
+                  color="#fff"
+                  style={style.list_icon}
+                />
+              </View>
+              <Text style={style.list_title}>All Credit Cards</Text>
+              <Icon name="chevron-right" size={width * 0.04} color="#fff" />
             </View>
-            <Text style={style.list_title}>Amazon Credentials</Text>
-            <Icon name="chevron-right" size={width * 0.04} color="#fff" />
-          </View>
-          <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
-            <View style={style.list_icon}>
-              <Image source={walmart} />
+            <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
+              <View style={style.list_icon}>
+                <Image source={category} />
+              </View>
+              <Text style={style.list_title}>Categories</Text>
+              <Icon name="chevron-right" size={width * 0.04} color="#fff" />
             </View>
-            <Text style={style.list_title}>Walmart Credentials</Text>
-            <Icon name="chevron-right" size={width * 0.04} color="#fff" />
-          </View>
-          <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
-            <View style={style.list_icon}>
-              <Image source={bnb} />
+            <View style={[style.card_main, {marginBottom: width * 0.05}]}>
+              <TouchableOpacity>
+                <Text style={style.connect_btn}>Connect to bank</Text>
+              </TouchableOpacity>
             </View>
-            <Text style={style.list_title}>Air BnB Credentials</Text>
-            <Icon name="chevron-right" size={width * 0.04} color="#fff" />
-          </View>
-          <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
-            <View style={style.list_icon}>
-              <MaterialCommunityIcons
-                name="truck"
-                size={width * 0.06}
-                color="#fff"
-                style={style.list_icon}
-              />
+            <View
+              style={[
+                style.card_main,
+                {
+                  paddingBottom: width * 0.03,
+                  marginBottom: width * 0.035,
+                  borderBottomColor: 'white',
+                  borderBottomWidth: 1,
+                },
+              ]}>
+              <View style={style.list_icon}>
+                <Icon
+                  name="puzzle-piece"
+                  size={width * 0.06}
+                  color="#fff"
+                  style={style.list_icon}
+                />
+              </View>
+              <Text style={style.list_title}>Tools</Text>
+              <Icon name="chevron-right" size={width * 0.04} color="#fff" />
             </View>
-            <Text style={style.list_title}>Trucking Credentials</Text>
-            <Icon name="chevron-right" size={width * 0.04} color="#fff" />
-          </View>
-          <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
-            <View style={style.list_icon}>
-              <Fontisto
-                name="credit-card"
-                size={width * 0.03}
-                color="#fff"
-                style={style.list_icon}
-              />
-            </View>
-            <Text style={style.list_title}>All Credit Cards</Text>
-            <Icon name="chevron-right" size={width * 0.04} color="#fff" />
-          </View>
-          <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
-            <View style={style.list_icon}>
-              <Image source={category} />
-            </View>
-            <Text style={style.list_title}>Categories</Text>
-            <Icon name="chevron-right" size={width * 0.04} color="#fff" />
-          </View>
-          <View style={[style.card_main, {marginBottom: width * 0.05}]}>
-            <TouchableOpacity>
-              <Text style={style.connect_btn}>Connect to bank</Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={[
-              style.card_main,
-              {
-                paddingBottom: width * 0.03,
-                marginBottom: width * 0.035,
-                borderBottomColor: 'white',
-                borderBottomWidth: 1,
-              },
-            ]}>
-            <View style={style.list_icon}>
-              <Icon
-                name="puzzle-piece"
-                size={width * 0.06}
-                color="#fff"
-                style={style.list_icon}
-              />
-            </View>
-            <Text style={style.list_title}>Tools</Text>
-            <Icon name="chevron-right" size={width * 0.04} color="#fff" />
-          </View>
-          <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
-            <View style={style.list_icon}>
-              <Icon
-                name="question-circle"
-                size={width * 0.06}
-                color="#fff"
-                style={style.list_icon}
-              />
-            </View>
-            <Text style={style.list_title}>Help and support</Text>
-            <Icon name="chevron-right" size={width * 0.04} color="#fff" />
-          </View>*/}
+            <View style={[style.card_main, {paddingBottom: width * 0.05}]}>
+              <View style={style.list_icon}>
+                <Icon
+                  name="question-circle"
+                  size={width * 0.06}
+                  color="#fff"
+                  style={style.list_icon}
+                />
+              </View>
+              <Text style={style.list_title}>Help and support</Text>
+              <Icon name="chevron-right" size={width * 0.04} color="#fff" />
+            </View> */}
 
             {/* Edit Profile  */}
             <TouchableOpacity
               style={[
                 style.card_main,
                 {
-                  paddingBottom: width * 0.05,
-                  borderBottomWidth: 1,
-                  borderBottomColor: 'white',
+                  // paddingBottom: width * 0.05,
+                  // borderBottomWidth: 1,
+                  // borderBottomColor: 'white',
                 },
               ]}
               activeOpacity={0.7}
@@ -228,9 +319,9 @@ const Profile = ({UserReducer, user_logout, navigation}) => {
               style={[
                 style.card_main,
                 {
-                  paddingVertical: width * 0.05,
-                  borderBottomWidth: 1,
-                  borderBottomColor: 'white',
+                  paddingTop: width * 0.05,
+                  // borderBottomWidth: 1,
+                  // borderBottomColor: 'white',
                 },
               ]}
               activeOpacity={0.7}
@@ -281,6 +372,7 @@ const style = StyleSheet.create({
     borderRadius: 20,
     padding: width * 0.05,
     width: width * 0.9,
+    alignSelf: 'center',
   },
   profile_img: {
     height: width * 0.15,
@@ -323,6 +415,14 @@ const style = StyleSheet.create({
   },
   contentView: {
     marginVertical: height * 0.04,
+  },
+  headerStyle: {
+    flexDirection: 'row',
+    width: width,
+    marginVertical: height * 0.02,
+    marginTop:height * 0.008,
+    // paddingVertical: height * 0.01,
+    justifyContent: 'space-between',
   },
 });
 

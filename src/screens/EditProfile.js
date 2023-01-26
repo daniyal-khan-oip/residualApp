@@ -9,6 +9,8 @@ import {
   Dimensions,
   StatusBar,
   Platform,
+  ImageBackground,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {connect} from 'react-redux';
 import React, {useState, useEffect, useRef} from 'react';
@@ -18,8 +20,10 @@ import ImagePicker from 'react-native-image-crop-picker';
 import * as actions from '../store/Actions/index';
 import {showMessage, hideMessage} from 'react-native-flash-message';
 import IconComp from '../components/IconComp';
+import LinearGradient from 'react-native-linear-gradient';
 
 const {width, height} = Dimensions.get('window');
+const imageURL = require('../assets/images/login_bg.png');
 
 const EditProfile = ({UserReducer, updateProfile, navigation}) => {
   const [fname, setFname] = useState(UserReducer?.userData?.first_name);
@@ -75,6 +79,7 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
 
   const _onSuccess = () => {
     setLoading(false);
+
     ImagePicker.clean().then(() => {
       console.log('removed all tmp images from tmp directory');
     });
@@ -89,14 +94,23 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
     setLname(UserReducer?.userData?.last_name);
   }, [UserReducer?.userData]);
   return (
-    <ScrollView>
-      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
-        <StatusBar
-          translucent
-          backgroundColor={themePurple}
-          barStyle="light-content"
-        />
-      </View>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <ScrollView
+      showsVerticalScrollIndicator={false}
+      >
+      {Platform?.OS !== 'ios' && (
+        <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
+          <StatusBar
+            translucent
+            backgroundColor={themePurple}
+            barStyle="light-content"
+          />
+        </View>
+      )}
+      <ImageBackground
+      source={imageURL} resizeMode="cover"
+      style={{flex:1}}
+      >
       <View style={styles.container}>
         {/* Image Container  */}
         <View style={styles.imageContainer}>
@@ -209,13 +223,23 @@ const EditProfile = ({UserReducer, updateProfile, navigation}) => {
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={updateProfileChanges}
-              style={styles.updateBtnStyle}>
+              >
+              <LinearGradient
+              colors={['#74B5E8', '#9974F2', '#E43DEC']}
+              start={{y: 0.0, x: 0.001}}
+              angleCenter={{x: 5, y: 0}}
+              end={{y: 0.0, x: 1.1}}
+              style={styles.updateBtnStyle}
+              >
               <Text style={styles.btnTxt}>Update</Text>
+              </LinearGradient>
             </TouchableOpacity>
           )}
         </View>
       </View>
+      </ImageBackground>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -225,10 +249,16 @@ const mapStateToProps = ({UserReducer}) => {
 export default connect(mapStateToProps, actions)(EditProfile);
 
 const styles = StyleSheet.create({
+  login_bg: {
+    flex: 1,
+    alignItems: 'center',
+    width: width,
+    height: height,
+  },
   container: {
     flex: 1,
     // height: height,
-    backgroundColor: themePurple,
+    // backgroundColor: themePurple,
   },
   btnTxt: {
     color: 'white',
@@ -236,7 +266,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
   },
   updateBtnStyle: {
-    borderWidth: 2,
+    borderWidth: 0,
     borderColor: 'white',
     backgroundColor: themePurple,
     width: width * 0.4,
@@ -260,11 +290,12 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     position: 'absolute',
-    top: height * 0.38,
+    top: Platform.OS == 'ios' ? height * 0.37 : height * 0.34,
     left: width * 0.05,
     paddingHorizontal: width * 0.03,
     backgroundColor: 'rgba(0,0,0,0.4)',
     borderRadius: 12,
+    paddingVertical: height * 0.02,
   },
   nameStyles: {
     color: 'white',
@@ -297,7 +328,7 @@ const styles = StyleSheet.create({
     fontSize: width * 0.04,
     fontFamily: 'Poppins-Medium',
     color: 'white',
-    backgroundColor: themePurple,
+    // backgroundColor: themePurple,
     marginVertical: height * 0.01,
   },
   textInputLabel: {
@@ -307,6 +338,8 @@ const styles = StyleSheet.create({
     borderRadius: width * 0.3,
     paddingHorizontal: width * 0.05,
     elevation: 20,
+    fontSize: width * 0.045,
+    height: height * 0.08,
   },
   phoneInputContainerStyle: {
     backgroundColor: 'white',

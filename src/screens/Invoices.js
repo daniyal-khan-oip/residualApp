@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -15,11 +15,13 @@ import {
   FlatList,
   RefreshControl,
   ActivityIndicator,
+  Image,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import * as actions from '../store/Actions/index';
-import {connect} from 'react-redux';
-import {themePurple} from '../assets/colors/colors';
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import { connect } from 'react-redux';
+import { themePurple } from '../assets/colors/colors';
+import { showMessage, hideMessage } from 'react-native-flash-message';
 import IconComp from '../components/IconComp';
 import Button from '../components/Button';
 import Heading from '../components/Heading';
@@ -28,15 +30,22 @@ import LottieView from 'lottie-react-native';
 import DatePicker from 'react-native-date-picker';
 import colors from '../assets/colors';
 import InvoiceMapper from '../components/invoice-card/InvoiceMapper';
+import InvoiceMappers from '../components/invoice-card/InvoiceMappers';
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs([
+  'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.',
+]);
+
 const image = require('../assets/images/login_bg.png');
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
 const Invoices = ({
   getInvoicesByDate,
   UserReducer,
   getUserInvoices,
   getInvoicesByEmail,
-  getInvoicesByType,
+  getAdminInvoices,
   navigation,
 }) => {
   const STATUS_BAR_HEIGHT =
@@ -49,10 +58,23 @@ const Invoices = ({
   const [endDate, setEndDate] = useState(
     new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
   );
+  let hasPaidInvoices = false;
+  // const [hasPaidInvoices, setHasPaidInvoices] = useState(false);
+  invoices.map(ele => {
+    if (ele.Status !== null) {
+      hasPaidInvoices = true;
+    }
+  });
+  useEffect(() => {
+    // alert(`${invoices.length}${searchChoice}`);
+  }, [invoices]);
   const isAdmin = UserReducer?.userData?.role_id !== 3 ? true : false;
   const [isLoading, setIsLoading] = useState(false);
   let API_DATA = {
     user_id: UserReducer?.userData?.id,
+  };
+  let CUSTOMER_API_DATA = {
+    customer_email: UserReducer?.userData?.email,
   };
   const accessToken = UserReducer?.accessToken;
 
@@ -63,23 +85,24 @@ const Invoices = ({
     ? UserReducer?.invoiceLastPage
     : 0;
 
-  console.log(lastPage, '==', pageNo);
-
   useEffect(() => {
     _onPressGetAllInvoices();
   }, []);
 
   useEffect(() => {
-    if(UserReducer?.invoices){
-    const oldData = searchChoice !== 'all' ? [] : [...invoices];
-    setInvoices([...UserReducer?.invoices]);
-    setInvoices([...oldData, ...UserReducer?.invoices]);
+    if (UserReducer?.invoices) {
+      const oldData = !isAdmin
+        ? [...invoices]
+        : isAdmin && searchChoice !== 'all'
+          ? []
+          : [...invoices];
+      // setInvoices([...UserReducer?.invoices]);
+      setInvoices([...oldData, ...UserReducer?.invoices]);
     } else {
-      setInvoices([])
+      setInvoices([]);
     }
   }, [UserReducer?.invoices]);
 
-  console.log(UserReducer?.invoice,"===============----")
   const _onPressSearch = async () => {
     Keyboard.dismiss();
     if (searchText.length === 0) {
@@ -97,7 +120,6 @@ const Invoices = ({
     setIsLoading(false);
   };
 
-
   const _onPressDateSearch = async () => {
     Keyboard.dismiss();
     setIsLoading(true);
@@ -105,6 +127,7 @@ const Invoices = ({
       start: moment(startDate).format('YYYY-MM-DD'),
       end: moment(endDate).format('YYYY-MM-DD'),
     };
+    // alert(JSON.stringify(data))
     await getInvoicesByDate(data, accessToken);
     setIsLoading(false);
   };
@@ -119,14 +142,12 @@ const Invoices = ({
         <View
           style={[
             styles.notFoundContainer,
-            {marginTop: isAdmin ? height * 0.1 : height * 0.35},
+            { marginVertical: isAdmin ? height * 0.1 : height * 0.05 },
           ]}>
           <Text style={styles.noRecFound}>No Invoices Found!</Text>
         </View>
       );
-    } 
-    
-    else if (pageNo < lastPage) {
+    } else if (pageNo <= lastPage) {
       //Footer View with Load More button
       return (
         <View style={styles.footer}>
@@ -137,17 +158,16 @@ const Invoices = ({
             style={styles.loadMoreBtn}>
             <Text style={styles.btnText}>Load More</Text>
             {isLoading ? (
-              <ActivityIndicator color="white" style={{marginLeft: 8}} />
+              <ActivityIndicator color="white" style={{ marginLeft: 8 }} />
             ) : null}
           </TouchableOpacity>
         </View>
       );
-    } 
-    
-    else {
+    } else {
       return <Text></Text>;
     }
   };
+  console.log(lastPage, '==', pageNo);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -155,21 +175,33 @@ const Invoices = ({
       setRefreshing(false);
       setIsLoading(true);
       setInvoices([]);
-      await getUserInvoices(API_DATA, accessToken, isAdmin, 1);
-      setPageNo(pageNo + 1);
+      if (isAdmin) {
+        await getAdminInvoices(API_DATA, accessToken, 1);
+      } else {
+        await getUserInvoices(CUSTOMER_API_DATA, accessToken, 1);
+      }
+      setPageNo(2);
+      setSearchChoice('all');
+      setSearchText('');
       setIsLoading(false);
     });
   }, []);
 
   const _onPressGetAllInvoices = async () => {
+    // const pageNum = pageNo + 1;
     setPageNo(pageNo + 1);
     Keyboard.dismiss();
-    setIsLoading(true);
-    await getUserInvoices(API_DATA, accessToken, isAdmin, pageNo);
-    setIsLoading(false);
+    pageNo == 1 ? setIsLoading(true) : null
+    if (isAdmin) {
+      await getAdminInvoices(API_DATA, accessToken, pageNo);
+    } else {
+      await getUserInvoices(CUSTOMER_API_DATA, accessToken, pageNo);
+    }
+
+    pageNo == 1 ? setIsLoading(false) : null
   };
 
-  const ButtonsComp = ({item}) => {
+  const ButtonsComp = ({ item }) => {
     return (
       <Button
         title={item.btnName}
@@ -180,6 +212,7 @@ const Invoices = ({
             backgroundColor: 'orange',
           },
         ]}
+        selected={searchChoice === item?.btnChoice}
         isBgColor={false}
         btnTextStyle={{
           fontFamily: 'Poppins-SemiBold',
@@ -209,30 +242,88 @@ const Invoices = ({
   ];
 
   return (
-    <ImageBackground source={image} resizeMode="cover" style={{flex: 1}}>
-      <View style={{height: STATUS_BAR_HEIGHT, backgroundColor: themePurple}}>
-        <StatusBar
-          translucent
-          backgroundColor={themePurple}
-          barStyle="light-content"
-        />
-      </View>
+    <ImageBackground source={image} style={{ flex: 1 }} resizeMode="cover">
+      {Platform.OS !== 'ios' && (
+        <View style={{ height: STATUS_BAR_HEIGHT, backgroundColor: themePurple }}>
+          <StatusBar
+            translucent
+            backgroundColor={themePurple}
+            barStyle="light-content"
+          />
+        </View>
+      )}
       <ScrollView
         nestedScrollEnabled={true}
+        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View style={{alignItems: 'center'}}>
+          <View
+            style={{
+              alignItems: 'center',
+              // marginTop: 20,
+              marginTop: height * 0.04,
+            }}>
             <>
               <>
-                <Text style={styles.main_title}>Invoices</Text>
+                {/* Header  */}
+                <View style={styles.headerStyle}>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={{
+                      width: width * 0.15,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onPress={() => {
+                      navigation.navigate('profile');
+                    }}>
+                    <Image
+                      style={{ height: 30, width: 30, resizeMode: 'contain' }}
+                      source={require('../assets/images/menu.png')}
+                    />
+                  </TouchableOpacity>
+
+                  <Image
+                    style={{ height: 50, width: 50 }}
+                    source={require('../assets/images/app-logo.png')}
+                  />
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={{
+                      width: width * 0.15,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onPress={() => {
+                      onRefresh();
+                    }}>
+                    <Image
+                      style={{
+                        height: 22,
+                        width: 22,
+                        tintColor: 'white',
+                      }}
+                      source={require('../assets/images/refresh.png')}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                <Text
+                  style={{
+                    color: 'white',
+                    fontSize: width * 0.06,
+                    fontWeight: 'bold',
+                  }}>
+                  Invoices
+                </Text>
 
                 {isAdmin && (
                   <FlatList
                     data={Buttons}
                     horizontal={true}
-                    renderItem={({item, index}) => {
+                    renderItem={({ item, index }) => {
                       return <ButtonsComp item={item} />;
                     }}
                   />
@@ -253,7 +344,7 @@ const Invoices = ({
                       <View
                         style={[
                           styles.rowView,
-                          {justifyContent: 'flex-start'},
+                          { justifyContent: 'flex-start' },
                         ]}>
                         <Heading
                           title={'Start Date:'}
@@ -263,12 +354,12 @@ const Invoices = ({
                           title={'End Date:'}
                           passedStyle={[
                             styles.dateLabel,
-                            {marginLeft: width * 0.25},
+                            { marginLeft: width * 0.25 },
                           ]}
                         />
                       </View>
                       <View
-                        style={[styles.rowView, {marginBottom: height * 0.03}]}>
+                        style={[styles.rowView, { marginBottom: height * 0.03 }]}>
                         <View style={styles.rowView}>
                           <TouchableOpacity
                             style={styles.datePickerView}
@@ -318,8 +409,20 @@ const Invoices = ({
                           ? _onPressSearch
                           : _onPressDateSearch
                       }
-                      style={styles.btnContainer}>
-                      <Text style={styles.btnText}>Search</Text>
+                      // style={styles.btnContainer}
+                      >
+                      {/* <Text style={styles.btnText}>Search</Text> */}
+                      <LinearGradient
+
+                        colors={['#74B5E8', '#9974F2', '#E43DEC']}
+                        style={styles.btnContainer}
+                        start={{ x: 0, y: 0.5 }}
+                        end={{ x: 1, y: 0.5 }}
+                        locations={[0, 0.7, 0.9]}
+                      >
+                        <Text style={styles.btnText}>Search</Text>
+                      </LinearGradient>
+
                     </TouchableOpacity>
                   )}
               </>
@@ -331,6 +434,8 @@ const Invoices = ({
                     backgroundColor: 'rgba(0,0,0,0.5)',
                     borderRadius: width * 0.03,
                     width: width * 0.63,
+                    height:
+                      Platform?.OS === 'ios' ? height * 0.2 : height * 0.24,
                   }}>
                   <LottieView
                     speed={1}
@@ -350,34 +455,59 @@ const Invoices = ({
                   </Text>
                 </View>
               ) : (
-                <FlatList
-                  data={isLoading ? [] : invoices}
-                  renderItem={({item, index}) => (
-                    <InvoiceMapper
-                      item={item}
-                      index={index}
-                      navigation={navigation}
+                <>
+                  {hasPaidInvoices && (
+                    <FlatList
+                      ListHeaderComponent={
+                        <Heading
+                          title="Paid Invoices"
+                          passedStyle={{
+                            color: 'white',
+                            fontSize: width * 0.055,
+                            fontWeight: 'bold',
+                            marginBottom: height * 0.03,
+                          }}
+                        />
+                      }
+                      data={isLoading ? [] : invoices}
+                      renderItem={({ item, index }) => (
+                        <InvoiceMappers
+                          item={item}
+                          index={index}
+                          navigation={navigation}
+                        />
+                      )}
+                      nestedScrollEnabled={true}
+                      keyExtractor={(item, index) => index?.toString()}
+                      ListFooterComponent={renderFooter}
                     />
                   )}
-                  nestedScrollEnabled={true}
-                  keyExtractor={(item, index) => index?.toString()}
-                  ListFooterComponent={renderFooter}
-                />
-                // ListFooterComponent={() => {
-                //   return invoices?.length === 0 ? (
-                //     <View
-                //       style={[
-                //         styles.notFoundContainer,
-                //         {marginTop: isAdmin ? height * 0.1 : height * 0.35},
-                //       ]}>
-                //       <Text style={styles.noRecFound}>
-                //         No Invoices Found!
-                //       </Text>
-                //     </View>
-                //   ) : (
-                //     <View style={{marginBottom: 200}} />
-                //   );
-                // }}
+
+                  <FlatList
+                    ListHeaderComponent={
+                      <Heading
+                        title="Pending Invoices"
+                        passedStyle={{
+                          color: 'white',
+                          fontSize: width * 0.055,
+                          fontWeight: 'bold',
+                          marginBottom: height * 0.03,
+                        }}
+                      />
+                    }
+                    data={isLoading ? [] : invoices}
+                    renderItem={({ item, index }) => (
+                      <InvoiceMapper
+                        item={item}
+                        index={index}
+                        navigation={navigation}
+                      />
+                    )}
+                    nestedScrollEnabled={true}
+                    keyExtractor={(item, index) => index?.toString()}
+                    ListFooterComponent={renderFooter}
+                  />
+                </>
               )}
 
               {/* Start Date Picker  */}
@@ -448,11 +578,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   lottieStyle: {
-    height: height * 0.38,
+    height: Platform?.OS === 'ios' ? height * 0.33 : height * 0.38,
     // backgroundColor: 'red',
     // position: 'absolute',
     // top:100,
-    marginTop: height * -0.055,
+    marginTop: Platform?.OS === 'ios' ? height * -0.037 : height * -0.06,
     // zIndex: 99999,
     // left: width * 0.04,
   },
@@ -506,6 +636,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
     textAlign: 'center',
     marginTop: 20,
+    marginLeft: width * 0.28,
   },
   eventStyle: {
     color: 'white',
@@ -533,7 +664,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: width * 0.04,
     marginBottom: height * 0.02,
-    marginRight: width * 0.05,
+    // marginRight: width * 0.05,
+    marginLeft:width*0.5
   },
   btnText: {
     color: 'white',
@@ -573,10 +705,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderColor: colors.themePurple1,
   },
+  headerStyle: {
+    flexDirection: 'row',
+    width: width,
+    marginTop: height * 0.02,
+    paddingVertical: height * 0.01,
+    // backgroundColor:'red',
+    justifyContent: 'space-between',
+  },
 });
 
-const mapStateToProps = ({UserReducer}) => {
-  return {UserReducer};
+const mapStateToProps = ({ UserReducer }) => {
+  return { UserReducer };
 };
 
 export default connect(mapStateToProps, actions)(Invoices);
